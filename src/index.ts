@@ -36,10 +36,10 @@ async function main() {
 
   const from = await getStarkNameOrAddress(max.data[0]);
   const to = await getStarkNameOrAddress(max.data[1]);
-  const amount = num.toBigInt(max.data[2]) + num.toBigInt(max.data[3]);
+  const amount = fromUint256ToFormattedNumber(max.data[2], max.data[3]);
 
   console.log(`From: ${from} to: ${to}`);
-  console.log(`\t${ethers.formatUnits(amount, ETH_DECIMALS)}`);
+  console.log(`\t${amount}`);
   console.log(`\Find it here https://starkscan.co/tx/${max.transaction_hash}`);
 }
 
@@ -59,5 +59,14 @@ async function doTweet() {
   // } else {
   //   console.log("Nothing");
   // }
+}
+
+function fromUint256ToFormattedNumber(low: string, high: string) {
+  const amount = uint256.uint256ToBN({low,high});
+  // TODO decimals isn't used atm
+  const formattedAmount = ethers.formatUnits(amount);
+  const parsedNum = parseFloat(formattedAmount);
+  const roundedNum = parsedNum.toFixed(3);
+  return roundedNum.toString();
 }
 main();
