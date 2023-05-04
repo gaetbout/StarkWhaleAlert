@@ -20,12 +20,13 @@ async function main() {
   const transfer_selector = hash.getSelectorFromName("Transfer");
   const response = await provider.getEvents({
     from_block: { block_number: block_number - 100 },
-    to_block: { block_number },
+    to_block: { block_number:  block_number - 1 },
     address: ETH_ADDRESS,
     keys: [transfer_selector],
     chunk_size: 1000,
   });
 
+  // TODO Need to filter et pas max
   const max = response.events.reduce((prev, current) => {
     const amount1 = num.toBigInt(prev.data[2]) + num.toBigInt(prev.data[3]);
     const amount2 = num.toBigInt(current.data[2]) + num.toBigInt(current.data[3]);
