@@ -13,7 +13,8 @@ const provider = new RpcProvider({ nodeUrl: `https://starknet-mainnet.g.alchemy.
 // TODO do a tweet
 // TODO remember each block inbetween multiple boots
 // TODO Stats when is it a big tx?
-// TODO Add way of store each token + transfer_selector + decimals + HIT limit
+// TODO Add way of store each token address + transfer_selector + decimals + HIT limit + SYMBOL + LOGO
+// TODO Should use some oracle to show actual value
 // TODO Pagination system if a LOT of transfer
 async function main() {
   const block_number = await provider.getBlockNumber();
