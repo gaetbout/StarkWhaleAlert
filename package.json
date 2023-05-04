@@ -31,6 +31,8 @@
   },
   "dependencies": {
     "dotenv": "^16.0.3",
+    "ethers": "^6.3.0",
+    "starknet": "^5.9.2",
     "ts-node": "^10.9.1",
     "twitter-api-sdk": "^1.2.1"
   }
