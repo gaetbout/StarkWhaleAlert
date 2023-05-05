@@ -12,3 +12,7 @@ coincap io conversion token <=> $ value https://docs.coincap.io/
 
 analyse is there to help and analyse a token to find out what would be the best lower bound
 Strict minimum to work with
+
+## TODO
+
+- Could make a better way to store token list with check that all is valid
