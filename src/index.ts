@@ -15,7 +15,6 @@ async function main() {
   const blockNumber = await provider.getBlockNumber();
   writeLastBlockNumber(blockNumber);
   tokens.forEach(async (token) => {
-
     const transferSelector = hash.getSelectorFromName("Transfer");
     const response = await provider.getEvents({
       from_block: { block_number: lastBlockNumber - 1 },
@@ -24,7 +23,9 @@ async function main() {
       keys: [transferSelector],
       chunk_size: 1000,
     });
-    if (response.events.length == 0) { return; }
+    if (response.events.length == 0) {
+      return;
+    }
 
     // TODO Need to filter et pas max
     const max = response.events.reduce((prev, current) => {

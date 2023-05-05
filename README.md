@@ -15,5 +15,5 @@ Strict minimum to work with
 
 ## TODO
 
- - Could make a better way to store token list with check that all is valid
- - Could be extended to catch Bridging events too
+- Could make a better way to store token list with check that all is valid
+- Could be extended to catch Bridging events too
