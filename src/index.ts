@@ -1,6 +1,7 @@
-import { RpcProvider, hash, num, uint256 } from "starknet";
+import { RpcProvider, hash, json, num, uint256 } from "starknet";
 import "dotenv/config";
 import { ethers } from "ethers";
+import { readFileSync, writeFileSync } from "fs";
 
 const ETH_ADDRESS = "0x049d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7";
 const ETH_DECIMALS = 18;
@@ -11,39 +12,44 @@ const provider = new RpcProvider({ nodeUrl: `https://starknet-mainnet.g.alchemy.
 
 // TODO do a tweet
 // TODO Catch bridging events?
-// TODO remember each block inbetween multiple boots
 
 // TODO Add way of store each token address + transfer_selector + decimals + HIT limit + SYMBOL + LOGO
 // TODO Pagination system if a LOT of transfer
 async function main() {
-  const block_number = await provider.getBlockNumber();
-  const transfer_selector = hash.getSelectorFromName("Transfer");
-  const response = await provider.getEvents({
-    from_block: { block_number: block_number - 100 },
-    to_block: { block_number: block_number - 1 },
-    address: ETH_ADDRESS,
-    keys: [transfer_selector],
-    chunk_size: 1000,
-  });
+  const lastBlockNumber = await getLastBlockNumber();
+  const blockNumber = await provider.getBlockNumber();
+  console.log(lastBlockNumber);
+  console.log(blockNumber);
+  writeLastBlockNumber(blockNumber);
+  console.log(await getLastBlockNumber());
 
-  // TODO Need to filter et pas max
-  const max = response.events.reduce((prev, current) => {
-    const amount1 = num.toBigInt(prev.data[2]) + num.toBigInt(prev.data[3]);
-    const amount2 = num.toBigInt(current.data[2]) + num.toBigInt(current.data[3]);
-    return amount1 > amount2 ? prev : current;
-  });
+  // const transferSelector = hash.getSelectorFromName("Transfer");
+  // const response = await provider.getEvents({
+  //   from_block: { block_number: lastBlockNumber - 1 },
+  //   to_block: { block_number: blockNumber - 1 },
+  //   address: ETH_ADDRESS,
+  //   keys: [transferSelector],
+  //   chunk_size: 1000,
+  // });
 
-  console.log(max);
+  // // TODO Need to filter et pas max
+  // const max = response.events.reduce((prev, current) => {
+  //   const amount1 = num.toBigInt(prev.data[2]) + num.toBigInt(prev.data[3]);
+  //   const amount2 = num.toBigInt(current.data[2]) + num.toBigInt(current.data[3]);
+  //   return amount1 > amount2 ? prev : current;
+  // });
 
-  const from = await getStarkNameOrAddress(max.data[0]);
-  const to = await getStarkNameOrAddress(max.data[1]);
-  const amount  = fromUint256ToFloat(max.data[2], max.data[3]);
-  const rate = await getTokenValueAsFloat("ethereum");
-  const usdValue = amount * rate;
+  // console.log(max);
 
-  console.log(`From: ${from} to: ${to}`);
-  console.log(`\t${amount.toFixed(3)} (${ usdValue } USD)`);
-  console.log(`\Find it here https://starkscan.co/tx/${max.transaction_hash}`);
+  // const from = await getStarkNameOrAddress(max.data[0]);
+  // const to = await getStarkNameOrAddress(max.data[1]);
+  // const amount  = fromUint256ToFloat(max.data[2], max.data[3]);
+  // const rate = await getTokenValueAsFloat("ethereum");
+  // const usdValue = amount * rate;
+
+  // console.log(`From: ${from} to: ${to}`);
+  // console.log(`\t${amount.toFixed(3)} (${ usdValue } USD)`);
+  // console.log(`\Find it here https://starkscan.co/tx/${max.transaction_hash}`);
 }
 
 async function getStarkNameOrAddress(address: string) {
@@ -82,5 +88,16 @@ async function getTokenValue(tokenName: string) {
   } catch (error) {
     console.error(error);
   }
+}
+
+function getLastBlockNumber() {
+  const jsonBlockObject = json.parse(readFileSync("./db/block.json").toString("ascii"));
+  return jsonBlockObject.lastProcesssedBlockNumber;
+}
+
+function writeLastBlockNumber(lastProcesssedBlockNumber: number) {
+  const jsonBlockObject = json.parse(readFileSync("./db/block.json").toString("ascii"));
+  jsonBlockObject.lastProcesssedBlockNumber = lastProcesssedBlockNumber;
+  writeFileSync("./db/block.json", json.stringify(jsonBlockObject));
 }
 main();
