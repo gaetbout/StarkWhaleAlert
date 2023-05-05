@@ -1,11 +1,6 @@
 import { json } from "starknet";
 import { readFileSync, writeFileSync } from "fs";
 
-function getTokens() {
-  const jsonTokens = json.parse(readFileSync("./db/tokens.json").toString("ascii"));
-  return jsonTokens.tokens;
-}
-
 function getLastBlockNumber() {
   const jsonBlock = json.parse(readFileSync("./db/block.json").toString("ascii"));
   return jsonBlock.lastProcesssedBlockNumber;
