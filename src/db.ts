@@ -39,4 +39,4 @@ const ETH = {
 
 const tokens: Token[] = [ETH];
 
-export { tokens, getLastBlockNumber, writeLastBlockNumber };
+export { Token, tokens, getLastBlockNumber, writeLastBlockNumber };

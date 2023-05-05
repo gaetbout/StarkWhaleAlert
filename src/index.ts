@@ -8,9 +8,8 @@ const coincapApiKey = process.env.COINCAP_API_KEY!;
 const provider = new RpcProvider({ nodeUrl: `https://starknet-mainnet.g.alchemy.com/v2/${alchemyApiKey}` });
 
 // TODO do a tweet
-// TODO Catch bridging events?
-
 // TODO Pagination system if a LOT of transfer
+
 async function main() {
   const lastBlockNumber = await getLastBlockNumber();
   const blockNumber = await provider.getBlockNumber();
