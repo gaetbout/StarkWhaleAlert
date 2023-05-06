@@ -8,17 +8,22 @@ const coincapApiKey = process.env.COINCAP_API_KEY as string;
 const provider = new RpcProvider({ nodeUrl: `https://starknet-mainnet.g.alchemy.com/v2/${alchemyApiKey}` });
 
 // TODO Pagination system if a LOT of transfer
-// TODO Store done tx hash somewhere to make sure I don't tweet 2x
 
 async function main() {
   const lastBlockNumber = await getLastBlockNumber();
   const blockNumber = await provider.getBlockNumber();
+
+  // No new block, nothing to proceed
+  if (lastBlockNumber >= blockNumber - 1) {
+    return;
+  }
+  
   writeLastBlockNumber(blockNumber);
   tokens.forEach(async (token) => {
     const transferSelector = hash.getSelectorFromName("Transfer");
     const response = await provider.getEvents({
-      from_block: { block_number: lastBlockNumber - 1 },
-      to_block: { block_number: blockNumber - 1 },
+      from_block: { block_number: lastBlockNumber},
+      to_block: { block_number: blockNumber - 1 }, // We only proccess block that are "complete"
       address: token.address,
       keys: [transferSelector],
       chunk_size: 1000,
