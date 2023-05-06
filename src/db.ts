@@ -17,7 +17,7 @@ type Token = {
   decimals: number;
   symbol: string;
   selector: string;
-  limit: number;
+  threshold: number;
   logo: string;
   rateApiId: string;
 };
@@ -27,7 +27,7 @@ const ETH = {
   decimals: 18,
   symbol: "ETH",
   selector: "Transfer",
-  limit: 5,
+  threshold: 5,
   logo: "Ξ",
   rateApiId: "ethereum",
 };
