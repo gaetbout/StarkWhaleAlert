@@ -14,6 +14,6 @@ analyse is there to help and analyse a token to find out what would be the best 
 Strict minimum to work with
 
 ## TODO
-
-- Could make a better way to store token list with check that all is valid
+- Have a DB with a correspondancy wallet address <==> to acutal (like binance, starkgate, etc etc)
 - Could be extended to catch Bridging events too
+- Could make a better way to store token list with check that all is valid
