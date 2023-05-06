@@ -1,13 +1,12 @@
-import { RpcProvider, hash, json, num, uint256 } from "starknet";
+import { RpcProvider, hash, num, uint256 } from "starknet";
 import "dotenv/config";
 import { ethers } from "ethers";
 import { tokens, getLastBlockNumber, writeLastBlockNumber } from "./db";
 
-const alchemyApiKey = process.env.ALCHEMY_API_KEY!;
-const coincapApiKey = process.env.COINCAP_API_KEY!;
+const alchemyApiKey = process.env.ALCHEMY_API_KEY as string;
+const coincapApiKey = process.env.COINCAP_API_KEY as string;
 const provider = new RpcProvider({ nodeUrl: `https://starknet-mainnet.g.alchemy.com/v2/${alchemyApiKey}` });
 
-// TODO do a tweet
 // TODO Pagination system if a LOT of transfer
 
 async function main() {
