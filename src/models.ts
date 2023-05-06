@@ -8,5 +8,12 @@ type Token = {
   rateApiId: string;
 };
 
-// TODO Do a to tweet type
-export { Token };
+type EmittedEvent = {
+  from_address: string;
+  keys: Array<string>;
+  data: Array<string>;
+  block_hash: string;
+  block_number: number;
+  transaction_hash: string;
+};
+export { Token, EmittedEvent };

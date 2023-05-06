@@ -17,12 +17,12 @@ async function main() {
   if (lastBlockNumber >= blockNumber - 1) {
     return;
   }
-  
+
   writeLastBlockNumber(blockNumber);
   tokens.forEach(async (token) => {
     const transferSelector = hash.getSelectorFromName("Transfer");
     const response = await provider.getEvents({
-      from_block: { block_number: lastBlockNumber},
+      from_block: { block_number: lastBlockNumber },
       to_block: { block_number: blockNumber - 1 }, // We only proccess block that are "complete"
       address: token.address,
       keys: [transferSelector],

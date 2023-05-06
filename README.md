@@ -14,7 +14,8 @@ analyse is there to help and analyse a token to find out what would be the best 
 Strict minimum to work with
 
 ## TODO
+
 - Have a DB with a correspondancy wallet address <==> to acutal (like binance, starkgate, etc etc)
- - Could store done tx hash somewhere to make sure I don't tweet 2x? Is it still relevant with replay block prevention?
+- Could store done tx hash somewhere to make sure I don't tweet 2x? Is it still relevant with replay block prevention?
 - Could be extended to catch Bridging events too
 - Could make a better way to store token list with check that all is valid
