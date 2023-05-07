@@ -5,7 +5,7 @@ import { writeTwitterRefreshToken } from "./db";
 
 const clientId = process.env.TWITTER_OAUTH2_CLIENT_ID as string;
 const clientSecret = process.env.TWITTER_OAUTH2_CLIENT_SECRET as string;
-const url = process.env.VERCEL_URL as string;
+const url = "http://127.0.0.1";
 const port = 3000;
 const app = express();
 // Instantiate with desired auth type (here's Bearer v2 auth)
@@ -14,7 +14,7 @@ const twitterClient = new TwitterApi({
   clientSecret,
 });
 
-const callbackURL = `${url}/${port}/callback`;
+const callbackURL = `${url}:${port}/callback`;
 let codeVerifierSaved: string;
 let storedState: string;
 
@@ -47,5 +47,5 @@ app.get("/callback", async function (req, res) {
 });
 
 app.listen(port, () => {
-  console.log(`You can open the login page`);
+  console.log(`Go here to login: ${url}/${port}/login`);
 });

@@ -8,7 +8,7 @@
     "build": "tsc",
     "tweet": "npx ts-node src/index.ts",
     "analyse": "npx ts-node src/analyse.ts",
-    "twitterLogin": "npx ts-node src/twitterLogin.ts",
+    "start": "npx ts-node src/twitterLogin.ts",
     "lint": "eslint . --fix",
     "prettier": "prettier --write ."
   },
