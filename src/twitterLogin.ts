@@ -3,14 +3,18 @@ import "dotenv/config";
 import express from "express";
 import { writeTwitterRefreshToken } from "./db";
 
+const clientId = process.env.TWITTER_OAUTH2_CLIENT_ID as string;
+const clientSecret = process.env.TWITTER_OAUTH2_CLIENT_SECRET as string;
+const url = process.env.VERCEL_URL as string;
+const port = 3000;
 const app = express();
 // Instantiate with desired auth type (here's Bearer v2 auth)
 const twitterClient = new TwitterApi({
-  clientId: process.env.TWITTER_OAUTH2_CLIENT_ID as string,
-  clientSecret: process.env.TWITTER_OAUTH2_CLIENT_SECRET as string,
+  clientId,
+  clientSecret,
 });
 
-const callbackURL = "http://127.0.0.1:3000/callback";
+const callbackURL = `${url}/${port}/callback`;
 let codeVerifierSaved: string;
 let storedState: string;
 
@@ -42,6 +46,6 @@ app.get("/callback", async function (req, res) {
   writeTwitterRefreshToken(refreshToken as string);
 });
 
-app.listen(3000, () => {
+app.listen(port, () => {
   console.log(`You can open the login page`);
 });
