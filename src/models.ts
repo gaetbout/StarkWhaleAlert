@@ -2,16 +2,16 @@ type Token = {
   address: string;
   decimals: number;
   symbol: string;
-  selector: string;
+  selector: string; // This should be the String of the selector (Transfer, ...), not the HEX value
   threshold: number;
   logo: string;
   rateApiId: string;
 };
 
 type EmittedEvent = {
-  from_address: string;
-  keys: Array<string>;
   data: Array<string>;
+  keys: Array<string>;
+  from_address: string;
   block_hash: string;
   block_number: number;
   transaction_hash: string;
