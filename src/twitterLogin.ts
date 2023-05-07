@@ -42,10 +42,6 @@ app.get("/callback", async function (req, res) {
   writeTwitterRefreshToken(refreshToken as string);
 });
 
-async function doListen() {
-  await app.listen(3000, () => {
-    console.log(`Go here to login: http://127.0.0.1:3000/login`);
-  });
-}
-
-doListen();
+app.listen(3000, () => {
+  console.log(`You can open the login page`);
+});
