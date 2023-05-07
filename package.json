@@ -6,9 +6,9 @@
   "type": "module",
   "scripts": {
     "build": "tsc",
-    "test": "npx ts-node src/index.ts",
+    "tweet": "npx ts-node src/index.ts",
     "analyse": "npx ts-node src/analyse.ts",
-    "tmp": "npx ts-node src/twitter.ts",
+    "twitterLogin": "npx ts-node src/twitterLogin.ts",
     "lint": "eslint . --fix",
     "prettier": "prettier --write ."
   },

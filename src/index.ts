@@ -3,6 +3,7 @@ import "dotenv/config";
 import { ethers } from "ethers";
 import { tokens, getLastBlockNumber, writeLastBlockNumber } from "./db";
 import { EmittedEvent, Token } from "./models";
+import { doTweet, refreshToken } from "./twitter";
 
 const alchemyApiKey = process.env.ALCHEMY_API_KEY as string;
 const coincapApiKey = process.env.COINCAP_API_KEY as string;
@@ -31,10 +32,12 @@ async function main() {
     });
 
     if (eventsToTweet.length == 0) {
-      // TODO refresh token
+      refreshToken();
     } else {
-      // TODO Tweet for each
-      await logItem(eventsToTweet[0], token);
+      eventsToTweet.forEach(async (e) => {
+        const textToTweet = await getFormattedText(e, token);
+        await doTweet(textToTweet);
+      });
     }
   });
 }
@@ -59,7 +62,7 @@ async function fetchAllEvent(token: Token, lastBlock: number, lastCompleteBlock:
   return allEvents;
 }
 
-async function logItem(event: EmittedEvent, currentToken: Token) {
+async function getFormattedText(event: EmittedEvent, currentToken: Token) {
   const from = await getStarkNameOrAddress(event.data[0]);
   const to = await getStarkNameOrAddress(event.data[1]);
   const amount = fromUint256ToFloat(event.data[2], event.data[3]);
@@ -68,9 +71,13 @@ async function logItem(event: EmittedEvent, currentToken: Token) {
   const amountFixed = amount.toFixed(3);
 
   // TODO Adding emoji before?
-  console.log(`${amountFixed} #${currentToken.symbol} ${currentToken.logo} (${usdValueLocalString} USD)`);
-  console.log(`From: ${from} to: ${to}`);
-  console.log(`https://starkscan.co/tx/${event.transaction_hash}`);
+  let textToTweet = "";
+  textToTweet += `${amountFixed} #${currentToken.symbol} ${currentToken.logo} (${usdValueLocalString} USD)`;
+  textToTweet += "\n";
+  textToTweet += `From: ${from} to: ${to}`;
+  textToTweet += "\n";
+  textToTweet += `https://starkscan.co/tx/${event.transaction_hash}`;
+  return textToTweet;
 }
 
 async function getStarkNameOrAddress(address: string) {

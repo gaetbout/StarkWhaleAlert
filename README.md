@@ -19,3 +19,4 @@ Strict minimum to work with
 - Could store done tx hash somewhere to make sure I don't tweet 2x? Is it still relevant with replay block prevention?
 - Could be extended to catch Bridging events too
 - Could make a better way to store token list with check that all is valid (selector shouldn't be a hash)
+- add bunch of tests

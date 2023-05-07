@@ -2,14 +2,26 @@ import { json } from "starknet";
 import { readFileSync, writeFileSync } from "fs";
 import { Token } from "./models";
 
+// TODO Could use https://github.com/typicode/lowdb or even an actaul DB
 function getLastBlockNumber() {
   const jsonBlock = json.parse(readFileSync("./db/block.json").toString("ascii"));
   return jsonBlock.lastProcesssedBlockNumber;
 }
 
+function getTwitterRefreshToken() {
+  const jsonBlock = json.parse(readFileSync("./db/block.json").toString("ascii"));
+  return jsonBlock.twitterRefreshToken;
+}
+
 function writeLastBlockNumber(lastProcesssedBlockNumber: number) {
   const jsonBlock = json.parse(readFileSync("./db/block.json").toString("ascii"));
   jsonBlock.lastProcesssedBlockNumber = lastProcesssedBlockNumber;
+  writeFileSync("./db/block.json", json.stringify(jsonBlock));
+}
+
+function writeTwitterRefreshToken(twitterRefreshToken: string) {
+  const jsonBlock = json.parse(readFileSync("./db/block.json").toString("ascii"));
+  jsonBlock.twitterRefreshToken = twitterRefreshToken;
   writeFileSync("./db/block.json", json.stringify(jsonBlock));
 }
 
@@ -25,4 +37,4 @@ const ETH = {
 
 const tokens: Token[] = [ETH];
 
-export { tokens, getLastBlockNumber, writeLastBlockNumber };
+export { tokens, getLastBlockNumber, writeLastBlockNumber, getTwitterRefreshToken, writeTwitterRefreshToken };
