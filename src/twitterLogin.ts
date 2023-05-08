@@ -47,5 +47,5 @@ app.get("/callback", async function (req, res) {
 });
 
 app.listen(port, () => {
-  console.log(`Go here to login: ${url}/${port}/login`);
+  console.log(`Go here to login: ${url}:${port}/login`);
 });

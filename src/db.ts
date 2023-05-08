@@ -3,12 +3,12 @@ import { readFileSync, writeFileSync } from "fs";
 import { Token } from "./models";
 
 // TODO Could use https://github.com/typicode/lowdb or even an actaul DB
-function getLastBlockNumber() {
+function getLastBlockNumber(): number {
   const jsonBlock = json.parse(readFileSync("./db/block.json").toString("ascii"));
   return jsonBlock.lastProcesssedBlockNumber;
 }
 
-function getTwitterRefreshToken() {
+function getTwitterRefreshToken(): string {
   const jsonBlock = json.parse(readFileSync("./db/block.json").toString("ascii"));
   return jsonBlock.twitterRefreshToken;
 }

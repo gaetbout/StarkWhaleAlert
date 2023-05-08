@@ -36,13 +36,14 @@ async function main() {
     } else {
       eventsToTweet.forEach(async (e) => {
         const textToTweet = await getFormattedText(e, token);
-        await doTweet(textToTweet);
+        console.log(textToTweet);
+        // await doTweet(textToTweet);
       });
     }
   });
 }
 
-async function fetchAllEvent(token: Token, lastBlock: number, lastCompleteBlock: number) {
+async function fetchAllEvent(token: Token, lastBlock: number, lastCompleteBlock: number): Promise<EmittedEvent[]> {
   let allEvents: Array<EmittedEvent> = [];
   let continuationToken = "0";
   const selector = hash.getSelectorFromName(token.selector);
@@ -62,11 +63,11 @@ async function fetchAllEvent(token: Token, lastBlock: number, lastCompleteBlock:
   return allEvents;
 }
 
-async function getFormattedText(event: EmittedEvent, currentToken: Token) {
+async function getFormattedText(event: EmittedEvent, currentToken: Token): Promise<string> {
   const from = await getStarkNameOrAddress(event.data[0]);
   const to = await getStarkNameOrAddress(event.data[1]);
-  const amount = fromUint256ToFloat(event.data[2], event.data[3]);
-  const rate = await getTokenValueAsFloat(currentToken.rateApiId);
+  const amount = lowHigh256ToNumber(event.data[2], event.data[3]);
+  const rate = await tokenValueToNumber(currentToken.rateApiId);
   const usdValueLocalString = Math.round(amount * rate).toLocaleString();
   const amountFixed = amount.toFixed(3);
 
@@ -80,7 +81,7 @@ async function getFormattedText(event: EmittedEvent, currentToken: Token) {
   return textToTweet;
 }
 
-async function getStarkNameOrAddress(address: string) {
+async function getStarkNameOrAddress(address: string): Promise<string> {
   try {
     return await provider.getStarkName(address);
   } catch (e) {
@@ -89,14 +90,14 @@ async function getStarkNameOrAddress(address: string) {
   }
 }
 
-function fromUint256ToFloat(low: string, high: string) {
+function lowHigh256ToNumber(low: string, high: string): number {
   const amount = uint256.uint256ToBN({ low, high });
   // TODO decimals isn't used atm
   const formattedAmount = ethers.formatUnits(amount);
   return parseFloat(formattedAmount);
 }
 
-async function getTokenValueAsFloat(tokenName: string) {
+async function tokenValueToNumber(tokenName: string): Promise<number> {
   const tokenValue = await getTokenValue(tokenName);
   return parseFloat(tokenValue.data.rateUsd);
 }
