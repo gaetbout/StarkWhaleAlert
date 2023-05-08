@@ -35,7 +35,7 @@ async function main() {
     if (eventsToTweet.length == 0) {
       await refreshToken();
     } else {
-      for (let index = 0; index < eventsToTweet.length; index++){
+      for (let index = 0; index < eventsToTweet.length; index++) {
         const textToTweet = await getFormattedText(eventsToTweet[index], token);
         await doTweet(textToTweet);
       }
@@ -44,7 +44,6 @@ async function main() {
   });
   writeLastBlockNumber(lastCompleteBlock);
 }
-
 
 async function fetchAllEvent(token: Token, lastBlock: number, lastCompleteBlock: number): Promise<EmittedEvent[]> {
   let allEvents: Array<EmittedEvent> = [];
