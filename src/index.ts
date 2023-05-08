@@ -36,13 +36,11 @@ async function main() {
     } else {
       eventsToTweet.forEach(async (e) => {
         const textToTweet = await getFormattedText(e, token);
-        console.log(textToTweet);
-        // await doTweet(textToTweet);
+        await doTweet(textToTweet);
       });
     }
   });
 }
-
 async function fetchAllEvent(token: Token, lastBlock: number, lastCompleteBlock: number): Promise<EmittedEvent[]> {
   let allEvents: Array<EmittedEvent> = [];
   let continuationToken = "0";

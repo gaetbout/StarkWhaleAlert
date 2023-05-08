@@ -26,7 +26,7 @@ app.get("/login", async function (req, res) {
 
   codeVerifierSaved = codeVerifier;
   storedState = state;
-
+  console.log(url);
   res.redirect(url);
 });
 
