@@ -3,7 +3,7 @@ import "dotenv/config";
 import { ethers } from "ethers";
 import { tokens, getLastBlockNumber, writeLastBlockNumber } from "./db";
 import { EmittedEvent, Token } from "./models";
-import { doTweet, refreshToken } from "./twitter";
+import { refreshTokenAndTweet } from "./twitter";
 
 const alchemyApiKey = process.env.ALCHEMY_API_KEY as string;
 const coincapApiKey = process.env.COINCAP_API_KEY as string;
@@ -34,11 +34,11 @@ async function main() {
     });
 
     if (eventsToTweet.length == 0) {
-      await refreshToken();
+      await refreshTokenAndTweet();
     } else {
       for (let index = 0; index < eventsToTweet.length; index++) {
         const textToTweet = await getFormattedText(eventsToTweet[index], token);
-        await doTweet(textToTweet);
+        await refreshTokenAndTweet(textToTweet);
       }
     }
     console.log("Done");

@@ -7,17 +7,14 @@ const twitterClient = new TwitterApi({
   clientSecret: process.env.TWITTER_OAUTH2_CLIENT_SECRET as string,
 });
 
-async function refreshToken() {
-  const { refreshToken: newRefreshToken } = await twitterClient.refreshOAuth2Token(getTwitterRefreshToken());
-  writeTwitterRefreshToken(newRefreshToken as string);
-}
-
-async function doTweet(tweetText: string) {
+async function refreshTokenAndTweet(tweetText?: string) {
   const { client: refreshedClient, refreshToken: newRefreshToken } = await twitterClient.refreshOAuth2Token(
     getTwitterRefreshToken(),
   );
   writeTwitterRefreshToken(newRefreshToken as string);
-  await refreshedClient.v2.tweet(tweetText);
+  if (tweetText){
+    await refreshedClient.v2.tweet(tweetText);
+  }
 }
 
-export { refreshToken, doTweet };
+export { refreshTokenAndTweet };
