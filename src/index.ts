@@ -12,7 +12,7 @@ const provider = new RpcProvider({ nodeUrl: `https://starknet-mainnet.g.alchemy.
 async function main() {
   const lastBlock = await getLastBlockNumber();
   // We only proccess block that are "complete"
-  const lastCompleteBlock = (await provider.getBlockNumber()) - 1;
+  const lastCompleteBlock = (await provider.getBlockNumber()) - 2;
 
   // No new block, nothing to proceed
   if (lastBlock >= lastCompleteBlock) {
