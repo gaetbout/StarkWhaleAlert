@@ -72,7 +72,7 @@ async function getFormattedText(event: EmittedEvent, currentToken: Token): Promi
   const amount = lowHigh256ToNumber(event.data[2], event.data[3]);
   const rate = await tokenValueToNumber(currentToken.rateApiId);
   const usdValueLocalString = Math.round(amount * rate).toLocaleString();
-  const amountFixed = amount.toFixed(3);
+  const amountFixed = amount.toFixed(2);
 
   // TODO Adding emoji before?
   let textToTweet = "";
