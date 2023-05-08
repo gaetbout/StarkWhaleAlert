@@ -19,7 +19,7 @@ async function main() {
     return;
   }
 
-  // TODO Change when multi tokekn ==> will be wrong
+  // TODO Change when multi token ==> will be wrong
   tokens.forEach(async (token) => {
     const events = await fetchAllEvent(token, lastBlock, lastCompleteBlock);
     if (events.length == 0) {
