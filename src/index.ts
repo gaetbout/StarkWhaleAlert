@@ -19,6 +19,7 @@ async function main() {
     return;
   }
 
+  // TODO Add sh scripts
   // TODO Change when multi token ==> will be wrong
   tokens.forEach(async (token) => {
     const events = await fetchAllEvent(token, lastBlock, lastCompleteBlock);
@@ -39,6 +40,7 @@ async function main() {
         await doTweet(textToTweet);
       }
     }
+    console.log("Done");
   });
   writeLastBlockNumber(lastCompleteBlock);
 }
@@ -87,6 +89,9 @@ async function getStarkNameOrAddress(address: string): Promise<string> {
     return await provider.getStarkName(address);
   } catch (e) {
     // console.log(e);
+    if (address == "0x0") {
+      return address;
+    }
     return address.slice(0, 5) + "..." + address.slice(-4);
   }
 }
