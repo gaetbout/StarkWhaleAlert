@@ -31,10 +31,9 @@ async function main() {
     });
 
     if (eventsToTweet.length == 0) {
-      refreshToken();
+      await refreshToken();
     } else {
       eventsToTweet.forEach(async (e) => {
-        // console.log(e);
         const textToTweet = await getFormattedText(e, token);
         await doTweet(textToTweet);
       });
