@@ -19,6 +19,7 @@ async function main() {
     return;
   }
 
+  // TODO Change when multi tokekn ==> will be wrong
   tokens.forEach(async (token) => {
     const events = await fetchAllEvent(token, lastBlock, lastCompleteBlock);
     if (events.length == 0) {
@@ -33,14 +34,16 @@ async function main() {
     if (eventsToTweet.length == 0) {
       await refreshToken();
     } else {
-      eventsToTweet.forEach(async (e) => {
-        const textToTweet = await getFormattedText(e, token);
+      for (let index = 0; index < eventsToTweet.length; index++){
+        const textToTweet = await getFormattedText(eventsToTweet[index], token);
         await doTweet(textToTweet);
-      });
+      }
     }
   });
   writeLastBlockNumber(lastCompleteBlock);
 }
+
+
 async function fetchAllEvent(token: Token, lastBlock: number, lastCompleteBlock: number): Promise<EmittedEvent[]> {
   let allEvents: Array<EmittedEvent> = [];
   let continuationToken = "0";
@@ -84,7 +87,7 @@ async function getStarkNameOrAddress(address: string): Promise<string> {
     return await provider.getStarkName(address);
   } catch (e) {
     // console.log(e);
-    return address; // TODO Should I shorten it?
+    return address.slice(0, 5) + "..." + address.slice(-4);
   }
 }
 
