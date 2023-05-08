@@ -16,6 +16,7 @@ async function main() {
 
   // No new block, nothing to proceed
   if (lastBlock >= lastCompleteBlock) {
+    console.log("No block to process");
     return;
   }
 
