@@ -18,8 +18,7 @@ async function main() {
   if (lastBlock >= lastCompleteBlock) {
     return;
   }
-  // TODO Should I write this or -1 ?
-  writeLastBlockNumber(lastCompleteBlock);
+
   tokens.forEach(async (token) => {
     const events = await fetchAllEvent(token, lastBlock, lastCompleteBlock);
     if (events.length == 0) {
@@ -35,11 +34,13 @@ async function main() {
       refreshToken();
     } else {
       eventsToTweet.forEach(async (e) => {
+        // console.log(e);
         const textToTweet = await getFormattedText(e, token);
         await doTweet(textToTweet);
       });
     }
   });
+  writeLastBlockNumber(lastCompleteBlock);
 }
 async function fetchAllEvent(token: Token, lastBlock: number, lastCompleteBlock: number): Promise<EmittedEvent[]> {
   let allEvents: Array<EmittedEvent> = [];

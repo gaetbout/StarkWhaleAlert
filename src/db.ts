@@ -2,7 +2,7 @@ import { json } from "starknet";
 import { readFileSync, writeFileSync } from "fs";
 import { Token } from "./models";
 
-// TODO Could use https://github.com/typicode/lowdb or even an actaul DB
+// TODO Could use https://github.com/typicode/lowdb or even an actual DB
 function getLastBlockNumber(): number {
   const jsonBlock = json.parse(readFileSync("./db/block.json").toString("ascii"));
   return jsonBlock.lastProcesssedBlockNumber;
@@ -30,7 +30,7 @@ const ETH = {
   decimals: 18,
   symbol: "ETH",
   selector: "Transfer",
-  threshold: 5e18, // 5 eth
+  threshold: 5e17, // 0.5 eth
   logo: "Ξ",
   rateApiId: "ethereum",
 };
