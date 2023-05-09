@@ -43,7 +43,7 @@ async function main() {
     }
     console.log("Done");
   });
-  writeLastBlockNumber(lastCompleteBlock);
+  writeLastBlockNumber(lastCompleteBlock + 1);
 }
 
 async function fetchAllEvent(token: Token, lastBlock: number, lastCompleteBlock: number): Promise<EmittedEvent[]> {
