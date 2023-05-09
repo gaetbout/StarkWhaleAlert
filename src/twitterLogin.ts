@@ -44,6 +44,7 @@ app.get("/callback", async function (req, res) {
   });
 
   writeTwitterRefreshToken(refreshToken as string);
+  res.send(refreshToken);
 });
 
 app.listen(port, () => {

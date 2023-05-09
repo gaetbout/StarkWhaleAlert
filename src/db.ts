@@ -30,7 +30,7 @@ const ETH = {
   decimals: 18,
   symbol: "ETH",
   selector: "Transfer",
-  threshold: 5e18, // 5 eth
+  threshold: 1e19, // 10 eth
   logo: "♦",
   rateApiId: "ethereum",
 };

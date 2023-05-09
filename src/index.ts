@@ -1,9 +1,9 @@
 import { RpcProvider, hash, num, uint256 } from "starknet";
 import "dotenv/config";
 import { ethers } from "ethers";
-import { tokens, getLastBlockNumber, writeLastBlockNumber } from "./db";
+import { tokens, getLastBlockNumber, writeLastBlockNumber, getTwitterRefreshToken } from "./db";
 import { EmittedEvent, Token } from "./models";
-import { refreshTokenAndTweet } from "./twitter";
+import { refreshToken, tweet } from "./twitter";
 
 const alchemyApiKey = process.env.ALCHEMY_API_KEY as string;
 const coincapApiKey = process.env.COINCAP_API_KEY as string;
@@ -16,13 +16,13 @@ async function main() {
 
   // No new block, nothing to proceed
   if (lastBlock >= lastCompleteBlock) {
-    console.log(`${new Date().toISOString()} - no block to process`);
+    console.log(`${new Date().toISOString()} - no block to process ${lastBlock} <=> ${lastCompleteBlock}`);
     return;
   }
 
-  // TODO Add sh scripts
   // TODO Change when multi token ==> will be wrong
-  tokens.forEach(async (token) => {
+  for (let tokenIndex = 0; tokenIndex < tokens.length; tokenIndex++) {
+    const token = tokens[tokenIndex];
     const events = await fetchAllEvent(token, lastBlock, lastCompleteBlock);
     if (events.length == 0) {
       return;
@@ -34,15 +34,15 @@ async function main() {
     });
 
     if (eventsToTweet.length == 0) {
-      await refreshTokenAndTweet();
+      await refreshToken();
     } else {
       for (let index = 0; index < eventsToTweet.length; index++) {
         const textToTweet = await getFormattedText(eventsToTweet[index], token);
-        await refreshTokenAndTweet(textToTweet);
+        await tweet(textToTweet);
       }
     }
     console.log(`${new Date().toISOString()} - Done`);
-  });
+  }
   writeLastBlockNumber(lastCompleteBlock + 1);
 }
 
