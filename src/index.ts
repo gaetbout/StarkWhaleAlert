@@ -75,10 +75,17 @@ async function getFormattedText(event: EmittedEvent, currentToken: Token): Promi
   const amountFixed = amount.toFixed(2);
 
   // TODO Adding emoji before?
+  // TODO ugly logic this should definitely change
   let textToTweet = "";
   textToTweet += `${amountFixed} #${currentToken.symbol} ${currentToken.logo} (${usdValueLocalString} USD)`;
   textToTweet += "\n";
-  textToTweet += `From: ${from} to: ${to}`;
+  if (to == "0x0") {
+    textToTweet += `${from} bridged to Ethereum L1`;
+  } else if (from == "0x0") {
+    textToTweet += `${to} bridged to Starknet L2`;
+  } else {
+    textToTweet += `From ${from} to ${to}`;
+  }
   textToTweet += "\n";
   textToTweet += `https://starkscan.co/tx/${event.transaction_hash}`;
   return textToTweet;

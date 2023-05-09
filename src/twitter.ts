@@ -12,7 +12,7 @@ async function refreshTokenAndTweet(tweetText?: string) {
     getTwitterRefreshToken(),
   );
   writeTwitterRefreshToken(newRefreshToken as string);
-  if (tweetText){
+  if (tweetText) {
     await refreshedClient.v2.tweet(tweetText);
   }
 }
