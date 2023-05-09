@@ -8,7 +8,6 @@ const twitterClient = new TwitterApi({
 });
 
 async function refreshToken() {
-  console.log(getTwitterRefreshToken());
   try {
     const { refreshToken: newRefreshToken } = await twitterClient.refreshOAuth2Token(getTwitterRefreshToken());
 
