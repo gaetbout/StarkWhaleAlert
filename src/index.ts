@@ -16,7 +16,7 @@ async function main() {
 
   // No new block, nothing to proceed
   if (lastBlock >= lastCompleteBlock) {
-    console.log("No block to process");
+    console.log(`${new Date().toISOString()} - no block to process`);
     return;
   }
 
@@ -41,7 +41,7 @@ async function main() {
         await refreshTokenAndTweet(textToTweet);
       }
     }
-    console.log("Done");
+    console.log(`${new Date().toISOString()} - Done`);
   });
   writeLastBlockNumber(lastCompleteBlock + 1);
 }

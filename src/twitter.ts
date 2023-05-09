@@ -8,12 +8,17 @@ const twitterClient = new TwitterApi({
 });
 
 async function refreshTokenAndTweet(tweetText?: string) {
-  const { client: refreshedClient, refreshToken: newRefreshToken } = await twitterClient.refreshOAuth2Token(
-    getTwitterRefreshToken(),
-  );
-  writeTwitterRefreshToken(newRefreshToken as string);
-  if (tweetText) {
-    await refreshedClient.v2.tweet(tweetText);
+  try {
+    const { client: refreshedClient, refreshToken: newRefreshToken } = await twitterClient.refreshOAuth2Token(
+      getTwitterRefreshToken(),
+    );
+
+    writeTwitterRefreshToken(newRefreshToken as string);
+    if (tweetText) {
+      await refreshedClient.v2.tweet(tweetText);
+    }
+  } catch (e: any) {
+    console.log(`${new Date().toISOString()} - Error with Twitter`);
   }
 }
 
