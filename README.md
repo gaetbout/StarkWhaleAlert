@@ -20,3 +20,4 @@ Strict minimum to work with
 - Could be extended to catch Bridging events too
 - Could make a better way to store token list with check that all is valid (selector shouldn't be a hash)
 - add bunch of tests
+- A way of automatically adjusting the threshold?

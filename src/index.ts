@@ -20,7 +20,7 @@ async function main() {
     return;
   }
 
-  // TODO Create DB if not existing
+  // TODO Create DB if not existing + Move twitter in its own file and only refresh if timeout rather than every 5 mn
   for (let tokenIndex = 0; tokenIndex < tokens.length; tokenIndex++) {
     const token = tokens[tokenIndex];
     const events = await fetchAllEvent(token, lastBlock, lastCompleteBlock);
