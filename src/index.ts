@@ -1,7 +1,7 @@
 import { RpcProvider, hash, num, uint256 } from "starknet";
 import "dotenv/config";
 import { ethers } from "ethers";
-import { tokens, getLastBlockNumber, writeLastBlockNumber, getTwitterRefreshToken } from "./db";
+import { tokens, getLastBlockNumber, writeLastBlockNumber } from "./db";
 import { EmittedEvent, Token } from "./models";
 import { refreshToken, tweet } from "./twitter";
 
@@ -20,7 +20,7 @@ async function main() {
     return;
   }
 
-  // TODO Change when multi token ==> will be wrong
+  // TODO Create DB if not existing
   for (let tokenIndex = 0; tokenIndex < tokens.length; tokenIndex++) {
     const token = tokens[tokenIndex];
     const events = await fetchAllEvent(token, lastBlock, lastCompleteBlock);
@@ -41,7 +41,7 @@ async function main() {
         await tweet(textToTweet);
       }
     }
-    console.log(`${new Date().toISOString()} - Done`);
+    console.log(`${new Date().toISOString()} - Done ${lastCompleteBlock + 1}`);
   }
   writeLastBlockNumber(lastCompleteBlock + 1);
 }

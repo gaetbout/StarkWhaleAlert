@@ -24,6 +24,7 @@ async function tweet(tweetText: string) {
     );
 
     writeTwitterRefreshToken(newRefreshToken as string);
+    console.log(`${new Date().toISOString()} - ${tweetText}`);
     await refreshedClient.v2.tweet(tweetText);
   } catch (e: any) {
     // TODO If e.data.status == 429  Store tweet until reset time (e.rateLimit.reset)
