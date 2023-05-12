@@ -1,6 +1,6 @@
 import { json } from "starknet";
 import { readFileSync, writeFileSync } from "fs";
-import { Token } from "./models";
+import { AddressToName, Token } from "./models";
 
 // TODO Could use https://github.com/typicode/lowdb or even an actual DB
 function getLastBlockNumber(): number {
@@ -35,6 +35,18 @@ const ETH = {
   rateApiId: "ethereum",
 };
 
+const LAYER_SWAP = {
+  address: "0x019252b1deef483477c4d30cfcc3e5ed9c82fafea44669c182a45a01b4fdb97a",
+  name: "Layerswap",
+};
+const addressList: AddressToName[] = [LAYER_SWAP];
 const tokens: Token[] = [ETH];
 
-export { tokens, getLastBlockNumber, writeLastBlockNumber, getTwitterRefreshToken, writeTwitterRefreshToken };
+export {
+  tokens,
+  getLastBlockNumber,
+  writeLastBlockNumber,
+  getTwitterRefreshToken,
+  writeTwitterRefreshToken,
+  addressList,
+};

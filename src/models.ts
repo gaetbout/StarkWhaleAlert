@@ -16,4 +16,9 @@ type EmittedEvent = {
   block_number: number;
   transaction_hash: string;
 };
-export { Token, EmittedEvent };
+
+type AddressToName = {
+  address: string;
+  name: string;
+};
+export { Token, EmittedEvent, AddressToName };

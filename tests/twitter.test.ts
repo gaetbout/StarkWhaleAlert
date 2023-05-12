@@ -1,4 +1,3 @@
-import {tweet } from "../src/twitter";
-
+import { tweet } from "../src/twitter";
 
 tweet("SomeText");

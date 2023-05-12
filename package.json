@@ -9,9 +9,9 @@
     "tweet": "npx ts-node src/index.ts",
     "analyse": "npx ts-node src/analyse.ts",
     "login": "npx ts-node src/twitterLogin.ts",
-    "test": "npx ts-node tests/twitter.test.ts",
+    "test": "npx ts-node tests/formatter.test.ts",
     "lint": "eslint . --fix",
-    "prettier": "prettier --write ."
+    "format": "prettier --write ."
   },
   "repository": {
     "type": "git",

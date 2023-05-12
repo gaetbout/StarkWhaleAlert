@@ -1,7 +1,7 @@
 import { RpcProvider, hash, num, uint256 } from "starknet";
 import "dotenv/config";
 import { ethers } from "ethers";
-import { tokens, getLastBlockNumber, writeLastBlockNumber } from "./db";
+import { tokens, getLastBlockNumber, writeLastBlockNumber, addressList } from "./db";
 import { EmittedEvent, Token } from "./models";
 import { refreshToken, tweet } from "./twitter";
 
@@ -91,7 +91,11 @@ async function getFormattedText(event: EmittedEvent, currentToken: Token): Promi
   return textToTweet;
 }
 
-async function getStarkNameOrAddress(address: string): Promise<string> {
+export async function getStarkNameOrAddress(address: string): Promise<string> {
+  const el = addressList.find((e) => e.address == address);
+  if (el) {
+    return el.name;
+  }
   try {
     return await provider.getStarkName(address);
   } catch (e) {
