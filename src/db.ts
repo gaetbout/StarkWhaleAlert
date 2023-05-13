@@ -36,7 +36,7 @@ const ETH = {
 };
 
 const LAYER_SWAP = {
-  address: "0x019252b1deef483477c4d30cfcc3e5ed9c82fafea44669c182a45a01b4fdb97a",
+  address: "0x19252b1deef483477c4d30cfcc3e5ed9c82fafea44669c182a45a01b4fdb97a",
   name: "Layerswap",
 };
 const addressList: AddressToName[] = [LAYER_SWAP];
