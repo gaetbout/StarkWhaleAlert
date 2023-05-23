@@ -7,6 +7,7 @@ const twitterClient = new TwitterApi({
   clientSecret: process.env.TWITTER_OAUTH2_CLIENT_SECRET as string,
 });
 
+// TODO If error here, should send an email
 async function refreshToken() {
   try {
     const { refreshToken: newRefreshToken } = await twitterClient.refreshOAuth2Token(getTwitterRefreshToken());
@@ -17,6 +18,7 @@ async function refreshToken() {
     console.log(e);
   }
 }
+// TODO If error here, should send an email
 async function tweet(tweetText: string) {
   try {
     const { client: refreshedClient, refreshToken: newRefreshToken } = await twitterClient.refreshOAuth2Token(

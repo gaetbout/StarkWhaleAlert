@@ -7,7 +7,10 @@ import { refreshToken, tweet } from "./twitter";
 
 const alchemyApiKey = process.env.ALCHEMY_API_KEY as string;
 const coincapApiKey = process.env.COINCAP_API_KEY as string;
-const provider = new RpcProvider({ nodeUrl: `https://starknet-mainnet.g.alchemy.com/v2/${alchemyApiKey}` });
+const provider = new RpcProvider({
+  nodeUrl: `https://starknet-mainnet.g.alchemy.com/v2/${alchemyApiKey}`,
+  retries: 400,
+});
 
 async function main() {
   const lastBlock = await getLastBlockNumber();
@@ -51,17 +54,21 @@ async function fetchAllEvent(token: Token, lastBlock: number, lastCompleteBlock:
   let continuationToken = "0";
   const selector = hash.getSelectorFromName(token.selector);
   while (continuationToken) {
-    const response = await provider.getEvents({
-      from_block: { block_number: lastBlock },
-      to_block: { block_number: lastCompleteBlock },
-      address: token.address,
-      keys: [selector],
-      chunk_size: 1000,
-      continuation_token: continuationToken,
-    });
+    try {
+      const response = await provider.getEvents({
+        from_block: { block_number: lastBlock },
+        to_block: { block_number: lastCompleteBlock },
+        address: token.address,
+        keys: [selector],
+        chunk_size: 1000,
+        continuation_token: continuationToken,
+      });
+      allEvents = allEvents.concat(response.events);
+      continuationToken = response.continuation_token;
+    } catch (e: any) {
+      console.log(e);
 
-    allEvents = allEvents.concat(response.events);
-    continuationToken = response.continuation_token;
+    }
   }
   return allEvents;
 }
