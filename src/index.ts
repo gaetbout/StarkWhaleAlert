@@ -51,7 +51,7 @@ async function fetchAllEvent(token: Token, lastBlock: number, lastCompleteBlock:
   let continuation_token = "0";
   const selector = hash.getSelectorFromName(token.selector);
   while (continuation_token) {
-    const response = await fetchEvents(token, lastBlock, lastCompleteBlock, selector);
+    const response = await fetchEvents(token, lastBlock, lastCompleteBlock, selector, continuation_token);
     allEvents = allEvents.concat(response.events);
     continuation_token = response.continuation_token;
   }
@@ -63,7 +63,7 @@ async function fetchEvents(
   lastBlock: number,
   lastCompleteBlock: number,
   selector: string,
-  continuation_token = "0",
+  continuation_token: string,
   retries = 0,
 ): Promise<any> {
   if (retries >= 3) {

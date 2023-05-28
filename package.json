@@ -10,6 +10,7 @@
     "analyse": "npx ts-node src/analyse.ts",
     "login": "npx ts-node src/twitterLogin.ts",
     "test": "npx ts-node tests/formatter.test.ts",
+    "test:tweet": "npx ts-node tests/twitter.test.ts",
     "lint": "eslint . --fix",
     "format": "prettier --write ."
   },

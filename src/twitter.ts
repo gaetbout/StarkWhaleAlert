@@ -17,6 +17,7 @@ async function refreshToken() {
   } catch (e: any) {
     log("Error in refreshToken()");
     console.log(e);
+    process.exit(1);
   }
 }
 // TODO If error here, should send an email
@@ -30,8 +31,9 @@ async function tweet(tweetText: string) {
     log(tweetText);
     await refreshedClient.v2.tweet(tweetText);
   } catch (e: any) {
-    log("Error in refreshTokenAndTweet()");
+    log("Error in tweet()");
     console.log(e);
+    process.exit(1);
   }
 }
 
