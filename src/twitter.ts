@@ -1,6 +1,7 @@
 import { TwitterApi } from "twitter-api-v2";
 import "dotenv/config";
 import { getTwitterRefreshToken, writeTwitterRefreshToken } from "./db";
+import { log } from ".";
 
 const twitterClient = new TwitterApi({
   clientId: process.env.TWITTER_OAUTH2_CLIENT_ID as string,
@@ -14,7 +15,7 @@ async function refreshToken() {
 
     writeTwitterRefreshToken(newRefreshToken as string);
   } catch (e: any) {
-    console.log(`${new Date().toISOString()} - Error in refreshToken()`);
+    log("Error in refreshToken()");
     console.log(e);
   }
 }
@@ -26,11 +27,10 @@ async function tweet(tweetText: string) {
     );
 
     writeTwitterRefreshToken(newRefreshToken as string);
-    console.log(`${new Date().toISOString()} - ${tweetText}`);
+    log(tweetText);
     await refreshedClient.v2.tweet(tweetText);
   } catch (e: any) {
-    // TODO If e.data.status == 429  Store tweet until reset time (e.rateLimit.reset)
-    console.log(`${new Date().toISOString()} - Error in refreshTokenAndTweet()`);
+    log("Error in refreshTokenAndTweet()");
     console.log(e);
   }
 }

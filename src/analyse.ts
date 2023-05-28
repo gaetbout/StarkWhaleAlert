@@ -4,8 +4,8 @@ import { EmittedEvent } from "./models";
 
 const CONTRACT_ADDRESS = "0x049d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7";
 const SELECTOR = "Transfer";
-const alchemyApiKey = process.env.ALCHEMY_API_KEY as string;
-const provider = new RpcProvider({ nodeUrl: `https://starknet-mainnet.g.alchemy.com/v2/${alchemyApiKey}` });
+const nodeProviderAPIKey = process.env.NODE_PROVIDER_API_KEY as string;
+const provider = new RpcProvider({ nodeUrl: `https://starknet-mainnet.infura.io/v3/${nodeProviderAPIKey}` });
 let loopNumber = 0;
 
 async function main() {
@@ -13,8 +13,8 @@ async function main() {
   await recursiveFetch(block_number);
 }
 
-async function recursiveFetch(block_number: number, continuationToken = "0") {
-  console.log(`Looped ${loopNumber} time(s), processed ${continuationToken} items`);
+async function recursiveFetch(block_number: number, continuation_token = "0") {
+  console.log(`Looped ${loopNumber} time(s), processed ${continuation_token || "0"} items`);
   loopNumber += 1;
   const transfer_selector = hash.getSelectorFromName(SELECTOR);
   const response = await provider.getEvents({
@@ -23,7 +23,7 @@ async function recursiveFetch(block_number: number, continuationToken = "0") {
     address: CONTRACT_ADDRESS,
     keys: [transfer_selector],
     chunk_size: 1000,
-    continuation_token: continuationToken,
+    continuation_token,
   });
 
   const sortedEvents = response.events.sort((a, b) => {

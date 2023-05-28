@@ -5,12 +5,9 @@ import { tokens, getLastBlockNumber, writeLastBlockNumber, addressList } from ".
 import { EmittedEvent, Token } from "./models";
 import { refreshToken, tweet } from "./twitter";
 
-const alchemyApiKey = process.env.ALCHEMY_API_KEY as string;
+const nodeProviderAPIKey = process.env.NODE_PROVIDER_API_KEY as string;
 const coincapApiKey = process.env.COINCAP_API_KEY as string;
-const provider = new RpcProvider({
-  nodeUrl: `https://starknet-mainnet.g.alchemy.com/v2/${alchemyApiKey}`,
-  retries: 400,
-});
+const provider = new RpcProvider({ nodeUrl: `https://starknet-mainnet.infura.io/v3/${nodeProviderAPIKey}` });
 
 async function main() {
   const lastBlock = await getLastBlockNumber();
@@ -19,7 +16,7 @@ async function main() {
 
   // No new block, nothing to proceed
   if (lastBlock >= lastCompleteBlock) {
-    console.log(`${new Date().toISOString()} - no block to process ${lastBlock} <=> ${lastCompleteBlock}`);
+    log(`no block to process ${lastBlock} <=> ${lastCompleteBlock}`);
     return;
   }
 
@@ -44,33 +41,49 @@ async function main() {
         await tweet(textToTweet);
       }
     }
-    console.log(`${new Date().toISOString()} - Done ${lastCompleteBlock + 1}`);
+    log(`Done ${lastCompleteBlock + 1}`);
   }
   writeLastBlockNumber(lastCompleteBlock + 1);
 }
 
 async function fetchAllEvent(token: Token, lastBlock: number, lastCompleteBlock: number): Promise<EmittedEvent[]> {
   let allEvents: Array<EmittedEvent> = [];
-  let continuationToken = "0";
+  let continuation_token = "0";
   const selector = hash.getSelectorFromName(token.selector);
-  while (continuationToken) {
-    try {
-      const response = await provider.getEvents({
-        from_block: { block_number: lastBlock },
-        to_block: { block_number: lastCompleteBlock },
-        address: token.address,
-        keys: [selector],
-        chunk_size: 1000,
-        continuation_token: continuationToken,
-      });
-      allEvents = allEvents.concat(response.events);
-      continuationToken = response.continuation_token;
-    } catch (e: any) {
-      console.log(e);
-
-    }
+  while (continuation_token) {
+    const response = await fetchEvents(token, lastBlock, lastCompleteBlock, selector);
+    allEvents = allEvents.concat(response.events);
+    continuation_token = response.continuation_token;
   }
   return allEvents;
+}
+
+async function fetchEvents(
+  token: Token,
+  lastBlock: number,
+  lastCompleteBlock: number,
+  selector: string,
+  continuation_token = "0",
+  retries = 0,
+): Promise<any> {
+  if (retries >= 3) {
+    log("Too many failures...");
+    process.exit(1);
+  }
+  try {
+    const response = await provider.getEvents({
+      from_block: { block_number: lastBlock },
+      to_block: { block_number: lastCompleteBlock },
+      address: token.address,
+      keys: [selector],
+      chunk_size: 1000,
+      continuation_token,
+    });
+    return response;
+  } catch (e: any) {
+    log(`Failed to fetch ${retries}... Retrying`);
+    await fetchEvents(token, lastBlock, lastCompleteBlock, selector, continuation_token, retries + 1);
+  }
 }
 
 async function getFormattedText(event: EmittedEvent, currentToken: Token): Promise<string> {
@@ -142,6 +155,10 @@ async function getTokenValue(tokenName: string) {
   } catch (error) {
     console.error(error);
   }
+}
+
+export function log(msg: string) {
+  console.log(`${new Date().toISOString()} - ${msg}`);
 }
 
 main();
