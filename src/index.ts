@@ -14,4 +14,6 @@ export const provider = new RpcProvider({
   chainId: constants.StarknetChainId.SN_MAIN,
 });
 
-await doLogic();
+export async function main() {
+  await doLogic();
+}
