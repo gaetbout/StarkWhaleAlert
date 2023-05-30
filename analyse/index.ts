@@ -1,14 +1,10 @@
-import { RpcProvider, constants, hash, num, uint256 } from "starknet";
+import { hash, num, uint256 } from "starknet";
 import "dotenv/config";
-import { EmittedEvent } from "../src";
+import { EmittedEvent, provider } from "../src";
 
 const CONTRACT_ADDRESS = "0x053c91253bc9682c04929ca02ed00b3e423f6710d2ee7e0d5ebb06f3ecf368a8";
 const SELECTOR = "Transfer";
-const nodeProviderAPIKey = process.env.NODE_PROVIDER_API_KEY as string;
-const provider = new RpcProvider({
-  nodeUrl: `https://starknet-mainnet.infura.io/v3/${nodeProviderAPIKey}`,
-  chainId: constants.StarknetChainId.SN_MAIN,
-});
+
 let loopNumber = 0;
 
 async function main() {

@@ -4,10 +4,7 @@ import { ethers } from "ethers";
 
 const coincapApiKey = process.env.COINCAP_API_KEY as string;
 
-export async function getFormattedText(
-  event: EmittedEvent,
-  currentToken: Token,
-): Promise<string> {
+export async function getFormattedText(event: EmittedEvent, currentToken: Token): Promise<string> {
   const from = await getStarkNameOrAddress(event.data[0]);
   const to = await getStarkNameOrAddress(event.data[1]);
   const amount = lowHigh256ToNumber(event.data[2], event.data[3]);
