@@ -8,7 +8,9 @@ const nodeProviderAPIKey = process.env.NODE_PROVIDER_API_KEY as string;
 const provider = new RpcProvider({ nodeUrl: `https://starknet-mainnet.infura.io/v3/${nodeProviderAPIKey}` });
 let loopNumber = 0;
 
+// TODO THIS FILE should be in another folder
 async function main() {
+  console.log(provider.getChainId());
   const block_number = await provider.getBlockNumber();
   await recursiveFetch(block_number);
 }

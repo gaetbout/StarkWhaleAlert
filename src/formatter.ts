@@ -57,8 +57,13 @@ function lowHigh256ToNumber(low: string, high: string): number {
 }
 
 async function tokenValueToNumber(tokenName: string): Promise<number> {
-  const tokenValue = await getTokenValue(tokenName);
-  return parseFloat(tokenValue.data.rateUsd);
+  // TODO Done temporary for USDC that doesn't have any value in the API
+  try {
+    const tokenValue = await getTokenValue(tokenName);
+    return parseFloat(tokenValue.data.rateUsd);
+  } catch (e: any) {
+    return 1;
+  }
 }
 
 async function getTokenValue(tokenName: string) {
