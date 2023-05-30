@@ -10,7 +10,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Step 2 - Install project
-        run: npm run install
+        run: npm install
 
       - name: Step 3 - Check correct formatting
         run: npm run format:check
