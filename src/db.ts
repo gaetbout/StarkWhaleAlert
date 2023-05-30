@@ -1,7 +1,6 @@
 import { json } from "starknet";
 import { readFileSync, writeFileSync } from "fs";
-import { AddressToName, Token } from "./models";
-import { log } from "./logger";
+import { AddressToName, Token, log } from ".";
 
 // TODO Could use https://github.com/typicode/lowdb or even an actual DB
 function getLastBlockNumber(): number {
