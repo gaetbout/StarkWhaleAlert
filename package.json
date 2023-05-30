@@ -13,7 +13,7 @@
     "test:tweet": "npx ts-node tests/twitter.test.ts",
     "lint": "eslint . --fix",
     "format": "prettier --write .",
-    "format:check": "prettier --check"
+    "format:check": "prettier --check ."
   },
   "repository": {
     "type": "git",
