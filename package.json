@@ -12,7 +12,8 @@
     "test": "npx ts-node tests/formatter.test.ts",
     "test:tweet": "npx ts-node tests/twitter.test.ts",
     "lint": "eslint . --fix",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "format:check": "prettier --check"
   },
   "repository": {
     "type": "git",
