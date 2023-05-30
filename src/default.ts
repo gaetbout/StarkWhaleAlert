@@ -1,4 +1,4 @@
-import { RpcProvider, hash, num } from "starknet";
+import { hash, num } from "starknet";
 import "dotenv/config";
 import {
   EmittedEvent,
@@ -10,10 +10,8 @@ import {
   getLastBlockNumber,
   writeLastBlockNumber,
   getFormattedText,
+  provider,
 } from ".";
-
-const nodeProviderAPIKey = process.env.NODE_PROVIDER_API_KEY as string;
-const provider = new RpcProvider({ nodeUrl: `https://starknet-mainnet.infura.io/v3/${nodeProviderAPIKey}` });
 
 export async function main() {
   log("Start", 0);
@@ -44,7 +42,7 @@ export async function main() {
       await refreshToken();
     } else {
       for (let index = 0; index < eventsToTweet.length; index++) {
-        const textToTweet = await getFormattedText(provider, eventsToTweet[index], token);
+        const textToTweet = await getFormattedText(eventsToTweet[index], token);
         await tweet(textToTweet);
       }
     }

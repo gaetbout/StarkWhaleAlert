@@ -1,16 +1,15 @@
-import { addressList, EmittedEvent, Token } from ".";
-import { RpcProvider, uint256 } from "starknet";
+import { addressList, EmittedEvent, provider, Token } from ".";
+import { uint256 } from "starknet";
 import { ethers } from "ethers";
 
 const coincapApiKey = process.env.COINCAP_API_KEY as string;
 
 export async function getFormattedText(
-  provider: RpcProvider,
   event: EmittedEvent,
   currentToken: Token,
 ): Promise<string> {
-  const from = await getStarkNameOrAddress(provider, event.data[0]);
-  const to = await getStarkNameOrAddress(provider, event.data[1]);
+  const from = await getStarkNameOrAddress(event.data[0]);
+  const to = await getStarkNameOrAddress(event.data[1]);
   const amount = lowHigh256ToNumber(event.data[2], event.data[3]);
   const rate = await tokenValueToNumber(currentToken.rateApiId);
   const usdValueLocalString = Math.round(amount * rate).toLocaleString();
@@ -33,7 +32,7 @@ export async function getFormattedText(
   return textToTweet;
 }
 
-export async function getStarkNameOrAddress(provider: RpcProvider, address: string): Promise<string> {
+export async function getStarkNameOrAddress(address: string): Promise<string> {
   const el = addressList.find((e) => e.address == address);
   if (el) {
     return el.name;
