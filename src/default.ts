@@ -90,5 +90,3 @@ async function fetchEvents(
     await fetchEvents(token, lastBlock, lastCompleteBlock, selector, continuation_token, retries + 1);
   }
 }
-
-main();
