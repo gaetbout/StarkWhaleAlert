@@ -4,12 +4,14 @@ import { ethers } from "ethers";
 import { tokens, getLastBlockNumber, writeLastBlockNumber, addressList } from "./db";
 import { EmittedEvent, Token } from "./models";
 import { refreshToken, tweet } from "./twitter";
+import { log } from "./logger";
 
 const nodeProviderAPIKey = process.env.NODE_PROVIDER_API_KEY as string;
 const coincapApiKey = process.env.COINCAP_API_KEY as string;
 const provider = new RpcProvider({ nodeUrl: `https://starknet-mainnet.infura.io/v3/${nodeProviderAPIKey}` });
 
 async function main() {
+  log("Start", 0);
   const lastBlock = await getLastBlockNumber();
   // We only proccess block that are "complete"
   const lastCompleteBlock = (await provider.getBlockNumber()) - 1;
@@ -41,9 +43,9 @@ async function main() {
         await tweet(textToTweet);
       }
     }
-    log(`Done ${lastCompleteBlock + 1}`);
   }
   writeLastBlockNumber(lastCompleteBlock + 1);
+  log("End", 0);
 }
 
 async function fetchAllEvent(token: Token, lastBlock: number, lastCompleteBlock: number): Promise<EmittedEvent[]> {
@@ -155,10 +157,6 @@ async function getTokenValue(tokenName: string) {
   } catch (error) {
     console.error(error);
   }
-}
-
-export function log(msg: string) {
-  console.log(`${new Date().toISOString()} - ${msg}`);
 }
 
 main();

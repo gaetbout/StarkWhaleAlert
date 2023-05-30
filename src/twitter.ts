@@ -1,7 +1,7 @@
 import { TwitterApi } from "twitter-api-v2";
 import "dotenv/config";
 import { getTwitterRefreshToken, writeTwitterRefreshToken } from "./db";
-import { log } from ".";
+import { log } from "./logger";
 
 const twitterClient = new TwitterApi({
   clientId: process.env.TWITTER_OAUTH2_CLIENT_ID as string,
