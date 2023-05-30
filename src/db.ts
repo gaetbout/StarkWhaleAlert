@@ -31,9 +31,19 @@ const ETH = {
   decimals: 18,
   symbol: "ETH",
   selector: "Transfer",
-  threshold: 2e19, // 20 eth
+  threshold: 5e19, // 50 eth
   logo: "♦",
   rateApiId: "ethereum",
+};
+
+const USDC = {
+  address: "0x053c91253bc9682c04929ca02ed00b3e423f6710d2ee7e0d5ebb06f3ecf368a8",
+  decimals: 18,
+  symbol: "USDC",
+  selector: "Transfer",
+  threshold: 1e5, // 100.000 $
+  logo: "$",
+  rateApiId: "usd-coin",
 };
 
 const LAYER_SWAP = {
@@ -41,7 +51,7 @@ const LAYER_SWAP = {
   name: "Layerswap",
 };
 const addressList: AddressToName[] = [LAYER_SWAP];
-const tokens: Token[] = [ETH];
+const tokens: Token[] = [ETH, USDC];
 
 export {
   tokens,
