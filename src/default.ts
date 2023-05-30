@@ -13,7 +13,7 @@ import {
   provider,
 } from ".";
 
-export async function main() {
+export async function doLogic() {
   log("Start", 0);
   const lastBlock = await getLastBlockNumber();
   // We only proccess block that are "complete"

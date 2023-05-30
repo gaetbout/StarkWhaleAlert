@@ -1,5 +1,5 @@
 import { RpcProvider, constants } from "starknet";
-import { main } from "./default";
+import { doLogic } from "./default";
 
 export * from "./db";
 export * from "./default";
@@ -14,4 +14,4 @@ export const provider = new RpcProvider({
   chainId: constants.StarknetChainId.SN_MAIN,
 });
 
-await main();
+await doLogic();
