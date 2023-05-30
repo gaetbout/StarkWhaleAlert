@@ -41,7 +41,7 @@ const USDC = {
   decimals: 18,
   symbol: "USDC",
   selector: "Transfer",
-  threshold: 1e5, // 100.000 $
+  threshold: 1e23, // 100.000 $
   logo: "$",
   rateApiId: "usd-coin",
 };
