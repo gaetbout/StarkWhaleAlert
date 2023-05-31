@@ -14,4 +14,5 @@ export const provider = new RpcProvider({
   chainId: constants.StarknetChainId.SN_MAIN,
 });
 
+// TODO Could use nodecron instead of a cron based work or even serverless
 await doLogic();

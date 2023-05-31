@@ -1,5 +1,5 @@
 import { addressList, EmittedEvent, provider, Token } from ".";
-import { uint256 } from "starknet";
+import { num, uint256 } from "starknet";
 import { ethers } from "ethers";
 
 const coincapApiKey = process.env.COINCAP_API_KEY as string;
@@ -7,10 +7,10 @@ const coincapApiKey = process.env.COINCAP_API_KEY as string;
 export async function getFormattedText(event: EmittedEvent, currentToken: Token): Promise<string> {
   const from = await getStarkNameOrAddress(event.data[0]);
   const to = await getStarkNameOrAddress(event.data[1]);
-  const amount = lowHigh256ToNumber(event.data[2], event.data[3]);
+  const amount = lowHigh256ToNumber(currentToken, event.data[2], event.data[3]);
   const rate = await tokenValueToNumber(currentToken.rateApiId);
   const usdValueLocalString = Math.round(amount * rate).toLocaleString();
-  const amountFixed = amount.toFixed(2);
+  const amountFixed = amount.toFixed();
 
   // TODO Adding emoji before?
   // TODO ugly logic this should definitely change
@@ -45,11 +45,16 @@ export async function getStarkNameOrAddress(address: string): Promise<string> {
   }
 }
 
-function lowHigh256ToNumber(low: string, high: string): number {
-  const amount = uint256.uint256ToBN({ low, high });
+function lowHigh256ToNumber(token:Token, low: string, high: string): number {
+  if (token.decimals == 18) {
+    const amount = uint256.uint256ToBN({ low, high });
   // TODO decimals isn't used atm
   const formattedAmount = ethers.formatUnits(amount);
   return parseFloat(formattedAmount);
+  } else {
+    const amount: number = parseInt(num.hexToDecimalString(low));
+    return amount / 1e6;
+  }
 }
 
 async function tokenValueToNumber(tokenName: string): Promise<number> {
