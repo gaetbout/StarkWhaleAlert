@@ -45,12 +45,12 @@ export async function getStarkNameOrAddress(address: string): Promise<string> {
   }
 }
 
-function lowHigh256ToNumber(token:Token, low: string, high: string): number {
+function lowHigh256ToNumber(token: Token, low: string, high: string): number {
   if (token.decimals == 18) {
     const amount = uint256.uint256ToBN({ low, high });
-  // TODO decimals isn't used atm
-  const formattedAmount = ethers.formatUnits(amount);
-  return parseFloat(formattedAmount);
+    // TODO decimals isn't used atm
+    const formattedAmount = ethers.formatUnits(amount);
+    return parseFloat(formattedAmount);
   } else {
     const amount: number = parseInt(num.hexToDecimalString(low));
     return amount / 1e6;
