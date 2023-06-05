@@ -10,7 +10,12 @@ export async function getFormattedText(event: EmittedEvent, currentToken: Token)
   const amount = lowHigh256ToNumber(currentToken, event.data[2], event.data[3]);
   const rate = await tokenValueToNumber(currentToken.rateApiId);
   const usdValueLocalString = Math.round(amount * rate).toLocaleString();
-  const amountFixed = amount.toFixed();
+  // TODO toFixed ==> when usdc it is kinda useless
+  // TODO There must be a better way to do this...
+  const amountFixed = new Intl.NumberFormat("de-DE", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(amount);
 
   // TODO Adding emoji before?
   // TODO ugly logic this should definitely change

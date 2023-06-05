@@ -33,7 +33,7 @@ export async function doLogic() {
     if (events.length == 0) {
       return;
     }
-    log(`Got ${events.length} events for ${token.symbol}`);
+    log(`${events.length} ${token.selector} for ${token.symbol}`);
     const eventsToTweet = events.filter((e) => {
       const amount1 = num.toBigInt(e.data[2]) + num.toBigInt(e.data[3]);
       return amount1 > token.threshold;
@@ -49,7 +49,6 @@ export async function doLogic() {
     }
   }
   writeLastBlockNumber(lastCompleteBlock + 1);
-  log("End", 0);
 }
 
 async function fetchAllEvent(token: Token, lastBlock: number, lastCompleteBlock: number): Promise<EmittedEvent[]> {
