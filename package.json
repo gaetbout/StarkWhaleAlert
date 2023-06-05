@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "build": "tsc",
-    "tweet": "npx ts-node src/index.ts",
+    "tweet": "npx ts-node src/index.ts --color",
     "analyse": "npx ts-node analyse/index.ts",
     "login": "npx ts-node src/twitterLogin.ts",
     "test": "npx ts-node tests/formatter.test.ts",
