@@ -11,11 +11,12 @@ import {
   writeLastBlockNumber,
   getFormattedText,
   provider,
+  newLine,
 } from ".";
 
 export async function doLogic() {
   const lastBlock = await getLastBlockNumber();
-  console.log();
+  newLine();
   log(`Start ${lastBlock}`, 0);
   // We only proccess block that are "complete"
   const lastCompleteBlock = (await provider.getBlockNumber()) - 1;

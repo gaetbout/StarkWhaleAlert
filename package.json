@@ -26,15 +26,6 @@
     "url": "https://github.com/gaetbout/StarkWhaleAlert/issues"
   },
   "homepage": "https://github.com/gaetbout/StarkWhaleAlert#readme",
-  "devDependencies": {
-    "@tsconfig/node18": "^2.0.0",
-    "@types/express": "^4.17.17",
-    "@types/node": "^18.16.3",
-    "@typescript-eslint/eslint-plugin": "^5.59.2",
-    "eslint": "^8.39.0",
-    "prettier": "^2.8.8",
-    "typescript": "^5.0.4"
-  },
   "dependencies": {
     "dotenv": "^16.0.3",
     "ethers": "^6.3.0",
@@ -42,5 +33,15 @@
     "starknet": "^5.11.1",
     "ts-node": "^10.9.1",
     "twitter-api-v2": "^1.14.2"
+  },
+  "devDependencies": {
+    "@tsconfig/node18": "^2.0.0",
+    "@types/express": "^4.17.17",
+    "@types/node": "^18.16.3",
+    "@typescript-eslint/eslint-plugin": "^5.59.2",
+    "chalk": "^5.2.0",
+    "eslint": "^8.39.0",
+    "prettier": "^2.8.8",
+    "typescript": "^5.0.4"
   }
 }

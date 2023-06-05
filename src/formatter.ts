@@ -42,7 +42,6 @@ export async function getStarkNameOrAddress(address: string): Promise<string> {
   try {
     return await provider.getStarkName(address);
   } catch (e) {
-    // console.log(e);
     if (address == "0x0") {
       return address;
     }

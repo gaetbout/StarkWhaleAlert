@@ -1,6 +1,6 @@
 import { TwitterApi } from "twitter-api-v2";
 import "dotenv/config";
-import { getTwitterRefreshToken, writeTwitterRefreshToken, log } from ".";
+import { getTwitterRefreshToken, writeTwitterRefreshToken, log, logError } from ".";
 
 const twitterClient = new TwitterApi({
   clientId: process.env.TWITTER_OAUTH2_CLIENT_ID as string,
@@ -15,7 +15,7 @@ async function refreshToken() {
     writeTwitterRefreshToken(newRefreshToken as string);
   } catch (e: any) {
     log("Error in refreshToken()");
-    console.log(e);
+    logError(e);
     process.exit(1);
   }
 }
@@ -31,7 +31,7 @@ async function tweet(tweetText: string) {
     await refreshedClient.v2.tweet(tweetText);
   } catch (e: any) {
     log("Error in tweet()");
-    console.log(e);
+    logError(e);
     process.exit(1);
   }
 }
