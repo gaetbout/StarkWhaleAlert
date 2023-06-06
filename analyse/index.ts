@@ -2,8 +2,9 @@ import { RpcProvider, constants, hash, num, uint256 } from "starknet";
 import "dotenv/config";
 import { EmittedEvent } from "../src/models";
 
-const CONTRACT_ADDRESS = "0x053c91253bc9682c04929ca02ed00b3e423f6710d2ee7e0d5ebb06f3ecf368a8";
+const CONTRACT_ADDRESS = "0x00da114221cb83fa859dbdb4c44beeaa0bb37c7537ad5ae66fe5e0efd20e6eb3";
 const SELECTOR = "Transfer";
+const DECIMALS = BigInt(1e18);
 
 let loopNumber = 0;
 
@@ -37,7 +38,7 @@ async function recursiveFetch(block_number: number, continuation_token = "0") {
     return Number(amount2 - amount1);
   });
 
-  logNFirstItems(sortedEvents, 5);
+  logNFirstItems(sortedEvents, 10);
 
   if (response.continuation_token) {
     recursiveFetch(block_number, response.continuation_token);
@@ -58,7 +59,7 @@ function logItem(event: EmittedEvent) {
   const amount = uint256.uint256ToBN({ low: event.data[2], high: event.data[3] });
 
   console.log(`\tFrom: ${from} to: ${to}`);
-  console.log(`\t${amount} (${amount.toString().length})`);
+  console.log(`\t${amount} (${amount.toString().length}) - ${amount / DECIMALS}`);
   console.log(`\t${event.block_number}`);
   console.log(`\thttps://starkscan.co/tx/${event.transaction_hash}`);
 }
