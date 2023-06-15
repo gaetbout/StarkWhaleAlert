@@ -27,6 +27,7 @@ export async function doLogic() {
     return;
   }
 
+  // TODO Move all this is a lib/shared folder to be able to correctly import and test elsewhere
   // TODO Create DB if not existing + Move twitter in its own file and only refresh if timeout rather than every 5 mn
   for (let tokenIndex = 0; tokenIndex < tokens.length; tokenIndex++) {
     const token = tokens[tokenIndex];

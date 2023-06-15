@@ -50,7 +50,13 @@ const LAYER_SWAP = {
   address: "0x19252b1deef483477c4d30cfcc3e5ed9c82fafea44669c182a45a01b4fdb97a",
   name: "Layerswap",
 };
-const addressList: AddressToName[] = [LAYER_SWAP];
+
+const ZKLEND_MARKET = {
+  address: "0x4c0a5193d58f74fbace4b74dcf65481e734ed1714121bdc571da345540efa05",
+  name: "zkLend: Market",
+};
+
+const addressList: AddressToName[] = [LAYER_SWAP, ZKLEND_MARKET];
 const tokens: Token[] = [ETH, USDC];
 
 export {

@@ -13,7 +13,6 @@ export const provider = new RpcProvider({
   nodeUrl: `https://starknet-mainnet.infura.io/v3/${nodeProviderAPIKey}`,
   chainId: constants.StarknetChainId.SN_MAIN,
 });
-
 async function main() {
   const block_number = await provider.getBlockNumber();
   await recursiveFetch(block_number);
@@ -46,6 +45,7 @@ async function recursiveFetch(block_number: number, continuation_token = "0") {
 }
 
 function logNFirstItems(items: Array<EmittedEvent>, numberOfItemToLog = 1) {
+  console.log(`${items.length} events`);
   for (let i = 0; i < numberOfItemToLog; i++) {
     console.log(`${i} ======================================================`);
     logItem(items[i]);
