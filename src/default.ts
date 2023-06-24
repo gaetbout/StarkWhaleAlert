@@ -88,6 +88,7 @@ async function fetchEvents(
     });
     return response;
   } catch (e: any) {
+    console.log(e);
     log(`Failed to fetch ${retries}... Retrying`);
     await fetchEvents(token, lastBlock, lastCompleteBlock, selector, continuation_token, retries + 1);
   }
