@@ -7,6 +7,7 @@ export * from "./formatter";
 export * from "./logger";
 export * from "./models";
 export * from "./twitter";
+export * from "./rateApi";
 
 const nodeProviderAPIKey = process.env.NODE_PROVIDER_API_KEY as string;
 export const provider = new RpcProvider({

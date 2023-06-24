@@ -1,8 +1,6 @@
-import { addressList, EmittedEvent, provider, Token } from ".";
+import { addressList, EmittedEvent, provider, Token, tokenValueToNumber } from ".";
 import { num, uint256 } from "starknet";
 import { ethers } from "ethers";
-
-const coincapApiKey = process.env.COINCAP_API_KEY as string;
 
 export async function getFormattedText(event: EmittedEvent, currentToken: Token): Promise<string> {
   const from = await getStarkNameOrAddress(event.data[0]);
@@ -58,33 +56,5 @@ function lowHigh256ToNumber(token: Token, low: string, high: string): number {
   } else {
     const amount: number = parseInt(num.hexToDecimalString(low));
     return amount / 1e6;
-  }
-}
-
-async function tokenValueToNumber(tokenName: string): Promise<number> {
-  // TODO Done temporary for USDC that doesn't have any value in the API
-  try {
-    const tokenValue = await getTokenValue(tokenName);
-    return parseFloat(tokenValue.data.rateUsd);
-  } catch (e: any) {
-    return 1;
-  }
-}
-
-async function getTokenValue(tokenName: string) {
-  try {
-    const response = await fetch(`https://api.coincap.io/v2/rates/${tokenName}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${coincapApiKey}`,
-      },
-    });
-    if (!response.ok) {
-      throw new Error(`HTTP error! Status: ${response.status}`);
-    }
-    return await response.json();
-  } catch (error) {
-    console.error(error);
   }
 }
