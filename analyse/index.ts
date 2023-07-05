@@ -26,7 +26,7 @@ async function recursiveFetch(block_number: number, continuation_token = "0") {
     from_block: { block_number: block_number - 10 },
     to_block: { block_number: block_number - 1 },
     address: CONTRACT_ADDRESS,
-    keys: [transfer_selector],
+    keys: [[transfer_selector]],
     chunk_size: 1000,
     continuation_token,
   });

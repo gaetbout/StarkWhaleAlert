@@ -82,7 +82,7 @@ async function fetchEvents(
       from_block: { block_number: lastBlock },
       to_block: { block_number: lastCompleteBlock },
       address: token.address,
-      keys: [selector],
+      keys: [[selector]],
       chunk_size: 1000,
       continuation_token,
     });
