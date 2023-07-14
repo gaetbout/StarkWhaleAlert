@@ -15,15 +15,27 @@ export const provider = new RpcProvider({
 });
 async function main() {
   const block_number = await provider.getBlockNumber();
-  await recursiveFetch(block_number);
+  await fetchAllEvents(block_number);
 }
 
-async function recursiveFetch(block_number: number, continuation_token = "0") {
-  console.log(`Looped ${loopNumber} time(s), processed ${continuation_token || "0"} items`);
+async function fetchAllEvents(block_number: number) {
+  const events = await recursiveFetch(block_number);
+
+  const sortedEvents = events.sort((a, b) => {
+    const amount1 = num.toBigInt(a.data[2]) + num.toBigInt(a.data[3]);
+    const amount2 = num.toBigInt(b.data[2]) + num.toBigInt(b.data[3]);
+    return Number(amount2 - amount1);
+  });
+
+  logNFirstItems(sortedEvents, 10);
+}
+
+async function recursiveFetch(block_number: number, continuation_token = "0"): Promise<EmittedEvent[]> {
+  console.log(`Looped ${loopNumber} time(s), processed ${continuation_token} items`);
   loopNumber += 1;
   const transfer_selector = hash.getSelectorFromName(SELECTOR);
   const response = await provider.getEvents({
-    from_block: { block_number: block_number - 10 },
+    from_block: { block_number: block_number - 1000 },
     to_block: { block_number: block_number - 1 },
     address: CONTRACT_ADDRESS,
     keys: [[transfer_selector]],
@@ -31,20 +43,14 @@ async function recursiveFetch(block_number: number, continuation_token = "0") {
     continuation_token,
   });
 
-  const sortedEvents = response.events.sort((a, b) => {
-    const amount1 = num.toBigInt(a.data[2]) + num.toBigInt(a.data[3]);
-    const amount2 = num.toBigInt(b.data[2]) + num.toBigInt(b.data[3]);
-    return Number(amount2 - amount1);
-  });
-
-  logNFirstItems(sortedEvents, 10);
-
   if (response.continuation_token) {
-    recursiveFetch(block_number, response.continuation_token);
+    const tmp = await recursiveFetch(block_number, response.continuation_token);
+    return response.events.concat(tmp);
+  } else {
+    return response.events;
   }
 }
-
-function logNFirstItems(items: Array<EmittedEvent>, numberOfItemToLog = 1) {
+function logNFirstItems(items: Array<EmittedEvent>, numberOfItemToLog: number) {
   console.log(`${items.length} events`);
   for (let i = 0; i < numberOfItemToLog; i++) {
     console.log(`${i} ======================================================`);
