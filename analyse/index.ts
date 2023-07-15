@@ -2,9 +2,9 @@ import { RpcProvider, constants, hash, num, uint256 } from "starknet";
 import "dotenv/config";
 import { EmittedEvent } from "../src/models";
 
-const CONTRACT_ADDRESS = "0x00da114221cb83fa859dbdb4c44beeaa0bb37c7537ad5ae66fe5e0efd20e6eb3";
+const CONTRACT_ADDRESS = "0x068f5c6a61780768455de69077e07e89787839bf8166decfbf92b645209c0fb8";
 const SELECTOR = "Transfer";
-const DECIMALS = BigInt(1e18);
+const DECIMALS = BigInt(1e6);
 
 let loopNumber = 0;
 

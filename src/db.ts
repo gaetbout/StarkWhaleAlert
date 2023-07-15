@@ -31,7 +31,7 @@ const ETH = {
   decimals: 18,
   symbol: "ETH",
   selector: "Transfer",
-  threshold: 2e19, // 20 eth
+  threshold: 3e19, // 30 eth
   logo: "♦",
   rateApiId: "ethereum",
 };
@@ -41,9 +41,19 @@ const USDC = {
   decimals: 6,
   symbol: "USDC",
   selector: "Transfer",
-  threshold: 4e10, // 40.000 $
+  threshold: 5e10, // 50.000 $
   logo: "$",
   rateApiId: "usd-coin",
+};
+
+const USDT = {
+  address: "0x068f5c6a61780768455de69077e07e89787839bf8166decfbf92b645209c0fb8",
+  decimals: 6,
+  symbol: "USDT",
+  selector: "Transfer",
+  threshold: 5e10, // 50.000 $
+  logo: "$",
+  rateApiId: "tether",
 };
 
 const LAYER_SWAP = {
@@ -57,7 +67,7 @@ const ZKLEND_MARKET = {
 };
 
 const addressList: AddressToName[] = [LAYER_SWAP, ZKLEND_MARKET];
-const tokens: Token[] = [ETH, USDC];
+const tokens: Token[] = [ETH, USDC, USDT];
 
 export {
   tokens,
