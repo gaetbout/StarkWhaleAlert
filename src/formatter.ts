@@ -33,7 +33,7 @@ export async function getFormattedText(event: EmittedEvent, currentToken: Token)
 }
 
 export async function getStarkNameOrAddress(address: string): Promise<string> {
-  const el = addressList.find((e) => e.address == address);
+  const el = addressList.find((e) => address.endsWith(e.address));
   if (el) {
     return el.name;
   }
