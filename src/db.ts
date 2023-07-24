@@ -31,7 +31,7 @@ const ETH = {
   decimals: 18,
   symbol: "ETH",
   selector: "Transfer",
-  threshold: 3e19, // 30 eth
+  threshold: 5e19, // 50 eth
   logo: "♦",
   rateApiId: "ethereum",
 };
@@ -41,7 +41,7 @@ const USDC = {
   decimals: 6,
   symbol: "USDC",
   selector: "Transfer",
-  threshold: 5e10, // 50.000 $
+  threshold: 6e10, // 60.000 $
   logo: "$",
   rateApiId: "usd-coin",
 };
@@ -51,7 +51,7 @@ const USDT = {
   decimals: 6,
   symbol: "USDT",
   selector: "Transfer",
-  threshold: 5e10, // 50.000 $
+  threshold: 6e10, // 60.000 $
   logo: "$",
   rateApiId: "tether",
 };
@@ -66,7 +66,17 @@ const ZKLEND_MARKET = {
   name: "zkLend: Market",
 };
 
-const addressList: AddressToName[] = [LAYER_SWAP, ZKLEND_MARKET];
+const BRIQ_FACTORY = {
+  address: "0x5b021b6743c4f420e20786baa7fb9add1d711302c267afbc171252a74687376",
+  name: "The Fucking Briq",
+};
+
+const STARKNET_DEPLOYER = {
+  address: "0x1176a1bd84444c89232ec27754698e5d2e7e1a7f1539f12027f28b23ec9f3d8",
+  name: "Starknet deployer",
+};
+
+const addressList: AddressToName[] = [LAYER_SWAP, ZKLEND_MARKET, BRIQ_FACTORY, STARKNET_DEPLOYER];
 const tokens: Token[] = [ETH, USDC, USDT];
 
 export {
