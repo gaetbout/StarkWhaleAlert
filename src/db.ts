@@ -93,17 +93,17 @@ const TENK_SWAP_ETH_USD = {
 
 const ORBITER_FINANCE_BRIDGE_1 = {
   address: "7b393627bd514d2aa4c83e9f0c468939df15ea3c29980cd8e7be3ec847795f0",
-  name: "Orbiter Finance Bridge",
+  name: "Orbiter Finance Bridge 1",
 };
 
 const ORBITER_FINANCE_BRIDGE_4 = {
   address: "6e18dd81378fd5240704204bccc546f6dfad3d08c4a3a44347bd274659ff328",
-  name: "Orbiter Finance Bridge",
+  name: "Orbiter Finance Bridge 4",
 };
 
 const ORBITER_FINANCE_BRIDGE_2 = {
   address: "64a24243f2aabae8d2148fa878276e6e6e452e3941b417f3c33b1649ea83e11",
-  name: "Orbiter Finance Bridge",
+  name: "Orbiter Finance Bridge 2",
 };
 
 const addressList: AddressToName[] = [
