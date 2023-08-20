@@ -34,7 +34,7 @@ jobs:
       - name: Step 3 - Run cargo fmt
         uses: actions-rs/cargo@v1
         with:
-          command: cargo fmt --check
+          command: fmt -- --check
 
   clippy:
     runs-on: ubuntu-latest
@@ -51,4 +51,4 @@ jobs:
       - name: Step 3 - Run cargo clippy
         uses: actions-rs/cargo@v1
         with:
-          command: cargo clippy --check
+          command: clippy -- --check
