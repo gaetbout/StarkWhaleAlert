@@ -1,5 +1,4 @@
 use dotenv::dotenv;
-use reqwest;
 use reqwest::header;
 use reqwest::header::HeaderValue;
 use std::error::Error;
@@ -17,7 +16,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
         header::CONTENT_TYPE,
         HeaderValue::from_static("application/json"),
     );
-     headers.insert(
+    headers.insert(
         header::AUTHORIZATION,
         HeaderValue::from_static("Bearer ${coincapApiKey}"),
     );
