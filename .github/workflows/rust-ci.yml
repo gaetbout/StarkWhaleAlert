@@ -29,9 +29,9 @@ jobs:
         uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
-          components: rustfmt
+          components: clippy, rustfmt
 
-      - name: Step 3 - Run cargo rustfmt
+      - name: Step 3 - Run cargo fmt
         uses: actions-rs/cargo@v1
         with:
           command: rustfmt
