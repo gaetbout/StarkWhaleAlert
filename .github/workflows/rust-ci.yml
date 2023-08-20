@@ -11,6 +11,8 @@ jobs:
 
       - name: Step 2 - Install rust
         uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
 
       - name: Step 3 - Check can build
         run: check
