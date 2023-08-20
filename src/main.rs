@@ -17,12 +17,14 @@ async fn main() -> Result<(), Box<dyn Error>> {
         header::CONTENT_TYPE,
         HeaderValue::from_static("application/json"),
     );
-    headers.insert(
+     headers.insert(
         header::AUTHORIZATION,
         HeaderValue::from_static("Bearer ${coincapApiKey}"),
     );
 
-    let client = reqwest::Client::builder().default_headers(headers).build()?;
+    let client = reqwest::Client::builder()
+        .default_headers(headers)
+        .build()?;
 
     let get_link: String = format!("{}{}", "https://api.coincap.io/v2/assets/", "ethereum");
 
