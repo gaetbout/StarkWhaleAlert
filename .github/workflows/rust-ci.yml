@@ -3,7 +3,7 @@ name: RUST CI
 on: [push, pull_request]
 
 jobs:
-  format:
+  check:
     runs-on: ubuntu-latest
     steps:
       - name: Step 1 - Check out main branch
@@ -15,4 +15,4 @@ jobs:
           toolchain: stable
 
       - name: Step 3 - Check can build
-        run: check
+        run: cargo check
