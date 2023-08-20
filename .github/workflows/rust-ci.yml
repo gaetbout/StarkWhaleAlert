@@ -18,3 +18,35 @@ jobs:
         uses: actions-rs/cargo@v1
         with:
           command: check
+
+  fmt:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Step 1 - Check out main branch
+        uses: actions/checkout@v3
+
+      - name: Step 2 - Install rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+
+      - name: Step 3 - Run cargo fmt
+        uses: actions-rs/cargo@v1
+        with:
+          command: fmt --check
+
+  clippy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Step 1 - Check out main branch
+        uses: actions/checkout@v3
+
+      - name: Step 2 - Install rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+
+      - name: Step 3 - Run cargo clippy
+        uses: actions-rs/cargo@v1
+        with:
+          command: clippy
