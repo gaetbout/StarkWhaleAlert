@@ -13,11 +13,11 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     let mut h = header::HeaderMap::new();
     h.insert(
-        "Content-Type",
+        header::CONTENT_TYPE,
         header::HeaderValue::from_static("application/json"),
     );
     h.insert(
-        "Authorization",
+        header::AUTHORIZATION,
         header::HeaderValue::from_static("Bearer ${coincapApiKey}"),
     );
 
