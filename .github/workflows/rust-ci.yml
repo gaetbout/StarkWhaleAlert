@@ -1,4 +1,4 @@
-name: CI
+name: RUST CI
 
 on: [push, pull_request]
 
