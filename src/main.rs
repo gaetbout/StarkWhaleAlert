@@ -19,7 +19,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     );
     headers.insert(
         header::AUTHORIZATION,
-        HeaderValue::from_static("Bearer ${coincapApiKey}"),
+        HeaderValue::from_staic("Bearer ${coincapApiKey}"),
     );
 
     let client = reqwest::Client::builder().default_headers(headers).build()?;

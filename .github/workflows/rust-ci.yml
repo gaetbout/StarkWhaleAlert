@@ -1,0 +1,16 @@
+name: CI
+
+on: [push, pull_request]
+
+jobs:
+  format:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Step 1 - Check out main branch
+        uses: actions/checkout@v3
+
+      - name: Step 2 - Install project
+        run: actions-rs/toolchain@v1
+
+      - name: Step 3 - Check can build
+        run: check
