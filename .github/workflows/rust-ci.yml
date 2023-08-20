@@ -14,5 +14,7 @@ jobs:
         with:
           toolchain: stable
 
-      - name: Step 3 - Check can build
-        run: cargo check
+      - name: Step 3 - Run cargo check
+        uses: actions-rs/toolchain@v1
+        with:
+          command: check
