@@ -36,8 +36,14 @@ pub async fn fetch_coin(coin_id: &str) {
 #[cfg(test)]
 mod tests {
     use super::fetch_coin;
+    use rstest::rstest;
+
+    #[rstest]
+    #[case("ethereum")]
+    #[case("usd-coin")]
+    #[case("tether")]
     #[tokio::test]
-    async fn it_works() {
-        fetch_coin("ethereum").await;
+    async fn it_works(#[case] coin: &str) {
+        fetch_coin(coin).await;
     }
 }
