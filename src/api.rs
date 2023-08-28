@@ -2,7 +2,7 @@
   use reqwest::header;
   use reqwest::header::HeaderValue;
   use std::time::Duration;
-  pub async fn lama(){
+  pub async fn fetch_coin(coin_id: &str){
     let mut headers = reqwest::header::HeaderMap::new();
     headers.insert(
         header::CONTENT_TYPE,
@@ -17,7 +17,7 @@
         .default_headers(headers)
         .build().expect("Failed building the client");
   
-    let get_link: String = format!("{}{}", "https://api.coincap.io/v2/assets/", "ethereum");
+    let get_link: String = format!("{}{}", "https://api.coincap.io/v2/assets/",coin_id);
   
     let ethereum = client
         .get(get_link)

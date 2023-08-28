@@ -6,7 +6,7 @@ mod api;
 async fn main() -> Result<(), Box<dyn Error>> {
     check_valid_env();
     
-    api::lama().await;
+    api::fetch_coin("ethereum").await;
 
     Ok(())
 }
