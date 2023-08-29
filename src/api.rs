@@ -7,13 +7,13 @@ use std::time::Duration;
 use crate::COINCAP_API_KEY;
 
 #[derive(Debug, Serialize, Deserialize)]
-struct Root {
-    data: Inner,
+struct FetchCoinResponse {
+    data: Data,
     timestamp: u64,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-struct Inner {
+struct Data {
     id: String,
     rank: String,
     symbol: String,
@@ -54,7 +54,7 @@ pub async fn fetch_coin(coin_id: &str) -> Result<(), reqwest::Error> {
 
     let get_link: String = format!("{}{}", "https://api.coincap.io/v2/assets/", coin_id);
 
-    let coin_info: Root = client
+    let coin_info: FetchCoinResponse = client
         .get(get_link)
         .header("Accept", "text/plain")
         .timeout(Duration::from_secs(3))
@@ -63,7 +63,7 @@ pub async fn fetch_coin(coin_id: &str) -> Result<(), reqwest::Error> {
         .json()
         .await?;
 
-    println!("{:}", coin_info.data.price_usd);
+    println!("{}:{}", coin_info.data.name, coin_info.data.price_usd);
     Ok(())
 }
 
