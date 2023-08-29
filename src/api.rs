@@ -26,7 +26,7 @@ struct Data {
     #[serde(rename = "volumeUsd24Hr")]
     volume_usd_24_hr: String,
     #[serde(rename = "priceUsd")]
-    price_usd: String,
+    price_usd: f64,
     #[serde(rename = "changePercent24Hr")]
     change_percent_24_hr: String,
     #[serde(rename = "vwap24Hr")]
