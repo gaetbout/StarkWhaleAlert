@@ -33,7 +33,7 @@ struct Data {
     vwap_24_hr: String,
 }
 
-pub async fn fetch_coin(coin_id: &str) -> Result<(), reqwest::Error> {
+pub async fn fetch_coin(coin_id: &str) -> Result<f64, reqwest::Error> {
     dotenv().ok();
     let mut headers = reqwest::header::HeaderMap::new();
     let token = std::env::var(COINCAP_API_KEY).expect("COINCAP_API_KEY must be set");
@@ -64,7 +64,7 @@ pub async fn fetch_coin(coin_id: &str) -> Result<(), reqwest::Error> {
         .await?;
 
     println!("{}:{}", coin_info.data.name, coin_info.data.price_usd);
-    Ok(())
+    Ok(coin_info.data.price_usd.parse().unwrap())
 }
 
 #[cfg(test)]
@@ -78,6 +78,8 @@ mod tests {
     #[case("tether")]
     #[tokio::test]
     async fn it_works(#[case] coin: &str) {
-        fetch_coin(coin).await.unwrap();
+        let value = fetch_coin(coin).await.unwrap();
+
+        println!("Value is {}", value);
     }
 }
