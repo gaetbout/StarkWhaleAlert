@@ -3,19 +3,20 @@ use std::error::Error;
 
 mod api;
 
+const COINCAP_API_KEY: &str = "COINCAP_API_KEY";
+
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
     check_valid_env();
 
-    api::fetch_coin("ethereum").await;
+    api::fetch_coin("ethereum").await?;
 
     Ok(())
 }
 
 fn check_valid_env() {
     dotenv().ok();
-    let mailcoach_api_token =
-        std::env::var("COINCAP_API_KEY").expect("COINCAP_API_KEY must be set.");
+    let mailcoach_api_token = std::env::var(COINCAP_API_KEY).expect("COINCAP_API_KEY must be set.");
     println!("Somethng {mailcoach_api_token}");
 }
 /*
