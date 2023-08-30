@@ -42,7 +42,7 @@ pub struct Token {
     decimals: u8,
     symbol: String,
     selector: String, // This should be the String of the selector (Transfer, ...), not the HEX value
-    threshold: FieldElement,  // TODO Could maybe take just how much and use decimals to reach total?
+    threshold: FieldElement, // TODO Could maybe take just how much and use decimals to reach total?
     logo: String,
     rate_api_id: String,
 }
@@ -114,10 +114,11 @@ pub async fn fetch_events(token: Token) -> Result<(), reqwest::Error> {
     );
     println!("decimals: {:?}", token.decimals);
     println!("threshold: {:?}", token.threshold);
-    let filtered_events:Vec<_> = events
+    let filtered_events: Vec<_> = events
         .events
         .iter()
-        .filter(|event| event.data[2] > token.threshold).collect();
+        .filter(|event| event.data[2] > token.threshold)
+        .collect();
     // TODO Handle the data part 2?
     println!("{:?}", filtered_events);
 
@@ -149,7 +150,7 @@ mod tests {
             decimals: 18,
             symbol: "ETH".to_string(),
             selector: "Transfer".to_string(),
-            threshold: FieldElement::from(10_u128.pow(18)  * 50), // 50 eth
+            threshold: FieldElement::from(10_u128.pow(18) * 50), // 50 eth
             logo: "♦".to_string(),
             rate_api_id: "ethereum".to_string(),
         };
