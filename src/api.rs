@@ -1,10 +1,14 @@
 use dotenv::dotenv;
-use reqwest::header;
 use reqwest::header::HeaderValue;
+use reqwest::{header, Url};
 use serde::{Deserialize, Serialize};
+use starknet::core::types::{EventFilter, BlockId, FieldElement};
+use starknet::core::utils::get_selector_from_name;
+use starknet::providers::Provider;
+use starknet::providers::{jsonrpc::HttpTransport, JsonRpcClient};
 use std::time::Duration;
 
-use crate::COINCAP_API_KEY;
+use crate::{COINCAP_API_KEY, NODE_PROVIDER_API_KEY};
 
 #[derive(Debug, Serialize, Deserialize)]
 struct FetchCoinResponse {
@@ -35,8 +39,9 @@ struct Data {
 
 pub async fn fetch_coin(coin_id: &str) -> Result<f64, reqwest::Error> {
     dotenv().ok();
-    let mut headers = reqwest::header::HeaderMap::new();
     let token = std::env::var(COINCAP_API_KEY).expect("COINCAP_API_KEY must be set");
+
+    let mut headers = reqwest::header::HeaderMap::new();
     let auth = String::from(format!("Bearer {token}"));
     headers.insert(
         header::CONTENT_TYPE,
@@ -67,9 +72,34 @@ pub async fn fetch_coin(coin_id: &str) -> Result<f64, reqwest::Error> {
     Ok(coin_info.data.price_usd.parse().unwrap())
 }
 
+pub async fn fetch_events() -> Result<(), reqwest::Error> {
+    dotenv().ok();
+    let token = std::env::var(NODE_PROVIDER_API_KEY).expect("COINCAP_API_KEY must be set");
+
+    let rpc_url = format!("https://starknet-mainnet.infura.io/v3/{token}");
+    let rpc_client = JsonRpcClient::new(HttpTransport::new(Url::parse(&rpc_url).unwrap()));
+
+    let events = rpc_client
+        .get_events(
+            EventFilter {
+                from_block: Some(BlockId::Number(181710)),
+                to_block: Some(BlockId::Number(181712)),
+                address: Some(FieldElement::from_hex_be("0x049d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7").unwrap()),
+                keys: Some(vec![vec![get_selector_from_name("Transfer").unwrap()]]),
+            },
+            None,
+            20,
+        )
+        .await
+        .unwrap();
+
+        println!("{:?}", events.events[0]);
+    Ok(())
+}
+
 #[cfg(test)]
 mod tests {
-    use super::fetch_coin;
+    use super::{fetch_coin, fetch_events};
     use rstest::rstest;
 
     #[rstest]
@@ -77,9 +107,14 @@ mod tests {
     #[case("usd-coin")]
     #[case("tether")]
     #[tokio::test]
-    async fn it_works(#[case] coin: &str) {
+    async fn test_fetch_coin(#[case] coin: &str) {
         let value = fetch_coin(coin).await.unwrap();
 
         println!("Value is {}", value);
+    }
+
+    #[tokio::test]
+    async fn test_fetch_events() {
+        fetch_events().await.unwrap();
     }
 }
