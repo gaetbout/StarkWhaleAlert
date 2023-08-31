@@ -55,6 +55,7 @@ mod tests {
         get_last_processsed_block, get_twitter_refresh_token, set_last_processsed_block,
         set_twitter_refresh_token,
     };
+    use std::fs;
 
     #[tokio::test]
     async fn test_db() {
@@ -64,5 +65,8 @@ mod tests {
         let twitter = get_twitter_refresh_token(path).await;
         println!("number {:?}:", number);
         println!("twitter {:?}:", twitter);
+        assert!(fs::metadata(path).is_ok(),"File should exist");
+        fs::remove_file(path).unwrap();
+        assert!(fs::metadata(path).is_err(),"File shouldn't exist anymore");
     }
 }
