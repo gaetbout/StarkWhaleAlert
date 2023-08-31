@@ -10,3 +10,4 @@ tokio = { version = "1.32.0", features = ["full"] }
 rstest = "0.18.2"
 serde = { version = "1.0.188", features = ["derive"] }
 starknet = { git = "https://github.com/xJonathanLEI/starknet-rs" }
+koit = "0.2.0"

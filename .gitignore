@@ -5,6 +5,8 @@ dist
 .vscode
 log
 
+test_db
+db
 # Added by cargo
 
 /target

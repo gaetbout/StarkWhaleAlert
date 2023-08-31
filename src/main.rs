@@ -2,6 +2,7 @@ use dotenv::dotenv;
 use std::error::Error;
 
 mod api;
+mod db;
 
 const COINCAP_API_KEY: &str = "COINCAP_API_KEY";
 const NODE_PROVIDER_API_KEY: &str = "NODE_PROVIDER_API_KEY";
