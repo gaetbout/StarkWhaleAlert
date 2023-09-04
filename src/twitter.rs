@@ -23,9 +23,9 @@ pub async fn tweet(text_to_tweet: String) {
 
     let token: Mutex<Oauth2Token> = Mutex::new(
         serde_json::from_reader(
-            std::fs::File::open("./token.json").expect(".oauth2_token.json not found"),
+            std::fs::File::open("./token.json").expect(".token.json not found"),
         )
-        .expect(".oauth2_token.json not valid json"),
+        .expect(".token.json not valid json"),
     );
 
     let mut token = token.lock().await;
@@ -35,8 +35,9 @@ pub async fn tweet(text_to_tweet: String) {
         .await
         .unwrap()
     {
+        println!("Refreshing token");
         serde_json::to_writer(
-            std::fs::File::create("./.oauth2_token.json").expect(".oauth2_token.json not found"),
+            std::fs::File::create("./.token.json").expect(".token.json not found"),
             token.deref(),
         )
         .expect("couldn't save token");
