@@ -37,14 +37,15 @@ app.get("/callback", async function (req, res) {
     return res.status(400).send("Stored tokens do not match!");
   }
 
-  const { refreshToken } = await twitterClient.loginWithOAuth2({
+  const token = await twitterClient.loginWithOAuth2({
     code: code as string,
     codeVerifier: codeVerifierSaved,
     redirectUri: callbackURL,
   });
 
-  writeTwitterRefreshToken(refreshToken as string);
-  res.send(refreshToken);
+  console.log(token);
+  writeTwitterRefreshToken(token.refreshToken as string);
+  res.send(token.refreshToken);
 });
 
 app.listen(port, () => {

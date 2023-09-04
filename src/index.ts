@@ -16,4 +16,4 @@ export const provider = new RpcProvider({
 });
 
 // TODO Could use nodecron instead of a cron based work or even serverless
-await doLogic();
+// await doLogic();

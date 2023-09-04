@@ -11,3 +11,7 @@ rstest = "0.18.2"
 serde = { version = "1.0.188", features = ["derive"] }
 starknet = { git = "https://github.com/xJonathanLEI/starknet-rs" }
 koit = "0.2.0"
+twitter-v2 = "0.1.8"
+anyhow = "1.0.75"
+time = "0.3.28"
+serde_json = "1.0.105"
