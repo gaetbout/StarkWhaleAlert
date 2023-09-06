@@ -5,10 +5,7 @@ dist
 .vscode
 log
 
-test_db
 db
-token.json
-dbt
 
 # Added by cargo
 

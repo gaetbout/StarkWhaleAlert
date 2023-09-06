@@ -6,6 +6,8 @@ use twitter_v2::{
     TwitterApi,
 };
 
+// TODO Update gitignore when all js gone 
+const PATH_TO_TOKEN_FILE : &str = "./db/token.json";
 use crate::{TWITTER_OAUTH2_CLIENT_ID, TWITTER_OAUTH2_CLIENT_SECRET};
 pub async fn tweet(text_to_tweet: String) {
     dotenv().ok();
@@ -23,9 +25,9 @@ pub async fn tweet(text_to_tweet: String) {
 
     let token: Mutex<Oauth2Token> = Mutex::new(
         serde_json::from_reader(
-            std::fs::File::open("./token.json").expect(".token.json not found"),
+            std::fs::File::open(PATH_TO_TOKEN_FILE).expect("token file not found"),
         )
-        .expect(".token.json not valid json"),
+        .expect("token file not valid json"),
     );
 
     let mut token = token.lock().await;
@@ -36,7 +38,7 @@ pub async fn tweet(text_to_tweet: String) {
     {
         println!("Refreshing token");
         serde_json::to_writer(
-            std::fs::File::create("./token.json").expect(".token.json not found"),
+            std::fs::File::create(PATH_TO_TOKEN_FILE).expect("token file not found"),
             token.deref(),
         )
         .expect("couldn't save token");
