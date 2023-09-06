@@ -10,8 +10,6 @@ use starknet::providers::Provider;
 use starknet::providers::{jsonrpc::HttpTransport, JsonRpcClient};
 use std::time::Duration;
 
-use crate::{COINCAP_API_KEY, NODE_PROVIDER_API_KEY};
-
 #[derive(Debug, Serialize, Deserialize)]
 struct FetchCoinResponse {
     data: Data,
@@ -50,8 +48,7 @@ pub struct Token {
 }
 
 pub async fn fetch_coin(coin_id: &str) -> Result<f64, reqwest::Error> {
-    dotenv().ok();
-    let token = std::env::var(COINCAP_API_KEY).expect("COINCAP_API_KEY must be set");
+    let token = dotenv!("COINCAP_API_KEY");
 
     let mut headers = reqwest::header::HeaderMap::new();
     let auth = String::from(format!("Bearer {token}"));
@@ -86,7 +83,7 @@ pub async fn fetch_coin(coin_id: &str) -> Result<f64, reqwest::Error> {
 
 pub async fn fetch_events(token: Token) -> Result<(), reqwest::Error> {
     dotenv().ok();
-    let api_key = std::env::var(NODE_PROVIDER_API_KEY).expect("COINCAP_API_KEY must be set");
+    let api_key = dotenv!("NODE_PROVIDER_API_KEY");
 
     let rpc_url = format!("https://starknet-mainnet.infura.io/v3/{api_key}");
     let rpc_client = JsonRpcClient::new(HttpTransport::new(Url::parse(&rpc_url).unwrap()));
@@ -131,9 +128,7 @@ pub async fn fetch_events(token: Token) -> Result<(), reqwest::Error> {
 }
 
 async fn address_to_domain(address: FieldElement, contract_addr: FieldElement) {
-    dotenv().ok();
-    let api_key = std::env::var(NODE_PROVIDER_API_KEY).expect("COINCAP_API_KEY must be set");
-
+    let api_key = dotenv!("NODE_PROVIDER_API_KEY");
     let rpc_url = format!("https://starknet-mainnet.infura.io/v3/{api_key}");
     let rpc_client = JsonRpcClient::new(HttpTransport::new(Url::parse(&rpc_url).unwrap()));
     let repsonse = rpc_client
@@ -227,6 +222,9 @@ fn extract_stars(mut domain: &str) -> (&str, usize) {
     (domain, k)
 }
 
+fn get_coincap_api_key() -> &'static str {
+    dotenv!("COINCAP_API_KEY")
+}
 #[cfg(test)]
 mod tests {
     use super::{fetch_coin, fetch_events, Token};

@@ -9,14 +9,11 @@ use twitter_v2::{
 
 // TODO Update gitignore when all js gone
 const PATH_TO_TOKEN_FILE: &str = "./db/token.json";
-use crate::{TWITTER_OAUTH2_CLIENT_ID, TWITTER_OAUTH2_CLIENT_SECRET};
 pub async fn tweet(text_to_tweet: String) {
     dotenv().ok();
 
-    let client_id =
-        std::env::var(TWITTER_OAUTH2_CLIENT_ID).expect("TWITTER_OAUTH2_CLIENT_ID must be set");
-    let client_secret = std::env::var(TWITTER_OAUTH2_CLIENT_SECRET)
-        .expect("TWITTER_OAUTH2_CLIENT_SECRET must be set");
+    let client_id = dotenv!("TWITTER_OAUTH2_CLIENT_ID");
+    let client_secret = dotenv!("TWITTER_OAUTH2_CLIENT_SECRET");
 
     let oauth2_client: Oauth2Client = Oauth2Client::new(
         client_id,

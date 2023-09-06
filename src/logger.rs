@@ -1,6 +1,13 @@
-use log::{Level, Metadata, Record};
+use log::{Level, LevelFilter, Metadata, Record};
 
+// use log::{debug, error, info, trace, warn};
 pub struct SimpleLogger;
+
+pub fn init() {
+    log::set_logger(&SimpleLogger)
+        .map(|()| log::set_max_level(LevelFilter::Trace))
+        .expect("Couldn't setup the logger");
+}
 
 impl log::Log for SimpleLogger {
     fn enabled(&self, _metadata: &Metadata) -> bool {
