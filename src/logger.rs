@@ -3,20 +3,34 @@ use log::{Level, Metadata, Record};
 pub struct SimpleLogger;
 
 impl log::Log for SimpleLogger {
-    fn enabled(&self, metadata: &Metadata) -> bool {
-        true //metadata.level() <= Level::Info
+    fn enabled(&self, _metadata: &Metadata) -> bool {
+        true
     }
 
     fn log(&self, record: &Record) {
         if self.enabled(record.metadata()) {
-            println!(
-                "{} {:<10}:{} {:<6}{}",
-                date(),
-                record.file().unwrap(),
-                record.line().unwrap(),
-                record.level(),
-                record.args()
-            );
+            match record.level() {
+                Level::Trace => {
+                    println!(
+                        "\t{} {:<10}:{} {:<6}{}",
+                        date(),
+                        record.file().unwrap(),
+                        record.line().unwrap(),
+                        record.level(),
+                        record.args()
+                    );
+                }
+                _ => {
+                    println!(
+                        "{} {:<10}:{} {:<6}{}",
+                        date(),
+                        record.file().unwrap(),
+                        record.line().unwrap(),
+                        record.level(),
+                        record.args()
+                    );
+                }
+            }
         }
     }
 
