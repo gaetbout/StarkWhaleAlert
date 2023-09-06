@@ -15,7 +15,7 @@ const TWITTER_OAUTH2_CLIENT_SECRET: &str = "TWITTER_OAUTH2_CLIENT_SECRET";
 async fn main() -> Result<(), Box<dyn Error>> {
     check_valid_env();
 
-    tweet("Someteazhing".to_string()).await;
+    tweet("Someteaeazzhing".to_string()).await;
     Ok(())
 }
 

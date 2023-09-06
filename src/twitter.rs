@@ -29,7 +29,6 @@ pub async fn tweet(text_to_tweet: String) {
     );
 
     let mut token = token.lock().await;
-
     if oauth2_client
         .refresh_token_if_expired(&mut token)
         .await
@@ -37,7 +36,7 @@ pub async fn tweet(text_to_tweet: String) {
     {
         println!("Refreshing token");
         serde_json::to_writer(
-            std::fs::File::create("./.token.json").expect(".token.json not found"),
+            std::fs::File::create("./token.json").expect(".token.json not found"),
             token.deref(),
         )
         .expect("couldn't save token");
