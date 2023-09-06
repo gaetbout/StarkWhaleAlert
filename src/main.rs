@@ -1,9 +1,12 @@
 use dotenv::dotenv;
+use log::{debug, error, info, trace, warn};
+use logger::SimpleLogger;
 use std::error::Error;
 use twitter::tweet;
 
 mod api;
 mod db;
+mod logger;
 mod twitter;
 
 const COINCAP_API_KEY: &str = "COINCAP_API_KEY";
@@ -11,11 +14,22 @@ const NODE_PROVIDER_API_KEY: &str = "NODE_PROVIDER_API_KEY";
 const TWITTER_OAUTH2_CLIENT_ID: &str = "TWITTER_OAUTH2_CLIENT_ID";
 const TWITTER_OAUTH2_CLIENT_SECRET: &str = "TWITTER_OAUTH2_CLIENT_SECRET";
 
+use log::{LevelFilter, SetLoggerError};
+
+pub fn init() -> Result<(), SetLoggerError> {
+    log::set_logger(&SimpleLogger).map(|()| log::set_max_level(LevelFilter::Trace))
+}
+
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
+    init().unwrap();
     check_valid_env();
-
-    tweet("Someteaeazzhing".to_string()).await;
+    info!("info");
+    trace!("trace");
+    warn!("warn");
+    debug!("debug");
+    error!("error");
+    // tweet("Someteaeazzhing".to_string()).await;
     Ok(())
 }
 

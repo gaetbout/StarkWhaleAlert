@@ -1,4 +1,5 @@
 use dotenv::dotenv;
+use log::info;
 use std::ops::Deref;
 use tokio::sync::Mutex;
 use twitter_v2::{
@@ -6,8 +7,8 @@ use twitter_v2::{
     TwitterApi,
 };
 
-// TODO Update gitignore when all js gone 
-const PATH_TO_TOKEN_FILE : &str = "./db/token.json";
+// TODO Update gitignore when all js gone
+const PATH_TO_TOKEN_FILE: &str = "./db/token.json";
 use crate::{TWITTER_OAUTH2_CLIENT_ID, TWITTER_OAUTH2_CLIENT_SECRET};
 pub async fn tweet(text_to_tweet: String) {
     dotenv().ok();
@@ -36,7 +37,7 @@ pub async fn tweet(text_to_tweet: String) {
         .await
         .unwrap()
     {
-        println!("Refreshing token");
+        info!("Refreshing token");
         serde_json::to_writer(
             std::fs::File::create(PATH_TO_TOKEN_FILE).expect("token file not found"),
             token.deref(),
