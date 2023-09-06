@@ -91,6 +91,9 @@ pub async fn fetch_events(token: Token) -> Result<(), reqwest::Error> {
     let rpc_url = format!("https://starknet-mainnet.infura.io/v3/{api_key}");
     let rpc_client = JsonRpcClient::new(HttpTransport::new(Url::parse(&rpc_url).unwrap()));
 
+    let bn = rpc_client.block_number().await.unwrap();
+    println!("Block number {}", bn);
+
     let events = rpc_client
         .get_events(
             EventFilter {
