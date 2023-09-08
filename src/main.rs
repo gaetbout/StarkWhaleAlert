@@ -26,6 +26,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     logger::init();
     check_valid_env();
     // twitter::tweet("Someteaeazzhing".to_string()).await;
+
     Ok(())
 }
 
