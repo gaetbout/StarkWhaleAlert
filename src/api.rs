@@ -38,13 +38,13 @@ struct Data {
 }
 
 pub struct Token {
-    address: String,
-    decimals: u8,
-    symbol: String,
-    selector: String, // This should be the String of the selector (Transfer, ...), not the HEX value
-    threshold: FieldElement, // TODO Could maybe take just how much and use decimals to reach total?
-    logo: String,
-    rate_api_id: String,
+    pub address: &'static str,
+    pub decimals: u8,
+    pub symbol: &'static str,
+    pub selector: &'static str, // This should be the String of the selector (Transfer, ...), not the HEX value
+    pub threshold: u128,
+    pub logo: &'static str,
+    pub rate_api_id: &'static str,
 }
 
 pub async fn fetch_coin(coin_id: &str) -> Result<f64, reqwest::Error> {
@@ -96,12 +96,10 @@ pub async fn fetch_events(token: Token) -> Result<(), reqwest::Error> {
             EventFilter {
                 from_block: Some(BlockId::Number(181710)),
                 to_block: Some(BlockId::Number(181711)),
-                address: Some(FieldElement::from_hex_be(token.address.as_str()).unwrap()),
-                keys: Some(vec![vec![
-                    get_selector_from_name(token.selector.as_str()).unwrap()
-                ]]),
+                address: Some(FieldElement::from_hex_be(token.address).unwrap()),
+                keys: Some(vec![vec![get_selector_from_name(token.selector).unwrap()]]),
             },
-            Some("1000".to_string()),
+            None,
             1000,
         )
         .await
@@ -112,14 +110,15 @@ pub async fn fetch_events(token: Token) -> Result<(), reqwest::Error> {
         "Cont token: {:?}",
         events
             .continuation_token
-            .unwrap_or("No cont token".to_string())
+            .unwrap_or("No continuation token".to_string())
     );
     println!("decimals: {:?}", token.decimals);
     println!("threshold: {:?}", token.threshold);
+    let threshold = FieldElement::from((10_u128.pow(token.decimals.into())) * token.threshold);
     let filtered_events: Vec<_> = events
         .events
         .iter()
-        .filter(|event| event.data[2] > token.threshold)
+        .filter(|event| event.data[2] > threshold)
         .collect();
     // TODO Handle the data part 2?
     println!("{:?}", filtered_events);
@@ -245,14 +244,14 @@ mod tests {
     #[tokio::test]
     async fn test_fetch_events() {
         let eth = Token {
-            address: "0x049d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7"
-                .to_string(),
+            address: "0x049d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7",
+
             decimals: 18,
-            symbol: "ETH".to_string(),
-            selector: "Transfer".to_string(),
-            threshold: FieldElement::from(10_u128.pow(18) * 50), // 50 eth
-            logo: "♦".to_string(),
-            rate_api_id: "ethereum".to_string(),
+            symbol: "ETH",
+            selector: "Transfer",
+            threshold: 50, // 50 eth
+            logo: "♦",
+            rate_api_id: "ethereum",
         };
         fetch_events(eth).await.unwrap();
     }
