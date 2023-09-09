@@ -2,7 +2,10 @@ use api::Token;
 use dotenv::dotenv;
 use log::info;
 use reqwest::Url;
-use starknet::providers::{jsonrpc::HttpTransport, JsonRpcClient, Provider};
+use starknet::{
+    core::types::FieldElement,
+    providers::{jsonrpc::HttpTransport, JsonRpcClient, Provider},
+};
 use std::error::Error;
 
 use crate::api::fetch_events;
@@ -29,17 +32,26 @@ const TOKENS: &'static [Token] = &[ETH];
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
     logger::init();
+    info!("Start");
     check_valid_env();
     let rpc_client = get_infura_client();
     let current_block = rpc_client.block_number().await.unwrap();
     info!("Current number: {}", current_block);
 
-    let events = fetch_events(rpc_client, &TOKENS[0], current_block - 2, current_block - 1)
+    let token = &TOKENS[0];
+    let events = fetch_events(rpc_client, token, current_block - 5, current_block - 1)
         .await
         .unwrap();
-    info!("Events: {:?}", events);
+    info!("Events len: {:?}", events.len());
 
+    let threshold = FieldElement::from((10_u128.pow(token.decimals.into())) * token.threshold);
+    let filtered_events: Vec<_> = events
+        .iter()
+        .filter(|event| event.data[2] > threshold)
+        .collect();
+    println!("{:?}", filtered_events);
     // twitter::tweet("Someteaeazzhing".to_string()).await;
+    info!("End");
 
     Ok(())
 }

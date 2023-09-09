@@ -1,4 +1,4 @@
-use log::{Level, LevelFilter, Metadata, Record};
+use log::{LevelFilter, Metadata, Record};
 
 // use log::{debug, error, info, trace, warn};
 pub struct SimpleLogger;
@@ -16,28 +16,15 @@ impl log::Log for SimpleLogger {
 
     fn log(&self, record: &Record) {
         if self.enabled(record.metadata()) {
-            match record.level() {
-                Level::Trace => {
-                    println!(
-                        "\t{} {:<10}:{} {:<6}{}",
-                        date(),
-                        record.file().unwrap(),
-                        record.line().unwrap(),
-                        record.level(),
-                        record.args()
-                    );
-                }
-                _ => {
-                    println!(
-                        "{} {:<10}:{} {:<6}{}",
-                        date(),
-                        record.file().unwrap(),
-                        record.line().unwrap(),
-                        record.level(),
-                        record.args()
-                    );
-                }
-            }
+            // println!(
+            //     "{} {:<10}:{} {:<6}{}",
+            //     date(),
+            //     record.file().unwrap(),
+            //     record.line().unwrap(),
+            //     record.level(),
+            //     record.args()
+            // );
+            println!("{} {:<6}{}", date(), record.level(), record.args());
         }
     }
 

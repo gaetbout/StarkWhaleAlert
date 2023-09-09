@@ -4,7 +4,7 @@ use reqwest::{header, header::HeaderValue, Error, Url};
 use serde::{Deserialize, Serialize};
 use starknet::{
     core::{
-        types::{BlockId, BlockTag, EventFilter, FieldElement, FunctionCall},
+        types::{BlockId, BlockTag, EmittedEvent, EventFilter, FieldElement, FunctionCall},
         utils::get_selector_from_name,
     },
     providers::{
@@ -90,40 +90,29 @@ pub async fn fetch_events(
     token: &Token,
     from_block: u64,
     to_block: u64,
-) -> Result<(), reqwest::Error> {
-    let events = rpc_client
-        .get_events(
-            EventFilter {
-                from_block: Some(BlockId::Number(from_block)),
-                to_block: Some(BlockId::Number(to_block)),
-                address: Some(FieldElement::from_hex_be(token.address).unwrap()),
-                keys: Some(vec![vec![get_selector_from_name(token.selector).unwrap()]]),
-            },
-            None,
-            1000,
-        )
-        .await
-        .unwrap();
+) -> Result<Vec<EmittedEvent>, reqwest::Error> {
+    let mut events = vec![];
+    let mut continuation_token = Some("0".to_string());
 
-    println!("{:?}", events.events.len());
-    println!(
-        "Cont token: {:?}",
-        events
-            .continuation_token
-            .unwrap_or("No continuation token".to_string())
-    );
-    println!("decimals: {:?}", token.decimals);
-    println!("threshold: {:?}", token.threshold);
-    let threshold = FieldElement::from((10_u128.pow(token.decimals.into())) * token.threshold);
-    let filtered_events: Vec<_> = events
-        .events
-        .iter()
-        .filter(|event| event.data[2] > threshold)
-        .collect();
-    // TODO Handle the data part 2?
-    println!("{:?}", filtered_events);
+    while let Some(cont_token) = continuation_token {
+        let event_page = rpc_client
+            .get_events(
+                EventFilter {
+                    from_block: Some(BlockId::Number(from_block)),
+                    to_block: Some(BlockId::Number(to_block)),
+                    address: Some(FieldElement::from_hex_be(token.address).unwrap()),
+                    keys: Some(vec![vec![get_selector_from_name(token.selector).unwrap()]]),
+                },
+                Some(cont_token),
+                1000,
+            )
+            .await
+            .unwrap();
 
-    Ok(())
+        continuation_token = event_page.continuation_token;
+        events.extend(event_page.events);
+    }
+    Ok(events)
 }
 
 async fn address_to_domain(
