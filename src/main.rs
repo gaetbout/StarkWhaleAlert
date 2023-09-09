@@ -64,8 +64,8 @@ async fn main() -> Result<(), Box<dyn Error>> {
         db::get_last_processed_block(None).await
     );
 
-    let token = &TOKENS[0];
     for token in TOKENS {
+        // Prob a better way to do, like spawning a thread to do all this in parrallel?
         lama(token, &rpc_client, last_block).await;
     }
 
