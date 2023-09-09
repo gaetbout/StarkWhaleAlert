@@ -5,8 +5,10 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Default, Deserialize, Serialize, Clone)]
 struct Data {
-    last_processsed_block: u128,
+    last_processsed_block: u64,
 }
+
+const LAST_BLOCK_FILE_PATH: &str = "./db/block.json";
 
 async fn get_db(path: &str) -> FileDatabase<Data, Json> {
     FileDatabase::<Data, Json>::load_from_path_or_default(path)
@@ -14,16 +16,16 @@ async fn get_db(path: &str) -> FileDatabase<Data, Json> {
         .unwrap()
 }
 
-pub async fn get_last_processsed_block(path: &str) -> u128 {
-    get_db(path)
+pub async fn get_last_processsed_block(path: Option<&str>) -> u64 {
+    get_db(path.unwrap_or(LAST_BLOCK_FILE_PATH))
         .await
         .read(|data| data.to_owned())
         .await
         .last_processsed_block
 }
 
-pub async fn set_last_processsed_block(path: &str, last_processsed_block: u128) {
-    let db = get_db(path).await;
+pub async fn set_last_processsed_block(path: Option<&str>, last_processsed_block: u64) {
+    let db = get_db(path.unwrap_or(LAST_BLOCK_FILE_PATH)).await;
     db.write(|data| {
         data.last_processsed_block = last_processsed_block;
     })

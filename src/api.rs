@@ -1,16 +1,13 @@
 use bigdecimal::num_traits;
 use num_traits::cast::ToPrimitive;
-use reqwest::{header, header::HeaderValue, Error, Url};
+use reqwest::{header, header::HeaderValue};
 use serde::{Deserialize, Serialize};
 use starknet::{
     core::{
         types::{BlockId, BlockTag, EmittedEvent, EventFilter, FieldElement, FunctionCall},
         utils::get_selector_from_name,
     },
-    providers::{
-        jsonrpc::{HttpTransport, HttpTransportError, JsonRpcClientError},
-        JsonRpcClient, Provider, ProviderError,
-    },
+    providers::{jsonrpc::HttpTransport, JsonRpcClient, Provider},
 };
 use std::time::Duration;
 

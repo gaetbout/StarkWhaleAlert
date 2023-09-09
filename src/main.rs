@@ -35,11 +35,15 @@ async fn main() -> Result<(), Box<dyn Error>> {
     info!("Start");
     check_valid_env();
     let rpc_client = get_infura_client();
-    let current_block = rpc_client.block_number().await.unwrap();
-    info!("Current number: {}", current_block);
+    let last_block = rpc_client
+        .block_number()
+        .await
+        .expect("Error while getting last block")
+        - 1;
+    info!("Current number: {}", last_block);
 
     let token = &TOKENS[0];
-    let events = fetch_events(rpc_client, token, current_block - 5, current_block - 1)
+    let events = fetch_events(rpc_client, token, last_block - 5, last_block - 1)
         .await
         .unwrap();
     info!("Events len: {:?}", events.len());
@@ -51,6 +55,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
         .collect();
     println!("{:?}", filtered_events);
     // twitter::tweet("Someteaeazzhing".to_string()).await;
+    db::set_last_processsed_block(None, last_block).await;
     info!("End");
 
     Ok(())
