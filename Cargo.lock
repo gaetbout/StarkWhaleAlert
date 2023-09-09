@@ -2044,6 +2044,7 @@ dependencies = [
  "dotenv_codegen",
  "koit",
  "log",
+ "num-bigint",
  "reqwest",
  "rstest",
  "serde",

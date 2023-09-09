@@ -1,6 +1,7 @@
 use api::Token;
 use dotenv::dotenv;
 use log::info;
+use num_bigint::{BigUint, ToBigInt};
 use reqwest::Url;
 use starknet::{
     core::types::FieldElement,
@@ -77,4 +78,30 @@ fn get_infura_client() -> JsonRpcClient<HttpTransport> {
     let api_key = dotenv!("NODE_PROVIDER_API_KEY");
     let rpc_url = format!("https://starknet-mainnet.infura.io/v3/{api_key}");
     JsonRpcClient::new(HttpTransport::new(Url::parse(&rpc_url).unwrap()))
+}
+
+fn to_u256(low: u128, high: u128) -> BigUint {
+    let mut low_vec = low.to_bigint().unwrap().to_u32_digits().1;
+    let mut high_vec = high.to_bigint().unwrap().to_u32_digits().1;
+    for _ in low_vec.len()..4 {
+        low_vec.push(0_u32)
+    }
+    low_vec.append(&mut high_vec);
+    BigUint::new(low_vec)
+}
+
+#[cfg(test)]
+mod tests {
+    use num_bigint::BigUint;
+
+    use super::to_u256;
+    #[test]
+    fn test_big_int() {
+        let u256_0 = to_u256(5456465465465465412, 11);
+        let u256_1 = to_u256(5456465465465465412, 12);
+        let u256_2 = to_u256(5456465465465465413, 12);
+        assert!(u256_0 < u256_1, "0");
+        assert!(u256_1 < u256_2, "1");
+        assert!((u256_1 + BigUint::new(vec![1])).eq(&u256_2), "2");
+    }
 }

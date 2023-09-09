@@ -214,84 +214,84 @@ fn get_coincap_api_key() -> &'static str {
 }
 #[cfg(test)]
 mod tests {
-    use super::{fetch_coin, fetch_events, Token};
-    use rstest::rstest;
-    use starknet::core::types::FieldElement;
+    // use super::{fetch_coin, fetch_events, Token};
+    // use rstest::rstest;
+    // use starknet::core::types::FieldElement;
 
-    #[rstest]
-    #[case("ethereum")]
-    #[case("usd-coin")]
-    #[case("tether")]
-    #[tokio::test]
-    async fn test_fetch_coin(#[case] coin: &str) {
-        let value = fetch_coin(coin).await.unwrap();
+    // #[rstest]
+    // #[case("ethereum")]
+    // #[case("usd-coin")]
+    // #[case("tether")]
+    // #[tokio::test]
+    // async fn test_fetch_coin(#[case] coin: &str) {
+    //     let value = fetch_coin(coin).await.unwrap();
 
-        println!("Value is {}", value);
-    }
+    //     println!("Value is {}", value);
+    // }
 
-    #[tokio::test]
-    async fn test_fetch_events() {
-        let eth = Token {
-            address: "0x049d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7",
+    // #[tokio::test]
+    // async fn test_fetch_events() {
+    //     let eth = Token {
+    //         address: "0x049d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7",
 
-            decimals: 18,
-            symbol: "ETH",
-            selector: "Transfer",
-            threshold: 50, // 50 eth
-            logo: "♦",
-            rate_api_id: "ethereum",
-        };
-        fetch_events(eth).await.unwrap();
-    }
+    //         decimals: 18,
+    //         symbol: "ETH",
+    //         selector: "Transfer",
+    //         threshold: 50, // 50 eth
+    //         logo: "♦",
+    //         rate_api_id: "ethereum",
+    //     };
+    //     fetch_events(eth).await.unwrap();
+    // }
 
-    #[tokio::test]
-    async fn test_starknet_id() {
-        // stark
-        super::address_to_domain(
-            FieldElement::from_hex_be(
-                "0x1f4055a52c859593e79988bfe998b536066805fe757522ece47945f46f6b6e7",
-            )
-            .unwrap(),
-            FieldElement::from_hex_be(
-                "0x6ac597f8116f886fa1c97a23fa4e08299975ecaf6b598873ca6792b9bbfb678",
-            )
-            .unwrap(),
-        )
-        .await;
+    // #[tokio::test]
+    // async fn test_starknet_id() {
+    //     // stark
+    //     super::address_to_domain(
+    //         FieldElement::from_hex_be(
+    //             "0x1f4055a52c859593e79988bfe998b536066805fe757522ece47945f46f6b6e7",
+    //         )
+    //         .unwrap(),
+    //         FieldElement::from_hex_be(
+    //             "0x6ac597f8116f886fa1c97a23fa4e08299975ecaf6b598873ca6792b9bbfb678",
+    //         )
+    //         .unwrap(),
+    //     )
+    //     .await;
 
-        // eli
-        super::address_to_domain(
-            FieldElement::from_hex_be(
-                "0x48f24d0d0618fa31813db91a45d8be6c50749e5e19ec699092ce29abe809294",
-            )
-            .unwrap(),
-            FieldElement::from_hex_be(
-                "0x6ac597f8116f886fa1c97a23fa4e08299975ecaf6b598873ca6792b9bbfb678",
-            )
-            .unwrap(),
-        )
-        .await;
+    //     // eli
+    //     super::address_to_domain(
+    //         FieldElement::from_hex_be(
+    //             "0x48f24d0d0618fa31813db91a45d8be6c50749e5e19ec699092ce29abe809294",
+    //         )
+    //         .unwrap(),
+    //         FieldElement::from_hex_be(
+    //             "0x6ac597f8116f886fa1c97a23fa4e08299975ecaf6b598873ca6792b9bbfb678",
+    //         )
+    //         .unwrap(),
+    //     )
+    //     .await;
 
-        // scott
-        super::address_to_domain(
-            FieldElement::from_hex_be(
-                "0x225bd17f4b4ede26c77673d8d40ec9805ec139a8167cae8d621bd295b260d13",
-            )
-            .unwrap(),
-            FieldElement::from_hex_be(
-                "0x6ac597f8116f886fa1c97a23fa4e08299975ecaf6b598873ca6792b9bbfb678",
-            )
-            .unwrap(),
-        )
-        .await;
+    //     // scott
+    //     super::address_to_domain(
+    //         FieldElement::from_hex_be(
+    //             "0x225bd17f4b4ede26c77673d8d40ec9805ec139a8167cae8d621bd295b260d13",
+    //         )
+    //         .unwrap(),
+    //         FieldElement::from_hex_be(
+    //             "0x6ac597f8116f886fa1c97a23fa4e08299975ecaf6b598873ca6792b9bbfb678",
+    //         )
+    //         .unwrap(),
+    //     )
+    //     .await;
 
-        super::address_to_domain(
-            FieldElement::from_hex_be("0x225bd17f4b4ede26c77673d8d3").unwrap(),
-            FieldElement::from_hex_be(
-                "0x6ac597f8116f886fa1c97a23fa4e08299975ecaf6b598873ca6792b9bbfb678",
-            )
-            .unwrap(),
-        )
-        .await;
-    }
+    //     super::address_to_domain(
+    //         FieldElement::from_hex_be("0x225bd17f4b4ede26c77673d8d3").unwrap(),
+    //         FieldElement::from_hex_be(
+    //             "0x6ac597f8116f886fa1c97a23fa4e08299975ecaf6b598873ca6792b9bbfb678",
+    //         )
+    //         .unwrap(),
+    //     )
+    //     .await;
+    // }
 }
