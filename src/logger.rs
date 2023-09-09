@@ -5,7 +5,7 @@ pub struct SimpleLogger;
 
 pub fn init() {
     log::set_logger(&SimpleLogger)
-        .map(|()| log::set_max_level(LevelFilter::Trace))
+        .map(|()| log::set_max_level(LevelFilter::Info))
         .expect("Couldn't setup the logger");
 }
 

@@ -1,13 +1,17 @@
 use bigdecimal::num_traits;
-use dotenv::dotenv;
 use num_traits::cast::ToPrimitive;
-use reqwest::header::HeaderValue;
-use reqwest::{header, Url};
+use reqwest::{header, header::HeaderValue, Error, Url};
 use serde::{Deserialize, Serialize};
-use starknet::core::types::{BlockId, BlockTag, EventFilter, FieldElement, FunctionCall};
-use starknet::core::utils::get_selector_from_name;
-use starknet::providers::Provider;
-use starknet::providers::{jsonrpc::HttpTransport, JsonRpcClient};
+use starknet::{
+    core::{
+        types::{BlockId, BlockTag, EventFilter, FieldElement, FunctionCall},
+        utils::get_selector_from_name,
+    },
+    providers::{
+        jsonrpc::{HttpTransport, HttpTransportError, JsonRpcClientError},
+        JsonRpcClient, Provider, ProviderError,
+    },
+};
 use std::time::Duration;
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -81,21 +85,17 @@ pub async fn fetch_coin(coin_id: &str) -> Result<f64, reqwest::Error> {
     Ok(coin_info.data.price_usd.parse().unwrap())
 }
 
-pub async fn fetch_events(token: Token) -> Result<(), reqwest::Error> {
-    dotenv().ok();
-    let api_key = dotenv!("NODE_PROVIDER_API_KEY");
-
-    let rpc_url = format!("https://starknet-mainnet.infura.io/v3/{api_key}");
-    let rpc_client = JsonRpcClient::new(HttpTransport::new(Url::parse(&rpc_url).unwrap()));
-
-    let bn = rpc_client.block_number().await.unwrap();
-    println!("Block number {}", bn);
-
+pub async fn fetch_events(
+    rpc_client: JsonRpcClient<HttpTransport>,
+    token: &Token,
+    from_block: u64,
+    to_block: u64,
+) -> Result<(), reqwest::Error> {
     let events = rpc_client
         .get_events(
             EventFilter {
-                from_block: Some(BlockId::Number(181710)),
-                to_block: Some(BlockId::Number(181711)),
+                from_block: Some(BlockId::Number(from_block)),
+                to_block: Some(BlockId::Number(to_block)),
                 address: Some(FieldElement::from_hex_be(token.address).unwrap()),
                 keys: Some(vec![vec![get_selector_from_name(token.selector).unwrap()]]),
             },
@@ -126,10 +126,11 @@ pub async fn fetch_events(token: Token) -> Result<(), reqwest::Error> {
     Ok(())
 }
 
-async fn address_to_domain(address: FieldElement, contract_addr: FieldElement) {
-    let api_key = dotenv!("NODE_PROVIDER_API_KEY");
-    let rpc_url = format!("https://starknet-mainnet.infura.io/v3/{api_key}");
-    let rpc_client = JsonRpcClient::new(HttpTransport::new(Url::parse(&rpc_url).unwrap()));
+async fn address_to_domain(
+    rpc_client: JsonRpcClient<HttpTransport>,
+    address: FieldElement,
+    contract_addr: FieldElement,
+) {
     let repsonse = rpc_client
         .call(
             FunctionCall {
