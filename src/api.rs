@@ -84,7 +84,7 @@ pub async fn fetch_coin(coin_id: &str) -> Result<f64, reqwest::Error> {
 
 // TODO check what can be impl on the object
 pub async fn fetch_events(
-    rpc_client: JsonRpcClient<HttpTransport>,
+    rpc_client: &JsonRpcClient<HttpTransport>,
     token: &Token,
     from_block: u64,
     to_block: u64,
@@ -113,15 +113,14 @@ pub async fn fetch_events(
     Ok(events)
 }
 
-async fn address_to_domain(
-    rpc_client: JsonRpcClient<HttpTransport>,
-    address: FieldElement,
-    contract_addr: FieldElement,
-) {
+async fn address_to_domain(rpc_client: JsonRpcClient<HttpTransport>, address: FieldElement) {
     let repsonse = rpc_client
         .call(
             FunctionCall {
-                contract_address: contract_addr,
+                contract_address: FieldElement::from_hex_be(
+                    "0x6ac597f8116f886fa1c97a23fa4e08299975ecaf6b598873ca6792b9bbfb678",
+                )
+                .unwrap(),
                 entry_point_selector: get_selector_from_name("address_to_domain").unwrap(),
                 calldata: vec![address],
             },
@@ -214,84 +213,76 @@ fn get_coincap_api_key() -> &'static str {
 }
 #[cfg(test)]
 mod tests {
-    // use super::{fetch_coin, fetch_events, Token};
-    // use rstest::rstest;
-    // use starknet::core::types::FieldElement;
+    use crate::get_infura_client;
 
-    // #[rstest]
-    // #[case("ethereum")]
-    // #[case("usd-coin")]
-    // #[case("tether")]
-    // #[tokio::test]
-    // async fn test_fetch_coin(#[case] coin: &str) {
-    //     let value = fetch_coin(coin).await.unwrap();
+    use super::{address_to_domain, fetch_coin, fetch_events, Token};
+    use rstest::rstest;
+    use starknet::core::types::FieldElement;
 
-    //     println!("Value is {}", value);
-    // }
+    #[rstest]
+    #[case("ethereum")]
+    #[case("usd-coin")]
+    #[case("tether")]
+    #[tokio::test]
+    async fn test_fetch_coin(#[case] coin: &str) {
+        let value = fetch_coin(coin).await.unwrap();
 
-    // #[tokio::test]
-    // async fn test_fetch_events() {
-    //     let eth = Token {
-    //         address: "0x049d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7",
+        println!("Value is {}", value);
+    }
 
-    //         decimals: 18,
-    //         symbol: "ETH",
-    //         selector: "Transfer",
-    //         threshold: 50, // 50 eth
-    //         logo: "♦",
-    //         rate_api_id: "ethereum",
-    //     };
-    //     fetch_events(eth).await.unwrap();
-    // }
+    #[tokio::test]
+    async fn test_fetch_events() {
+        let eth = Token {
+            address: "0x049d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7",
 
-    // #[tokio::test]
-    // async fn test_starknet_id() {
-    //     // stark
-    //     super::address_to_domain(
-    //         FieldElement::from_hex_be(
-    //             "0x1f4055a52c859593e79988bfe998b536066805fe757522ece47945f46f6b6e7",
-    //         )
-    //         .unwrap(),
-    //         FieldElement::from_hex_be(
-    //             "0x6ac597f8116f886fa1c97a23fa4e08299975ecaf6b598873ca6792b9bbfb678",
-    //         )
-    //         .unwrap(),
-    //     )
-    //     .await;
+            decimals: 18,
+            symbol: "ETH",
+            selector: "Transfer",
+            threshold: 50, // 50 eth
+            logo: "♦",
+            rate_api_id: "ethereum",
+        };
+        fetch_events(get_infura_client(), &eth, 200000, 200001)
+            .await
+            .unwrap();
+    }
 
-    //     // eli
-    //     super::address_to_domain(
-    //         FieldElement::from_hex_be(
-    //             "0x48f24d0d0618fa31813db91a45d8be6c50749e5e19ec699092ce29abe809294",
-    //         )
-    //         .unwrap(),
-    //         FieldElement::from_hex_be(
-    //             "0x6ac597f8116f886fa1c97a23fa4e08299975ecaf6b598873ca6792b9bbfb678",
-    //         )
-    //         .unwrap(),
-    //     )
-    //     .await;
+    #[tokio::test]
+    async fn test_starknet_id() {
+        // stark
+        address_to_domain(
+            get_infura_client(),
+            FieldElement::from_hex_be(
+                "0x1f4055a52c859593e79988bfe998b536066805fe757522ece47945f46f6b6e7",
+            )
+            .unwrap(),
+        )
+        .await;
 
-    //     // scott
-    //     super::address_to_domain(
-    //         FieldElement::from_hex_be(
-    //             "0x225bd17f4b4ede26c77673d8d40ec9805ec139a8167cae8d621bd295b260d13",
-    //         )
-    //         .unwrap(),
-    //         FieldElement::from_hex_be(
-    //             "0x6ac597f8116f886fa1c97a23fa4e08299975ecaf6b598873ca6792b9bbfb678",
-    //         )
-    //         .unwrap(),
-    //     )
-    //     .await;
+        // eli
+        address_to_domain(
+            get_infura_client(),
+            FieldElement::from_hex_be(
+                "0x48f24d0d0618fa31813db91a45d8be6c50749e5e19ec699092ce29abe809294",
+            )
+            .unwrap(),
+        )
+        .await;
 
-    //     super::address_to_domain(
-    //         FieldElement::from_hex_be("0x225bd17f4b4ede26c77673d8d3").unwrap(),
-    //         FieldElement::from_hex_be(
-    //             "0x6ac597f8116f886fa1c97a23fa4e08299975ecaf6b598873ca6792b9bbfb678",
-    //         )
-    //         .unwrap(),
-    //     )
-    //     .await;
-    // }
+        // scott
+        address_to_domain(
+            get_infura_client(),
+            FieldElement::from_hex_be(
+                "0x225bd17f4b4ede26c77673d8d40ec9805ec139a8167cae8d621bd295b260d13",
+            )
+            .unwrap(),
+        )
+        .await;
+
+        address_to_domain(
+            get_infura_client(),
+            FieldElement::from_hex_be("0x225bd17f4b4ede26c77673d8d3").unwrap(),
+        )
+        .await;
+    }
 }

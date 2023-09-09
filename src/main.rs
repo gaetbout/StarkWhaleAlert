@@ -3,10 +3,7 @@ use dotenv::dotenv;
 use log::info;
 use num_bigint::{BigUint, ToBigInt};
 use reqwest::Url;
-use starknet::{
-    core::types::FieldElement,
-    providers::{jsonrpc::HttpTransport, JsonRpcClient, Provider},
-};
+use starknet::providers::{jsonrpc::HttpTransport, JsonRpcClient, Provider};
 use std::error::Error;
 
 use crate::api::fetch_events;
@@ -23,12 +20,32 @@ const ETH: Token = Token {
     decimals: 18,
     symbol: "ETH",
     selector: "Transfer",
-    threshold: 50, //FieldElement::from(10_u128.pow(18) * 50), // 50 eth
+    threshold: 50,
     logo: "♦",
     rate_api_id: "ethereum",
 };
 
-const TOKENS: &'static [Token] = &[ETH];
+const USDC: Token = Token {
+    address: "0x053c91253bc9682c04929ca02ed00b3e423f6710d2ee7e0d5ebb06f3ecf368a8",
+    decimals: 6,
+    symbol: "USDC",
+    selector: "Transfer",
+    threshold: 60_000,
+    logo: "$",
+    rate_api_id: "usd-coin",
+};
+
+const USDT: Token = Token {
+    address: "0x068f5c6a61780768455de69077e07e89787839bf8166decfbf92b645209c0fb8",
+    decimals: 6,
+    symbol: "USDT",
+    selector: "Transfer",
+    threshold: 60_000,
+    logo: "$",
+    rate_api_id: "tether",
+};
+
+const TOKENS: &'static [Token] = &[ETH, USDC, USDT];
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
@@ -48,16 +65,10 @@ async fn main() -> Result<(), Box<dyn Error>> {
     );
 
     let token = &TOKENS[0];
-    let events = fetch_events(rpc_client, token, last_block - 5, last_block - 1)
-        .await
-        .unwrap();
+    for token in TOKENS {
+        lama(token, &rpc_client, last_block).await;
+    }
 
-    let threshold = FieldElement::from((10_u128.pow(token.decimals.into())) * token.threshold);
-    let filtered_events: Vec<_> = events
-        .iter()
-        .filter(|event| event.data[2] > threshold)
-        .collect();
-    println!("Filtered events: {:?}", filtered_events);
     // twitter::tweet("Someteaeazzhing".to_string()).await;
     db::set_last_processsed_block(None, last_block).await;
     info!("End");
@@ -65,6 +76,23 @@ async fn main() -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
+async fn lama(token: &Token, rpc_client: &JsonRpcClient<HttpTransport>, last_block: u64) {
+    let events = fetch_events(&rpc_client, token, last_block - 5, last_block - 1)
+        .await
+        .unwrap();
+
+    let threshold = to_u256(10_u128.pow(token.decimals.into()) * token.threshold, 0);
+    let filtered_events: Vec<_> = events
+        .iter()
+        .filter(|event| {
+            let low: u128 = event.data[2].try_into().unwrap();
+            let high = event.data[3].try_into().unwrap();
+
+            to_u256(low, high) > threshold
+        })
+        .collect();
+    println!("Filtered events: {:?}", filtered_events);
+}
 fn check_valid_env() {
     dotenv().ok();
     std::env::var("COINCAP_API_KEY").expect("COINCAP_API_KEY must be set.");
@@ -81,6 +109,7 @@ fn get_infura_client() -> JsonRpcClient<HttpTransport> {
 }
 
 fn to_u256(low: u128, high: u128) -> BigUint {
+    // There is prob a better solution to do that...
     let mut low_vec = low.to_bigint().unwrap().to_u32_digits().1;
     let mut high_vec = high.to_bigint().unwrap().to_u32_digits().1;
     for _ in low_vec.len()..4 {
