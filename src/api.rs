@@ -82,6 +82,7 @@ pub async fn fetch_coin(coin_id: &str) -> Result<f64, reqwest::Error> {
     Ok(coin_info.data.price_usd.parse().unwrap())
 }
 
+// TODO check what can be impl on the object
 pub async fn fetch_events(
     rpc_client: JsonRpcClient<HttpTransport>,
     token: &Token,

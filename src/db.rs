@@ -16,7 +16,7 @@ async fn get_db(path: &str) -> FileDatabase<Data, Json> {
         .unwrap()
 }
 
-pub async fn get_last_processsed_block(path: Option<&str>) -> u64 {
+pub async fn get_last_processed_block(path: Option<&str>) -> u64 {
     get_db(path.unwrap_or(LAST_BLOCK_FILE_PATH))
         .await
         .read(|data| data.to_owned())
@@ -35,14 +35,14 @@ pub async fn set_last_processsed_block(path: Option<&str>, last_processsed_block
 #[cfg(test)]
 mod tests {
 
-    use super::{get_last_processsed_block, set_last_processsed_block};
+    use super::{get_last_processed_block, set_last_processsed_block};
     use std::fs;
 
     #[tokio::test]
     async fn test_db() {
         let path = "./test_db";
-        set_last_processsed_block(path, 12).await;
-        let number = get_last_processsed_block(path).await;
+        set_last_processsed_block(Some(path), 12).await;
+        let number = get_last_processed_block(Some(path)).await;
         println!("number {:?}:", number);
         assert!(fs::metadata(path).is_ok(), "File should exist");
         fs::remove_file(path).unwrap();

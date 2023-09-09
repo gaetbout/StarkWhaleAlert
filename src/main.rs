@@ -41,19 +41,22 @@ async fn main() -> Result<(), Box<dyn Error>> {
         .expect("Error while getting last block")
         - 1;
     info!("Current number: {}", last_block);
+    info!(
+        "Last proccessed number: {}",
+        db::get_last_processed_block(None).await
+    );
 
     let token = &TOKENS[0];
     let events = fetch_events(rpc_client, token, last_block - 5, last_block - 1)
         .await
         .unwrap();
-    info!("Events len: {:?}", events.len());
 
     let threshold = FieldElement::from((10_u128.pow(token.decimals.into())) * token.threshold);
     let filtered_events: Vec<_> = events
         .iter()
         .filter(|event| event.data[2] > threshold)
         .collect();
-    println!("{:?}", filtered_events);
+    println!("Filtered events: {:?}", filtered_events);
     // twitter::tweet("Someteaeazzhing".to_string()).await;
     db::set_last_processsed_block(None, last_block).await;
     info!("End");
@@ -65,8 +68,6 @@ fn check_valid_env() {
     dotenv().ok();
     std::env::var("COINCAP_API_KEY").expect("COINCAP_API_KEY must be set.");
     std::env::var("NODE_PROVIDER_API_KEY").expect("NODE_PROVIDER_API_KEY must be set.");
-    // TODO These 2 are only required when doing the login, so they prob can be taken out?
-    // Maybe this can even turn into another crate?
     std::env::var("TWITTER_OAUTH2_CLIENT_ID").expect("TWITTER_OAUTH2_CLIENT_ID must be set.");
     std::env::var("TWITTER_OAUTH2_CLIENT_SECRET")
         .expect("TWITTER_OAUTH2_CLIENT_SECRET must be set.");
