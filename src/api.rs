@@ -242,7 +242,7 @@ mod tests {
             logo: "♦",
             rate_api_id: "ethereum",
         };
-        fetch_events(get_infura_client(), &eth, 200000, 200001)
+        fetch_events(&get_infura_client(), &eth, 200000, 200001)
             .await
             .unwrap();
     }

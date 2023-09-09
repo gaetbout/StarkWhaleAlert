@@ -44,7 +44,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
 }
 
 async fn lama(token: &Token, rpc_client: &JsonRpcClient<HttpTransport>, last_block: u64) {
-    let events = fetch_events(&rpc_client, token, last_block - 5, last_block - 1)
+    let events = fetch_events(&rpc_client, token, last_block - 5, last_block)
         .await
         .unwrap();
 
@@ -60,6 +60,7 @@ async fn lama(token: &Token, rpc_client: &JsonRpcClient<HttpTransport>, last_blo
         .collect();
     println!("Filtered events: {:?}", filtered_events);
 }
+
 fn check_valid_env() {
     dotenv().ok();
     std::env::var("COINCAP_API_KEY").expect("COINCAP_API_KEY must be set.");
@@ -185,11 +186,15 @@ const address_list: &'static [AddressToName] = &[
     ORBITER_FINANCE_BRIDGE_4,
 ];
 
+fn ends_with(a: &str) -> Option<&AddressToName> {
+    address_list.iter().find(|item| a.ends_with(item.address))
+}
 #[cfg(test)]
 mod tests {
     use num_bigint::BigUint;
 
-    use super::to_u256;
+    use super::{ends_with, to_u256};
+
     #[test]
     fn test_big_int() {
         let u256_0 = to_u256(5456465465465465412, 11);
@@ -198,5 +203,18 @@ mod tests {
         assert!(u256_0 < u256_1, "0");
         assert!(u256_1 < u256_2, "1");
         assert!((u256_1 + BigUint::new(vec![1])).eq(&u256_2), "2");
+    }
+
+    #[test]
+    fn test_ends_with() {
+        let a = ends_with("0x7b393627bd514d2aa4c83e9f0c468939df15ea3c29980cd8e7be3ec847795f0");
+        assert!(a.is_some(), "Should be some");
+        assert!(
+            a.unwrap().name == "Orbiter Finance Bridge 1",
+            "Should be Orbiter Finance Bridge 1"
+        );
+
+        let b = ends_with("0x7b393627bd5132114c83e9f0c468939df15ea3c29980cd8e7be3ec847795f0");
+        assert!(b.is_none(), "Should be None");
     }
 }
