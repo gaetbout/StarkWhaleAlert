@@ -1,4 +1,3 @@
-use dotenv::dotenv;
 use log::info;
 use std::ops::Deref;
 use tokio::sync::Mutex;
@@ -10,8 +9,6 @@ use twitter_v2::{
 // TODO Update gitignore when all js gone
 const PATH_TO_TOKEN_FILE: &str = "./db/token.json";
 pub async fn tweet(text_to_tweet: String) {
-    dotenv().ok();
-
     let client_id = dotenv!("TWITTER_OAUTH2_CLIENT_ID");
     let client_secret = dotenv!("TWITTER_OAUTH2_CLIENT_SECRET");
 

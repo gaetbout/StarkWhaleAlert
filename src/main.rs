@@ -3,7 +3,10 @@ use dotenv::dotenv;
 use log::info;
 use num_bigint::{BigUint, ToBigInt};
 use reqwest::Url;
-use starknet::providers::{jsonrpc::HttpTransport, JsonRpcClient, Provider};
+use starknet::{
+    core::types::EmittedEvent,
+    providers::{jsonrpc::HttpTransport, JsonRpcClient, Provider},
+};
 use std::error::Error;
 
 #[macro_use]
@@ -33,7 +36,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     for token in TOKENS {
         // Prob a better way to do, like spawning a thread to do all this in parrallel?
-        lama(token, &rpc_client, last_block).await;
+        let to_tweet = get_events_to_tweet_about(token, &rpc_client, last_block).await;
     }
 
     // twitter::tweet("Someteaeazzhing".to_string()).await;
@@ -43,14 +46,18 @@ async fn main() -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
-async fn lama(token: &Token, rpc_client: &JsonRpcClient<HttpTransport>, last_block: u64) {
+async fn get_events_to_tweet_about(
+    token: &Token,
+    rpc_client: &JsonRpcClient<HttpTransport>,
+    last_block: u64,
+) -> Vec<EmittedEvent> {
     let events = fetch_events(&rpc_client, token, last_block - 5, last_block)
         .await
         .unwrap();
 
     let threshold = to_u256(10_u128.pow(token.decimals.into()) * token.threshold, 0);
     let filtered_events: Vec<_> = events
-        .iter()
+        .into_iter()
         .filter(|event| {
             let low: u128 = event.data[2].try_into().unwrap();
             let high = event.data[3].try_into().unwrap();
@@ -58,7 +65,7 @@ async fn lama(token: &Token, rpc_client: &JsonRpcClient<HttpTransport>, last_blo
             to_u256(low, high) > threshold
         })
         .collect();
-    println!("Filtered events: {:?}", filtered_events);
+    filtered_events.clone()
 }
 
 fn check_valid_env() {
