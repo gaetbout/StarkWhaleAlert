@@ -14,6 +14,7 @@ extern crate dotenv_codegen;
 
 mod api;
 mod db;
+mod formatter;
 mod logger;
 mod twitter;
 
@@ -29,16 +30,14 @@ async fn main() -> Result<(), Box<dyn Error>> {
         .expect("Error while getting last block")
         - 1;
     info!("Current number: {}", last_block);
-    info!(
-        "Last proccessed number: {}",
-        db::get_last_processed_block(None).await
-    );
 
     for token in TOKENS {
         // Prob a better way to do, like spawning a thread to do all this in parrallel?
         let to_tweet = get_events_to_tweet_about(token, &rpc_client, last_block).await;
+        println!("TO TWEET {:?}", to_tweet);
+        // to_tweet.iter().fo
     }
-
+    // TODO Const file?
     // twitter::tweet("Someteaeazzhing".to_string()).await;
     db::set_last_processsed_block(None, last_block).await;
     info!("End");
