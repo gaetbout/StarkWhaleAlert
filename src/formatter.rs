@@ -1,5 +1,4 @@
 use bigdecimal::ToPrimitive;
-use chrono::format::format;
 use num_bigint::BigUint;
 use starknet::core::types::{EmittedEvent, FieldElement};
 
@@ -8,8 +7,9 @@ use crate::{
     to_u256,
 };
 
-async fn get_formatted_text(emitted_event: EmittedEvent, token: Token) -> String {
+pub async fn get_formatted_text(emitted_event: EmittedEvent, token: &Token) -> String {
     // TODO Update "from" and "to" to use starknet ID and reduce ID
+    // or resolve through the array
     let from = emitted_event.data[0];
     let to = emitted_event.data[1];
     let amount = to_u256(
@@ -117,8 +117,7 @@ mod tests {
             )
             .unwrap(),
         };
-        let response = get_formatted_text(emitted_event, USDC).await;
-        println!("LAMA\n{response}");
+        let response = get_formatted_text(emitted_event, &USDC).await;
         assert!(
             response
                 == "1.000.000 #USDC $ (1.000.000 USD)\n0x6e1...b3ce bridged to Starknet L2\nhttps://starkscan.co/tx/0x732b09d901fb0075d283ac23cbaae4f8c486123a88a621eeaa05d0b5ddfb8d8",

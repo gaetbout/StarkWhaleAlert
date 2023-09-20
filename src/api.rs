@@ -207,9 +207,6 @@ fn extract_stars(mut domain: &str) -> (&str, usize) {
     (domain, k)
 }
 
-fn get_coincap_api_key() -> &'static str {
-    dotenv!("COINCAP_API_KEY")
-}
 #[cfg(test)]
 mod tests {
     use crate::get_infura_client;
