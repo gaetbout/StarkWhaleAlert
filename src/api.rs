@@ -78,7 +78,6 @@ pub async fn fetch_coin(coin_id: &str) -> Result<f64, reqwest::Error> {
         .json()
         .await?;
 
-    println!("{}:{}", coin_info.data.name, coin_info.data.price_usd);
     Ok(coin_info.data.price_usd.parse().unwrap())
 }
 

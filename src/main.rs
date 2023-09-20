@@ -179,7 +179,7 @@ const ORBITER_FINANCE_BRIDGE_2: AddressToName = AddressToName {
 };
 
 const TOKENS: &'static [Token] = &[ETH, USDC, USDT];
-const address_list: &'static [AddressToName] = &[
+const ADDRESS_LIST: &'static [AddressToName] = &[
     LAYER_SWAP,
     ZKLEND_MARKET,
     BRIQ_FACTORY,
@@ -193,7 +193,7 @@ const address_list: &'static [AddressToName] = &[
 ];
 
 fn ends_with(a: &str) -> Option<&AddressToName> {
-    address_list.iter().find(|item| a.ends_with(item.address))
+    ADDRESS_LIST.iter().find(|item| a.ends_with(item.address))
 }
 #[cfg(test)]
 mod tests {
