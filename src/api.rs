@@ -81,7 +81,7 @@ pub async fn fetch_coin(coin_id: &str) -> Result<f64, reqwest::Error> {
     Ok(coin_info.data.price_usd.parse().unwrap())
 }
 
-// TODO check what can be impl on the object
+// TODO check what can be impl on the token object
 pub async fn fetch_events(
     rpc_client: &JsonRpcClient<HttpTransport>,
     token: &Token,
@@ -89,27 +89,35 @@ pub async fn fetch_events(
     to_block: u64,
 ) -> Result<Vec<EmittedEvent>, reqwest::Error> {
     let mut events = vec![];
-    let mut continuation_token = Some("0".to_string());
+    let mut continuation_token = None;
+    let from_block = Some(BlockId::Number(from_block));
+    let to_block = Some(BlockId::Number(to_block));
+    let address = Some(FieldElement::from_hex_be(token.address).expect("Invalid address"));
+    let keys = Some(vec![vec![
+        get_selector_from_name(token.selector).expect("Invalid selector")
+    ]]);
 
-    while let Some(cont_token) = continuation_token {
+    loop {
         let event_page = rpc_client
             .get_events(
                 EventFilter {
-                    from_block: Some(BlockId::Number(from_block)),
-                    to_block: Some(BlockId::Number(to_block)),
-                    address: Some(FieldElement::from_hex_be(token.address).unwrap()),
-                    keys: Some(vec![vec![get_selector_from_name(token.selector).unwrap()]]),
+                    from_block,
+                    to_block,
+                    address,
+                    keys: keys.clone(),
                 },
-                Some(cont_token),
+                continuation_token,
                 1000,
             )
             .await
             .unwrap();
 
-        continuation_token = event_page.continuation_token;
         events.extend(event_page.events);
+        match event_page.continuation_token {
+            Some(_) => continuation_token = event_page.continuation_token,
+            None => return Ok(events),
+        }
     }
-    Ok(events)
 }
 
 async fn address_to_domain(rpc_client: JsonRpcClient<HttpTransport>, address: FieldElement) {

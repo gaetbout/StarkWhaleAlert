@@ -29,7 +29,7 @@ const ETH: Token = Token {
     rate_api_id: "ethereum",
 };
 
-const USDC: Token = Token {
+pub const USDC: Token = Token {
     address: "0x053c91253bc9682c04929ca02ed00b3e423f6710d2ee7e0d5ebb06f3ecf368a8",
     decimals: 6,
     symbol: "USDC",

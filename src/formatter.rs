@@ -81,7 +81,7 @@ pub async fn get_formatted_text(emitted_event: EmittedEvent, token: &Token) -> S
 mod tests {
     use starknet::core::types::{EmittedEvent, FieldElement};
 
-    use crate::USDC;
+    use crate::consts::USDC;
 
     use super::get_formatted_text;
 

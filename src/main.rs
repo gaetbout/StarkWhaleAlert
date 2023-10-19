@@ -62,7 +62,7 @@ async fn get_events_to_tweet_about(
         .unwrap();
 
     let threshold = to_u256(10_u128.pow(token.decimals.into()) * token.threshold, 0);
-    let filtered_events: Vec<_> = events
+    events
         .into_iter()
         .filter(|event| {
             let low: u128 = event.data[2].try_into().unwrap();
@@ -70,8 +70,7 @@ async fn get_events_to_tweet_about(
 
             to_u256(low, high) > threshold
         })
-        .collect();
-    filtered_events.clone()
+        .collect()
 }
 
 fn check_valid_env() {
