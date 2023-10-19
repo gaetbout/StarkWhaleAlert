@@ -17,3 +17,4 @@ export const provider = new RpcProvider({
 
 // TODO Could use nodecron instead of a cron based work or even serverless
 // await doLogic();
+// TODO Will still need a portail to login to twitter
