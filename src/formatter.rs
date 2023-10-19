@@ -44,37 +44,28 @@ pub async fn get_formatted_text(emitted_event: EmittedEvent, token: &Token) -> S
         amount_string, token.symbol, token.logo, usd_value_string
     );
     let second_line = if to == FieldElement::ZERO {
-        let from_hex = format!("{:#x}", from);
-        format!(
-            "{}...{} bridged to Ethereum L1",
-            &from_hex[0..5],
-            &from_hex[from_hex.len() - 4..]
-        )
+        format!("{} bridged to Ethereum L1", format_address(from))
     } else if from == FieldElement::ZERO {
-        let to_hex = format!("{:#x}", to);
-        format!(
-            "{}...{} bridged to Starknet L2",
-            &to_hex[0..5],
-            &to_hex[to_hex.len() - 4..]
-        )
+        format!("{} bridged to Starknet L2", format_address(to))
     } else {
-        let from_hex = format!("{:#x}", from);
-        let to_hex = format!("{:#x}", to);
-
-        format!(
-            "From {}...{} to {}...{}",
-            &from_hex[0..5],
-            &from_hex[from_hex.len() - 4..],
-            &to_hex[0..5],
-            &to_hex[from_hex.len() - 4..]
-        )
+        format!("From {} to {}", format_address(from), format_address(to),)
     };
 
     let third_line = format!(
         "https://starkscan.co/tx/{}",
-        format!("{:#x}", emitted_event.transaction_hash)
+        to_hex(emitted_event.transaction_hash)
     );
     format!("{}\n{}\n{}", first_line, second_line, third_line)
+}
+
+// TODO Add this on Field Element type
+fn to_hex(fe: FieldElement) -> String {
+    format!("{:#x}", fe)
+}
+
+fn format_address(address: FieldElement) -> String {
+    let address = to_hex(address);
+    format!("{}...{}", &address[0..5], &address[address.len() - 4..],)
 }
 
 #[cfg(test)]
