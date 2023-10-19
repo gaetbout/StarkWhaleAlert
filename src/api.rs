@@ -1,3 +1,4 @@
+use crate::consts::STARKNET_ID_CONTRACT_ADDRESS;
 use bigdecimal::num_traits;
 use num_traits::cast::ToPrimitive;
 use reqwest::{header, header::HeaderValue};
@@ -120,14 +121,14 @@ pub async fn fetch_events(
     }
 }
 
-async fn address_to_domain(rpc_client: JsonRpcClient<HttpTransport>, address: FieldElement) {
-    let repsonse = rpc_client
+pub async fn address_to_domain(
+    rpc_client: JsonRpcClient<HttpTransport>,
+    address: FieldElement,
+) -> Option<String> {
+    let response = rpc_client
         .call(
             FunctionCall {
-                contract_address: FieldElement::from_hex_be(
-                    "0x6ac597f8116f886fa1c97a23fa4e08299975ecaf6b598873ca6792b9bbfb678",
-                )
-                .unwrap(),
+                contract_address: STARKNET_ID_CONTRACT_ADDRESS,
                 entry_point_selector: get_selector_from_name("address_to_domain").unwrap(),
                 calldata: vec![address],
             },
@@ -135,20 +136,22 @@ async fn address_to_domain(rpc_client: JsonRpcClient<HttpTransport>, address: Fi
         )
         .await
         .unwrap();
-
+    if response.len() == 1 && response[0] == FieldElement::ZERO {
+        return None;
+    }
     let mut domain = String::new();
-    repsonse.iter().skip(1).for_each(|value| {
+    response.iter().skip(1).for_each(|value| {
         domain.push_str(decode(*value).as_str());
         domain.push('.');
     });
     domain.push_str("stark");
-    println!("DOMAIN FOUND {}", domain);
+    Some(domain)
 }
 
 const BASIC_ALPHABET: &str = "abcdefghijklmnopqrstuvwxyz0123456789-";
 const BIG_ALPHABET: &str = "这来";
 
-pub fn decode(mut felt: FieldElement) -> String {
+fn decode(mut felt: FieldElement) -> String {
     let mut decoded: String = String::new();
     let basic_plus = FieldElement::from(BASIC_ALPHABET.chars().count() + 1);
     let basic_len = FieldElement::from(BASIC_ALPHABET.chars().count());
@@ -258,26 +261,6 @@ mod tests {
             get_infura_client(),
             FieldElement::from_hex_be(
                 "0x1f4055a52c859593e79988bfe998b536066805fe757522ece47945f46f6b6e7",
-            )
-            .unwrap(),
-        )
-        .await;
-
-        // eli
-        address_to_domain(
-            get_infura_client(),
-            FieldElement::from_hex_be(
-                "0x48f24d0d0618fa31813db91a45d8be6c50749e5e19ec699092ce29abe809294",
-            )
-            .unwrap(),
-        )
-        .await;
-
-        // scott
-        address_to_domain(
-            get_infura_client(),
-            FieldElement::from_hex_be(
-                "0x225bd17f4b4ede26c77673d8d40ec9805ec139a8167cae8d621bd295b260d13",
             )
             .unwrap(),
         )

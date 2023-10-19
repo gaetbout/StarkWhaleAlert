@@ -46,7 +46,8 @@ async fn main() -> Result<(), Box<dyn Error>> {
         }
     }
 
-    //
+    // twitter::tweet("LAMA".to_string()).await;
+
     db::set_last_processsed_block(None, last_block).await;
     info!("End");
     Ok(())
@@ -82,7 +83,7 @@ fn check_valid_env() {
         .expect("TWITTER_OAUTH2_CLIENT_SECRET must be set.");
 }
 
-fn get_infura_client() -> JsonRpcClient<HttpTransport> {
+pub fn get_infura_client() -> JsonRpcClient<HttpTransport> {
     let api_key = dotenv!("NODE_PROVIDER_API_KEY");
     let rpc_url = format!("https://starknet-mainnet.infura.io/v3/{api_key}");
     JsonRpcClient::new(HttpTransport::new(Url::parse(&rpc_url).unwrap()))
@@ -102,6 +103,7 @@ fn to_u256(low: u128, high: u128) -> BigUint {
 fn ends_with(a: &str) -> Option<&AddressToName> {
     ADDRESS_LIST.iter().find(|item| a.ends_with(item.address))
 }
+
 #[cfg(test)]
 mod tests {
     use num_bigint::BigUint;
