@@ -58,7 +58,7 @@ const USDT: Token = Token {
     rate_api_id: "tether",
 };
 
-const LAYER_SWAP: AddressToName = AddressToName {
+pub const LAYER_SWAP: AddressToName = AddressToName {
     address: "19252b1deef483477c4d30cfcc3e5ed9c82fafea44669c182a45a01b4fdb97a",
     name: "Layerswap",
 };
