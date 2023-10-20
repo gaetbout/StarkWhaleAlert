@@ -1,13 +1,4 @@
-use starknet::core::types::FieldElement;
-
 use crate::api::Token;
-
-pub const STARKNET_ID_CONTRACT_ADDRESS: FieldElement = FieldElement::from_mont([
-    9876522541644636344,
-    16204762974907305178,
-    9525933456780166611,
-    327799339589885214,
-]);
 
 pub const TOKENS: &'static [Token] = &[ETH, USDC, USDT];
 pub const ADDRESS_LIST: &'static [AddressToName] = &[

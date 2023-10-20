@@ -9,12 +9,9 @@ use twitter_v2::{
 // TODO Update gitignore when all js gone
 const PATH_TO_TOKEN_FILE: &str = "./db/token.json";
 pub async fn tweet(text_to_tweet: String) {
-    let client_id = dotenv!("TWITTER_OAUTH2_CLIENT_ID");
-    let client_secret = dotenv!("TWITTER_OAUTH2_CLIENT_SECRET");
-
     let oauth2_client: Oauth2Client = Oauth2Client::new(
-        client_id,
-        client_secret,
+        dotenv!("TWITTER_OAUTH2_CLIENT_ID"),
+        dotenv!("TWITTER_OAUTH2_CLIENT_SECRET"),
         "http://127.0.0.1:3000/callback".parse().unwrap(),
     );
 
@@ -38,9 +35,8 @@ pub async fn tweet(text_to_tweet: String) {
         )
         .expect("couldn't save token");
     }
-    let token = token.clone();
 
-    TwitterApi::new(token)
+    TwitterApi::new(token.clone())
         .post_tweet()
         .text(text_to_tweet)
         .send()

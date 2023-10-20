@@ -2,15 +2,9 @@ use bigdecimal::ToPrimitive;
 use num_bigint::BigUint;
 use starknet::core::types::{EmittedEvent, FieldElement};
 
-use crate::{
-    api::{address_to_domain, fetch_coin, Token},
-    consts::ADDRESS_LIST,
-    get_infura_client, to_u256,
-};
+use crate::{api, api::Token, consts::ADDRESS_LIST, get_infura_client, starknet_id, to_u256};
 
 pub async fn get_formatted_text(emitted_event: EmittedEvent, token: &Token) -> String {
-    // TODO Update "from" and "to" to use starknet ID and reduce ID
-    // or resolve through the array
     let from = emitted_event.data[0];
     let to = emitted_event.data[1];
     let amount = to_u256(
@@ -27,7 +21,7 @@ pub async fn get_formatted_text(emitted_event: EmittedEvent, token: &Token) -> S
         .collect::<Result<Vec<&str>, _>>()
         .unwrap()
         .join(".");
-    let rate = fetch_coin(token.rate_api_id).await.unwrap();
+    let rate = api::fetch_coin(token.rate_api_id).await.unwrap();
     let rate = BigUint::new(vec![rate.to_u32().unwrap()]);
     let usd_value = amount * rate;
     let usd_value_string = usd_value
@@ -58,25 +52,29 @@ pub async fn get_formatted_text(emitted_event: EmittedEvent, token: &Token) -> S
 
     let third_line = format!(
         "https://starkscan.co/tx/{}",
-        to_hex(emitted_event.transaction_hash)
+        emitted_event.transaction_hash.to_hex()
     );
     format!("{}\n{}\n{}", first_line, second_line, third_line)
 }
 
-// TODO Add this on Field Element type
-fn to_hex(fe: FieldElement) -> String {
-    format!("{:#x}", fe)
+trait ToHex {
+    fn to_hex(self) -> String;
+}
+impl ToHex for FieldElement {
+    fn to_hex(self) -> String {
+        format!("{:#x}", self)
+    }
 }
 
 async fn format_address(address: FieldElement) -> String {
-    let address_as_hex = to_hex(address);
+    let address_as_hex = address.to_hex();
     let named_address = ADDRESS_LIST
         .iter()
         .find(|item| address_as_hex.ends_with(item.address));
     if let Some(address_to_name) = named_address {
         return address_to_name.name.to_string();
     };
-    let starknet_id = address_to_domain(get_infura_client(), address).await;
+    let starknet_id = starknet_id::address_to_domain(get_infura_client(), address).await;
     match starknet_id {
         Some(name) => name,
         None => {

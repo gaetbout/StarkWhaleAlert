@@ -1,4 +1,4 @@
-use api::{fetch_events, Token};
+use api::Token;
 use dotenv::dotenv;
 use log::info;
 use num_bigint::{BigUint, ToBigInt};
@@ -19,6 +19,7 @@ mod consts;
 mod db;
 mod formatter;
 mod logger;
+mod starknet_id;
 mod twitter;
 
 #[tokio::main]
@@ -27,17 +28,25 @@ async fn main() -> Result<(), Box<dyn Error>> {
     info!("Start");
     check_valid_env();
     let rpc_client = get_infura_client();
-    let last_block = rpc_client
+    let last_network_block = rpc_client
         .block_number()
         .await
         .expect("Error while getting last block")
         - 1;
-    info!("Current number: {}", last_block);
+
+    info!("Start {}", last_network_block);
+    let last_processed_block = db::get_last_processed_block(None).await;
+    if last_processed_block >= last_network_block {
+        info!(
+            "No block to process {} >= {} ",
+            last_processed_block, last_network_block
+        );
+        return Ok(());
+    }
 
     for token in TOKENS {
         // Prob a better way to do, like spawning a thread to do all this in parrallel?
-        let to_tweet = get_events_to_tweet_about(token, &rpc_client, last_block).await;
-        println!("TO TWEET {:?}", to_tweet);
+        let to_tweet = get_events_to_tweet_about(token, &rpc_client, last_network_block).await;
 
         for emitted_event in to_tweet {
             let text_to_tweet = formatter::get_formatted_text(emitted_event, token).await;
@@ -45,9 +54,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
         }
     }
 
-    // twitter::tweet("LAMA".to_string()).await;
-
-    db::set_last_processsed_block(None, last_block).await;
+    db::set_last_processsed_block(None, last_network_block).await;
     info!("End");
     Ok(())
 }
@@ -57,7 +64,7 @@ async fn get_events_to_tweet_about(
     rpc_client: &JsonRpcClient<HttpTransport>,
     last_block: u64,
 ) -> Vec<EmittedEvent> {
-    let events = fetch_events(&rpc_client, token, last_block - 5, last_block)
+    let events = api::fetch_events(&rpc_client, token, last_block - 5, last_block)
         .await
         .unwrap();
 
@@ -89,7 +96,7 @@ pub fn get_infura_client() -> JsonRpcClient<HttpTransport> {
 }
 
 fn to_u256(low: u128, high: u128) -> BigUint {
-    // There is prob a better solution to do that...
+    // TODO There is prob a better solution to do that...
     let mut low_vec = low.to_bigint().unwrap().to_u32_digits().1;
     let mut high_vec = high.to_bigint().unwrap().to_u32_digits().1;
     for _ in low_vec.len()..4 {
