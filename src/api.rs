@@ -76,7 +76,7 @@ pub async fn fetch_coin(coin_id: &str) -> Result<f64, reqwest::Error> {
         .json()
         .await?;
 
-    Ok(coin_info.data.price_usd.parse().unwrap())
+    Ok(coin_info.data.price_usd.parse().expect("Error: fetch_coin"))
 }
 
 // TODO check what can be impl on the token object
@@ -108,7 +108,7 @@ pub async fn fetch_events(
                 1000,
             )
             .await
-            .unwrap();
+            .expect("Error: fetch_events");
 
         events.extend(event_page.events);
         match event_page.continuation_token {

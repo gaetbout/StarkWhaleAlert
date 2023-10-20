@@ -36,6 +36,7 @@ pub async fn tweet(text_to_tweet: String) {
         .expect("couldn't save token");
     }
 
+    info!("Tweeting \n{}", text_to_tweet);
     TwitterApi::new(token.clone())
         .post_tweet()
         .text(text_to_tweet)

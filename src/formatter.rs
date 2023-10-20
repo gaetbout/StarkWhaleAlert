@@ -8,8 +8,8 @@ pub async fn get_formatted_text(emitted_event: EmittedEvent, token: &Token) -> S
     let from = emitted_event.data[0];
     let to = emitted_event.data[1];
     let amount = to_u256(
-        emitted_event.data[2].try_into().unwrap(),
-        emitted_event.data[3].try_into().unwrap(),
+        emitted_event.data[2].try_into().expect("Error: low"),
+        emitted_event.data[3].try_into().expect("Error: high"),
     );
     let amount = amount / 10_u128.pow(token.decimals.into());
     let amount_string = amount

@@ -35,7 +35,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
         - 1;
 
     info!("Start {}", last_network_block);
-    let last_processed_block = db::get_last_processed_block(None).await;
+    let last_processed_block = db::get_last_processed_block().await;
     if last_processed_block >= last_network_block {
         info!(
             "No block to process {} >= {} ",
@@ -46,7 +46,9 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     for token in TOKENS {
         // Prob a better way to do, like spawning a thread to do all this in parrallel?
-        let to_tweet = get_events_to_tweet_about(token, &rpc_client, last_network_block).await;
+        let to_tweet =
+            get_events_to_tweet_about(token, &rpc_client, last_processed_block, last_network_block)
+                .await;
 
         for emitted_event in to_tweet {
             let text_to_tweet = formatter::get_formatted_text(emitted_event, token).await;
@@ -54,7 +56,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
         }
     }
 
-    db::set_last_processsed_block(None, last_network_block).await;
+    db::set_last_processsed_block(last_network_block).await;
     info!("End");
     Ok(())
 }
@@ -62,9 +64,10 @@ async fn main() -> Result<(), Box<dyn Error>> {
 async fn get_events_to_tweet_about(
     token: &Token,
     rpc_client: &JsonRpcClient<HttpTransport>,
-    last_block: u64,
+    from_block: u64,
+    to_block: u64,
 ) -> Vec<EmittedEvent> {
-    let events = api::fetch_events(&rpc_client, token, last_block - 5, last_block)
+    let events = api::fetch_events(&rpc_client, token, from_block, to_block)
         .await
         .unwrap();
 
