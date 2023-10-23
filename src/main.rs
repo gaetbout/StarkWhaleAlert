@@ -75,7 +75,7 @@ async fn get_events_to_tweet_about(
     from_block: u64,
     to_block: u64,
 ) -> Vec<EmittedEvent> {
-    let events = api::fetch_events(&rpc_client, token, from_block, to_block)
+    let events = api::fetch_events(rpc_client, token, from_block, to_block)
         .await
         .unwrap();
 

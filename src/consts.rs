@@ -1,7 +1,7 @@
 use crate::api::Token;
 
-pub const TOKENS: &'static [Token] = &[ETH, USDC, USDT];
-pub const ADDRESS_LIST: &'static [AddressToName] = &[
+pub const TOKENS: &[Token] = &[ETH, USDC, USDT];
+pub const ADDRESS_LIST: &[AddressToName] = &[
     LAYER_SWAP,
     ZKLEND_MARKET,
     BRIQ_FACTORY,

@@ -50,7 +50,7 @@ pub async fn fetch_coin(coin_id: &str) -> Result<f64, reqwest::Error> {
     let token = dotenv!("COINCAP_API_KEY");
 
     let mut headers = reqwest::header::HeaderMap::new();
-    let auth = String::from(format!("Bearer {token}"));
+    let auth = format!("Bearer {token}");
     headers.insert(
         header::CONTENT_TYPE,
         HeaderValue::from_static("application/json"),
