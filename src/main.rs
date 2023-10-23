@@ -25,7 +25,6 @@ mod twitter;
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
     logger::init();
-    info!("Start");
     check_valid_env();
     let rpc_client = get_infura_client();
     let last_network_block = rpc_client
@@ -44,8 +43,17 @@ async fn main() -> Result<(), Box<dyn Error>> {
         return Ok(());
     }
 
+    if last_network_block > last_processed_block + 100 {
+        // TODO Send mail
+        info!(
+            "Local is {} blocks behind. Please resync: {}",
+            last_network_block - last_processed_block,
+            last_network_block
+        );
+        return Ok(());
+    }
     for token in TOKENS {
-        // Prob a better way to do, like spawning a thread to do all this in parrallel?
+        // TODO Prob a better way to do, like spawning a thread and do each in parrallel?
         let to_tweet =
             get_events_to_tweet_about(token, &rpc_client, last_processed_block, last_network_block)
                 .await;

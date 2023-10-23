@@ -1,3 +1,4 @@
+use colored::Colorize;
 use log::{LevelFilter, Metadata, Record};
 
 // use log::{debug, error, info, trace, warn};
@@ -16,15 +17,12 @@ impl log::Log for SimpleLogger {
 
     fn log(&self, record: &Record) {
         if self.enabled(record.metadata()) {
-            // println!(
-            //     "{} {:<10}:{} {:<6}{}",
-            //     date(),
-            //     record.file().unwrap(),
-            //     record.line().unwrap(),
-            //     record.level(),
-            //     record.args()
-            // );
-            println!("{} {:<6}{}", date(), record.level(), record.args());
+            println!(
+                "{} {:<6}{}",
+                date().blue().bold(),
+                record.level().to_string().bright_blue(),
+                record.args()
+            );
         }
     }
 
