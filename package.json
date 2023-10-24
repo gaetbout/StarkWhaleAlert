@@ -6,11 +6,8 @@
   "type": "module",
   "scripts": {
     "build": "tsc",
-    "tweet": "npx ts-node src/index.ts --color",
-    "analyse": "npx ts-node analyse/index.ts",
-    "login": "npx ts-node src/twitterLogin.ts",
-    "test": "npx ts-node tests/formatter.test.ts",
-    "test:tweet": "npx ts-node tests/twitter.test.ts",
+    "analyse": "npx ts-node scripts/index.ts",
+    "login": "npx ts-node scripts/twitterLogin.ts",
     "lint": "eslint . --fix",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
@@ -28,7 +25,6 @@
   "homepage": "https://github.com/gaetbout/StarkWhaleAlert#readme",
   "dependencies": {
     "dotenv": "^16.0.3",
-    "ethers": "^6.3.0",
     "express": "^4.18.2",
     "starknet": "5.19.1",
     "ts-node": "^10.9.1",

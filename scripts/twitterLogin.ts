@@ -1,7 +1,6 @@
 import { TwitterApi } from "twitter-api-v2";
 import "dotenv/config";
 import express from "express";
-import { writeTwitterRefreshToken } from "./db";
 
 const clientId = process.env.TWITTER_OAUTH2_CLIENT_ID as string;
 const clientSecret = process.env.TWITTER_OAUTH2_CLIENT_SECRET as string;
@@ -44,10 +43,9 @@ app.get("/callback", async function (req, res) {
   });
 
   console.log(token);
-  writeTwitterRefreshToken(token.refreshToken as string);
   res.send(token.refreshToken);
 });
 
 app.listen(port, () => {
-  console.log(`Go here to login: ${url}:${port}/login`);
+  console.log(`Open:\n${url}:${port}/login`);
 });

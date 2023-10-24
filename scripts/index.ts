@@ -1,6 +1,14 @@
 import { RpcProvider, constants, hash, num, uint256 } from "starknet";
 import "dotenv/config";
-import { EmittedEvent } from "../src/models";
+
+type EmittedEvent = {
+  data: Array<string>;
+  keys: Array<string>;
+  from_address: string;
+  block_hash: string;
+  block_number: number;
+  transaction_hash: string;
+};
 
 const CONTRACT_ADDRESS = "0x068f5c6a61780768455de69077e07e89787839bf8166decfbf92b645209c0fb8";
 const SELECTOR = "Transfer";
