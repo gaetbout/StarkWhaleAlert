@@ -1,3 +1,4 @@
+// This code was extracted from https://github.com/Th0rgal/starknet-rs/tree/feat/starknet-id
 use bigdecimal::num_traits;
 use num_traits::cast::ToPrimitive;
 use starknet::{
