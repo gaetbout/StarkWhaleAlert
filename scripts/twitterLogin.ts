@@ -2,6 +2,7 @@ import { TwitterApi } from "twitter-api-v2";
 import "dotenv/config";
 import express from "express";
 
+// TODO UPDATE TO BUN
 const clientId = process.env.TWITTER_OAUTH2_CLIENT_ID as string;
 const clientSecret = process.env.TWITTER_OAUTH2_CLIENT_SECRET as string;
 const url = "http://127.0.0.1";
