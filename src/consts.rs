@@ -24,7 +24,7 @@ const ETH: Token = Token {
     decimals: 18,
     symbol: "ETH",
     selector: "Transfer",
-    threshold: 50,
+    threshold: 70,
     logo: "♦",
     rate_api_id: "ethereum",
 };
@@ -34,7 +34,7 @@ pub const USDC: Token = Token {
     decimals: 6,
     symbol: "USDC",
     selector: "Transfer",
-    threshold: 60_000,
+    threshold: 100_000,
     logo: "$",
     rate_api_id: "usd-coin",
 };
@@ -44,7 +44,7 @@ const USDT: Token = Token {
     decimals: 6,
     symbol: "USDT",
     selector: "Transfer",
-    threshold: 60_000,
+    threshold: 100_000,
     logo: "$",
     rate_api_id: "tether",
 };
