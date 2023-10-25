@@ -27,11 +27,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     logger::init();
     check_valid_env();
     let rpc_client = get_infura_client();
-    let last_network_block = rpc_client
-        .block_number()
-        .await
-        .expect("Error while getting last block")
-        - 1;
+    let last_network_block = rpc_client.block_number().await? - 1;
 
     info!("Start {}", last_network_block);
     let last_processed_block = db::get_last_processed_block().await;
@@ -79,6 +75,7 @@ async fn get_events_to_tweet_about(
         .await
         .unwrap();
 
+    info!("{} Transfer for {}", events.len(), token.symbol);
     let threshold = to_u256(10_u128.pow(token.decimals.into()) * token.threshold, 0);
     events
         .into_iter()

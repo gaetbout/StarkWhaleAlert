@@ -5,7 +5,10 @@ use starknet::{
         types::{BlockId, EmittedEvent, EventFilter, FieldElement},
         utils::get_selector_from_name,
     },
-    providers::{jsonrpc::HttpTransport, JsonRpcClient, Provider},
+    providers::{
+        jsonrpc::{HttpTransport, HttpTransportError, JsonRpcClientError},
+        JsonRpcClient, Provider, ProviderError,
+    },
 };
 use std::time::Duration;
 
@@ -62,8 +65,7 @@ pub async fn fetch_coin(coin_id: &str) -> Result<f64, reqwest::Error> {
 
     let client = reqwest::Client::builder()
         .default_headers(headers)
-        .build()
-        .expect("Failed building the client");
+        .build()?;
 
     let get_link: String = format!("{}{}", "https://api.coincap.io/v2/assets/", coin_id);
 
@@ -84,7 +86,7 @@ pub async fn fetch_events(
     token: &Token,
     from_block: u64,
     to_block: u64,
-) -> Result<Vec<EmittedEvent>, reqwest::Error> {
+) -> Result<Vec<EmittedEvent>, ProviderError<JsonRpcClientError<HttpTransportError>>> {
     let mut events = vec![];
     let mut continuation_token = None;
     let from_block = Some(BlockId::Number(from_block));
@@ -106,8 +108,7 @@ pub async fn fetch_events(
                 continuation_token,
                 1000,
             )
-            .await
-            .expect("Error: fetch_events");
+            .await?;
 
         events.extend(event_page.events);
         match event_page.continuation_token {
