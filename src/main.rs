@@ -48,6 +48,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
         );
         return Ok(());
     }
+
     for token in TOKENS {
         // TODO Prob a better way to do, like spawning a thread and do each in parrallel?
         let to_tweet =
@@ -60,7 +61,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
         }
     }
 
-    db::set_last_processsed_block(last_network_block).await;
+    db::set_last_processed_block(last_network_block).await;
     info!("End {}\n", last_network_block);
     Ok(())
 }
