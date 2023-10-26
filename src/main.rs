@@ -29,8 +29,8 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let rpc_client = get_infura_client();
     let last_network_block = rpc_client.block_number().await? - 1;
 
-    info!("Start {}", last_network_block);
     let last_processed_block = db::get_last_processed_block().await;
+    info!("Start {}", last_processed_block);
     if last_processed_block >= last_network_block {
         info!(
             "No block to process {} >= {} ",
@@ -61,7 +61,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     }
 
     db::set_last_processsed_block(last_network_block).await;
-    info!("End {}", last_network_block);
+    info!("End {}\n", last_network_block);
     Ok(())
 }
 
