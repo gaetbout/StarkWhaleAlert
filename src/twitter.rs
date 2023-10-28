@@ -37,12 +37,15 @@ pub async fn tweet(text_to_tweet: String) {
     }
 
     info!("Tweeting \n{}", text_to_tweet);
-    TwitterApi::new(token.clone())
+    let res = TwitterApi::new(token.clone())
         .post_tweet()
         .text(text_to_tweet)
         .send()
         .await
-        .unwrap();
+        .unwrap()
+        .clone();
+    let data = res.data().unwrap();
+    info!("Tweet id {}", data.id);
 }
 
 #[cfg(test)]

@@ -41,6 +41,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     if last_network_block > last_processed_block + 100 {
         // TODO Send mail
+        // TODO If option -r ==> resync
         info!(
             "Local is {} blocks behind. Please resync: {}",
             last_network_block - last_processed_block,
