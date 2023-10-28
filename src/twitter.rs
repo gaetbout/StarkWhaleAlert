@@ -23,6 +23,17 @@ pub async fn tweet(text_to_tweet: String) {
     );
 
     let mut token = token.lock().await;
+    info!("Tweeting \n{}", text_to_tweet);
+    let res = TwitterApi::new(token.clone())
+        .post_tweet()
+        .text(text_to_tweet)
+        .send()
+        .await
+        .unwrap()
+        .clone();
+    let data = res.data().unwrap();
+    info!("Tweet id {}", data.id);
+
     if oauth2_client
         .refresh_token_if_expired(&mut token)
         .await
@@ -35,17 +46,6 @@ pub async fn tweet(text_to_tweet: String) {
         )
         .expect("couldn't save token");
     }
-
-    info!("Tweeting \n{}", text_to_tweet);
-    let res = TwitterApi::new(token.clone())
-        .post_tweet()
-        .text(text_to_tweet)
-        .send()
-        .await
-        .unwrap()
-        .clone();
-    let data = res.data().unwrap();
-    info!("Tweet id {}", data.id);
 }
 
 #[cfg(test)]
