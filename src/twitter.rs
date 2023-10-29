@@ -25,6 +25,19 @@ pub async fn tweet(text_to_tweet: String) {
     );
 
     let mut token = token.lock().await;
+    if oauth2_client
+        .refresh_token_if_expired(&mut token)
+        .await
+        .unwrap()
+    {
+        info!("Refreshing token");
+        serde_json::to_writer(
+            std::fs::File::create(PATH_TO_TOKEN_FILE).expect("token file not found"),
+            token.deref(),
+        )
+        .expect("couldn't save token");
+    }
+
     info!("Tweeting \n{}", text_to_tweet);
     let res = TwitterApi::new(token.clone())
         .post_tweet()
@@ -39,19 +52,6 @@ pub async fn tweet(text_to_tweet: String) {
         Err(err) => {
             info!("ERR: \n{:?}", err)
         }
-    }
-
-    if oauth2_client
-        .refresh_token_if_expired(&mut token)
-        .await
-        .unwrap()
-    {
-        info!("Refreshing token");
-        serde_json::to_writer(
-            std::fs::File::create(PATH_TO_TOKEN_FILE).expect("token file not found"),
-            token.deref(),
-        )
-        .expect("couldn't save token");
     }
 }
 
