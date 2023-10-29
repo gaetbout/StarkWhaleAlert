@@ -30,11 +30,16 @@ pub async fn tweet(text_to_tweet: String) {
         .post_tweet()
         .text(text_to_tweet)
         .send()
-        .await
-        .unwrap()
-        .clone();
-    let data = res.data().unwrap();
-    info!("Tweet id {}", data.id);
+        .await;
+
+    match res {
+        Ok(val) => {
+            info!("VAL: \n{:?}", val)
+        }
+        Err(err) => {
+            info!("ERR: \n{:?}", err)
+        }
+    }
 
     if oauth2_client
         .refresh_token_if_expired(&mut token)
