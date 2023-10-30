@@ -15,7 +15,7 @@ jobs:
           toolchain: stable
 
       - name: Step 3 - Run cargo check
-        run: cargo check
+        run: mv .env.example .env && cargo check
 
   fmt:
     runs-on: ubuntu-latest

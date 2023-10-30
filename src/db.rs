@@ -11,6 +11,8 @@ struct Data {
 
 const LAST_BLOCK_FILE_PATH: &str = "./db/block.json";
 
+// TODO Create default DB if not existing.
+
 async fn get_db() -> FileDatabase<Data, Json> {
     FileDatabase::<Data, Json>::load_from_path_or_default(LAST_BLOCK_FILE_PATH)
         .await
