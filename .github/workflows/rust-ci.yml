@@ -11,8 +11,6 @@ jobs:
 
       - name: Step 2 - Install rust
         uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
 
       - name: Step 3 - Run cargo check
         run: mv .env.example .env && cargo check
@@ -26,9 +24,6 @@ jobs:
 
       - name: Step 2 - Install rust
         uses: actions-rs/toolchain@v1
-        with:
-          profile: default
-          toolchain: stable
 
       - name: Step 3 - Run cargo fmt
         run: cargo fmt --check
@@ -42,9 +37,6 @@ jobs:
 
       - name: Step 2 - Install rust
         uses: actions-rs/toolchain@v1
-        with:
-          profile: default
-          toolchain: stable
 
       - name: Step 3 - Run cargo clippy
         run: cargo clippy
