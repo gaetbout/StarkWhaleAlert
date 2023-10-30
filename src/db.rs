@@ -26,7 +26,7 @@ pub async fn get_last_processed_block() -> u64 {
 }
 
 pub async fn set_last_processed_block(last_processed_block: u64) {
-    info!("Writting block {}", last_processed_block);
+    info!("Written block {}", last_processed_block);
     let db = get_db().await;
     db.write(|data| {
         data.last_processed_block = last_processed_block;

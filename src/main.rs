@@ -7,6 +7,7 @@ use starknet::{
     core::types::EmittedEvent,
     providers::{jsonrpc::HttpTransport, JsonRpcClient, Provider},
 };
+use std::env;
 use std::error::Error;
 
 use crate::consts::TOKENS;
@@ -41,12 +42,16 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     if last_network_block > last_processed_block + 100 {
         // TODO Send mail
-        // TODO If option -r ==> resync
         info!(
-            "Local is {} blocks behind. Please resync: {}",
+            "Local is {} blocks behind (current: {}). To resync use option -r",
             last_network_block - last_processed_block,
             last_network_block
         );
+        let args: Vec<String> = env::args().collect();
+        if args.contains(&String::from("-r")) {
+            info!("Updating to latest block...");
+            db::set_last_processed_block(last_network_block).await;
+        }
         return Ok(());
     }
 
