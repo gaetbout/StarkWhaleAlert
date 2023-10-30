@@ -45,4 +45,4 @@ jobs:
           toolchain: stable
 
       - name: Step 3 - Run cargo clippy
-        run: cargo clippy
+        run: mv .env.example .env && cargo clippy
