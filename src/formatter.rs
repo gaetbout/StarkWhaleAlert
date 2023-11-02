@@ -2,7 +2,7 @@ use bigdecimal::ToPrimitive;
 use num_bigint::BigUint;
 use starknet::core::types::{EmittedEvent, FieldElement};
 
-use crate::{api, api::Token, consts::ADDRESS_LIST, get_infura_client, starknet_id, to_u256};
+use crate::{api, consts::Token, consts::ADDRESS_LIST, get_infura_client, starknet_id, to_u256};
 
 pub async fn get_formatted_text(emitted_event: EmittedEvent, token: &Token) -> String {
     let from = emitted_event.data[0];

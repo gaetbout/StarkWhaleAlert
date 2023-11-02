@@ -1,3 +1,4 @@
+use crate::consts::Token;
 use reqwest::{header, header::HeaderValue};
 use serde::{Deserialize, Serialize};
 use starknet::{
@@ -37,16 +38,6 @@ struct Data {
     change_percent_24_hr: String,
     #[serde(rename = "vwap24Hr")]
     vwap_24_hr: String,
-}
-
-pub struct Token {
-    pub address: &'static str,
-    pub decimals: u8,
-    pub symbol: &'static str,
-    pub selector: &'static str, // This should be the String of the selector (Transfer, ...), not the HEX value
-    pub threshold: u128,
-    pub logo: &'static str,
-    pub rate_api_id: &'static str,
 }
 
 pub async fn fetch_coin(coin_id: &str) -> Result<f64, reqwest::Error> {

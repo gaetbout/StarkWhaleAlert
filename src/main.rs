@@ -1,4 +1,4 @@
-use api::Token;
+use consts::{Token, TOKENS};
 use dotenv::dotenv;
 use log::info;
 use num_bigint::{BigUint, ToBigInt};
@@ -10,8 +10,6 @@ use starknet::{
 use std::env;
 use std::error::Error;
 
-use crate::consts::TOKENS;
-
 #[macro_use]
 extern crate dotenv_codegen;
 
@@ -22,6 +20,9 @@ mod formatter;
 mod logger;
 mod starknet_id;
 mod twitter;
+
+// TODO Add a job to create the executable on ubuntu
+// TODO If no block file ==> create one with latest
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
@@ -67,7 +68,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
         }
     }
 
-    db::set_last_processed_block(last_network_block).await;
+    db::set_last_processed_block(last_network_block + 1).await;
     info!("End {}\n", last_network_block);
     Ok(())
 }

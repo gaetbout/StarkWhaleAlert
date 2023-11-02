@@ -1,8 +1,6 @@
-use std::default::Default;
-
 use koit::{format::Json, FileDatabase};
-use log::info;
 use serde::{Deserialize, Serialize};
+use std::default::Default;
 
 #[derive(Debug, Default, Deserialize, Serialize, Clone)]
 struct Data {
@@ -12,7 +10,6 @@ struct Data {
 const LAST_BLOCK_FILE_PATH: &str = "./db/block.json";
 
 // TODO Create default DB if not existing.
-
 async fn get_db() -> FileDatabase<Data, Json> {
     FileDatabase::<Data, Json>::load_from_path_or_default(LAST_BLOCK_FILE_PATH)
         .await
@@ -28,7 +25,6 @@ pub async fn get_last_processed_block() -> u64 {
 }
 
 pub async fn set_last_processed_block(last_processed_block: u64) {
-    info!("Written block {}", last_processed_block);
     let db = get_db().await;
     db.write(|data| {
         data.last_processed_block = last_processed_block;

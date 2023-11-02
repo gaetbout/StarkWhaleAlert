@@ -1,4 +1,12 @@
-use crate::api::Token;
+pub struct Token {
+    pub address: &'static str,
+    pub decimals: u8,
+    pub symbol: &'static str,
+    pub selector: &'static str, // This should be the String of the selector (Transfer, ...), not the HEX value
+    pub threshold: u128,
+    pub logo: &'static str,
+    pub rate_api_id: &'static str,
+}
 
 pub const TOKENS: &[Token] = &[ETH, USDC, USDT];
 pub const ADDRESS_LIST: &[AddressToName] = &[
