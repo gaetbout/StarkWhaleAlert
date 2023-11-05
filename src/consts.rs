@@ -1,6 +1,6 @@
 pub struct Token {
     pub address: &'static str,
-    pub decimals: u8,
+    pub decimals: u32,
     pub symbol: &'static str,
     pub selector: &'static str, // This should be the String of the selector (Transfer, ...), not the HEX value
     pub threshold: u128,

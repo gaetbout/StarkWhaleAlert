@@ -1,4 +1,3 @@
-use colored::Colorize;
 use log::{LevelFilter, Metadata, Record};
 
 // use log::{debug, error, info, trace, warn};
@@ -18,9 +17,9 @@ impl log::Log for SimpleLogger {
     fn log(&self, record: &Record) {
         if self.enabled(record.metadata()) {
             println!(
-                "{} {:<6}{}",
-                date().blue().bold(),
-                record.level().to_string().bright_blue(),
+                "\u{1b}[34m{} \u{1b}[1m{:<6}\u{1b}[22m\u{1b}[32m{}\u{1b}[39m",
+                date(),
+                record.level().to_string(),
                 record.args()
             );
         }
@@ -34,4 +33,16 @@ fn date() -> String {
     let timezone: chrono::FixedOffset = chrono::offset::TimeZone::from_offset(&offset);
     let current_time = chrono::Utc::now().with_timezone(&timezone);
     current_time.format("%F %T").to_string()
+}
+
+#[cfg(test)]
+mod tests {
+    use super::init;
+    use log::info;
+
+    #[tokio::test]
+    async fn test_logger() {
+        init();
+        info!("Testing some colors");
+    }
 }

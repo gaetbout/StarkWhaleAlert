@@ -69,7 +69,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     }
 
     db::set_last_processed_block(last_network_block + 1).await;
-    info!("End {}\n", last_network_block);
+    info!("End {}\n", last_network_block + 1);
     Ok(())
 }
 

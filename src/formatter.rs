@@ -1,4 +1,4 @@
-use bigdecimal::ToPrimitive;
+use bigdecimal::{FromPrimitive, ToPrimitive};
 use num_bigint::BigUint;
 use starknet::core::types::{EmittedEvent, FieldElement};
 
@@ -7,11 +7,11 @@ use crate::{api, consts::Token, consts::ADDRESS_LIST, get_infura_client, starkne
 pub async fn get_formatted_text(emitted_event: EmittedEvent, token: &Token) -> String {
     let from = emitted_event.data[0];
     let to = emitted_event.data[1];
-    let amount = to_u256(
+    let mut amount = to_u256(
         emitted_event.data[2].try_into().expect("Error: low"),
         emitted_event.data[3].try_into().expect("Error: high"),
     );
-    let amount = amount / 10_u128.pow(token.decimals.into());
+    amount = to_rounded(amount, token.decimals);
     let amount_string = amount
         .to_string()
         .as_bytes()
@@ -57,6 +57,16 @@ pub async fn get_formatted_text(emitted_event: EmittedEvent, token: &Token) -> S
     format!("{}\n{}\n{}", first_line, second_line, third_line)
 }
 
+fn to_rounded(amount: BigUint, pow: u32) -> BigUint {
+    let power = 10_u128.pow(pow);
+    let amount = amount.clone() / power;
+    let rounding = amount.clone() / (power / 10) % amount.clone();
+    if rounding > BigUint::from_u8(5).unwrap() {
+        amount + 1_u128
+    } else {
+        amount
+    }
+}
 trait ToHex {
     fn to_hex(self) -> String;
 }
@@ -89,8 +99,8 @@ async fn format_address(address: FieldElement) -> String {
 
 #[cfg(test)]
 mod tests {
-    use super::{format_address, get_formatted_text};
-    use crate::consts::USDC;
+    use super::{format_address, get_formatted_text, to_rounded};
+    use crate::{consts::USDC, to_u256};
     use starknet::core::types::{EmittedEvent, FieldElement};
 
     #[tokio::test]
@@ -250,5 +260,18 @@ mod tests {
         )
         .await;
         assert!(response == "stark.stark", "Should be stark.stark");
+    }
+
+    #[test]
+    fn test_rounding() {
+        let bigint_close_to_84 = to_u256(83997000000000000000, 0);
+        let eight_four = to_u256(84, 0);
+        let rounded_84 = to_rounded(bigint_close_to_84, 18);
+        assert!(rounded_84 == eight_four, "Should be 84");
+
+        let bigint_close_to_83 = to_u256(83497000000000000000, 0);
+        let eight_tree = to_u256(83, 0);
+        let rounded_83 = to_rounded(bigint_close_to_83, 18);
+        assert!(rounded_83 == eight_tree, "Should be 83");
     }
 }

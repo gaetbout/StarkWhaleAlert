@@ -1,4 +1,4 @@
-use log::info;
+use log::{error, info};
 use std::fs::File;
 use twitter_v2::{
     authorization::{Oauth2Client, Oauth2Token},
@@ -40,13 +40,8 @@ pub async fn tweet(text_to_tweet: String) {
         .send()
         .await;
 
-    match res {
-        Ok(val) => {
-            info!("ALL GOOD: \n{:?}", val)
-        }
-        Err(err) => {
-            info!("ERROR: \n{:?}", err)
-        }
+    if res.is_err() {
+        error!("Twitter error\n{:?}", res.unwrap_err());
     }
 }
 
