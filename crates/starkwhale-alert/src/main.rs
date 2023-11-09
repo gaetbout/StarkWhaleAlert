@@ -21,7 +21,6 @@ mod logger;
 mod starknet_id;
 mod twitter;
 
-// TODO Add a job to create the executable on ubuntu
 // TODO If no block file ==> create one with latest
 
 #[tokio::main]
