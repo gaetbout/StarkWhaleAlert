@@ -9,6 +9,9 @@ coincap io conversion token <=> $ value https://docs.coincap.io/
 ## Installation
  use `cargo install --path crates/crate-name`
 
+build for linux: `cargo build --bin starkwhale_alert --release --target=x86_64-unknown-linux-gnu`
+
+
 
 ## Contribution
 

@@ -1,6 +1,7 @@
 use bigdecimal::{FromPrimitive, ToPrimitive};
 use num_bigint::BigUint;
 use starknet::core::types::{EmittedEvent, FieldElement};
+use std::ops::Div;
 
 use crate::{api, consts::Token, consts::ADDRESS_LIST, get_infura_client, starknet_id, to_u256};
 
@@ -22,8 +23,8 @@ pub async fn get_formatted_text(emitted_event: EmittedEvent, token: &Token) -> S
         .unwrap()
         .join(".");
     let rate = api::fetch_coin(token.rate_api_id).await.unwrap();
-    let rate = BigUint::new(vec![rate.to_u32().unwrap()]);
-    let usd_value = amount * rate;
+    let rate = BigUint::new(vec![(rate * 10000_f64).to_u32().unwrap()]);
+    let usd_value = (amount * rate).div(BigUint::new(vec![10000]));
     let usd_value_string = usd_value
         .to_string()
         .as_bytes()
@@ -99,6 +100,7 @@ async fn format_address(address: FieldElement) -> String {
 
 #[cfg(test)]
 mod tests {
+
     use super::{format_address, get_formatted_text, to_rounded};
     use crate::{consts::USDC, to_u256};
     use starknet::core::types::{EmittedEvent, FieldElement};
