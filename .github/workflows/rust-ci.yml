@@ -60,7 +60,7 @@ jobs:
           toolchain: stable
 
       - name: Step 3 - Run cargo build
-        run: cargo build --bin starkwhale_alert --release
+        run: mv .env.example .env && cargo build --bin starkwhale_alert --release
       
       - name: Step 4 - Publish starkwhale_alert binary to artifacts
         uses: actions/upload-artifact@v3
