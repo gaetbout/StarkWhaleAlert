@@ -5,7 +5,6 @@ use twitter_v2::{
     TwitterApi,
 };
 
-// TODO Update gitignore when all js gone
 const PATH_TO_TOKEN_FILE: &str = "./db/token.json";
 pub async fn tweet(text_to_tweet: String) {
     info!("Tweet start");
