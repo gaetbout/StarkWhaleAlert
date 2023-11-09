@@ -9,13 +9,12 @@ reqwest = { version = "0.11.18", features = ["json"] }
 tokio = { version = "1.32.0", features = ["full"] }
 rstest = "0.18.2"
 serde = { version = "1.0.188", features = ["derive"] }
+serde_json = "1.0.105"
 starknet = { git = "https://github.com/xJonathanLEI/starknet-rs" }
 koit = "0.2.0"
 twitter-v2 = "0.1.8"
-serde_json = "1.0.105"
 bigdecimal = "0.4.1"
 log = "0.4.20"
 chrono = "0.4.29"
 dotenv_codegen = "0.15.0"
 num-bigint = "0.4.4"
-openssl = { version = "0.10", features = ["vendored"] }
