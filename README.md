@@ -7,6 +7,8 @@ starknetJS
 coincap io conversion token <=> $ value https://docs.coincap.io/
 
 ## Installation
+ use `cargo install --path crates/crate-name`
+
 
 ## Contribution
 
@@ -16,7 +18,4 @@ Strict minimum to work with
 ## TODO
 
 - Have a DB with a correspondancy wallet address <==> to actual (like binance, starkgate, 0x0, etc etc,)
-- Serverless?
-- Could make a better way to store token list with check that all is valid (selector shouldn't be a hash)
-- add bunch of tests
 - A way of automatically adjusting the threshold?

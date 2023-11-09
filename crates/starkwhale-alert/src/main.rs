@@ -35,7 +35,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     info!("Start {}", last_processed_block);
     if last_processed_block >= last_network_block {
         info!(
-            "No block to process {} >= {} ",
+            "No block to process {} >= {}\n",
             last_processed_block, last_network_block
         );
         return Ok(());
@@ -50,7 +50,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
         );
         let args: Vec<String> = env::args().collect();
         if args.contains(&String::from("-r")) {
-            info!("Updating to latest block...");
+            info!("Updating to latest block...\n");
             db::set_last_processed_block(last_network_block).await;
         }
         return Ok(());
