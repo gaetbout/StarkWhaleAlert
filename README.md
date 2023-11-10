@@ -53,6 +53,12 @@ cargo build --bin starkwhale_alert --release --target=x86_64-unknown-linux-gnu
 ## Setup 
 
 ### Twitter
+Start by running once the project:
+```shell
+cargo run --bin starkwhale_alert
+```
+This will take care of creating all relevant files in the db folder (and also the folder)
+
 First create a new project on:  
 https://developer.twitter.com/en/portal/dashboard  
 Remember to save the `CLIENT_ID` and `CLIENT_SECRET` somehwere, you'll need it later.  
@@ -63,7 +69,7 @@ Then run:
 ```shell
 cargo run --bin twitter_login
 ```
-You can now open http://127.0.0.1:3000/login in your browser and authorize the application. It should redirect you to a page where you can see your token. Copy the whole page, create a file named `token.json` in the [db folder](./db/) and paste inside that file.
+You can now open http://127.0.0.1:3000/login in your browser and authorize the application. It should redirect you to another page, copy the whole page and paste it in the [token file](./db/token.json).
 
 ### Setup the .env
 This script is using: 
@@ -92,4 +98,4 @@ The first time you run the script, the block might be out of date and it'll tell
 This will update the block file to the latest block.
 
 After this step you are all setup.  
-I setup nodecron to run this script every 5 minutes.
+I personally setup nodecron to run this script every 5 minutes.

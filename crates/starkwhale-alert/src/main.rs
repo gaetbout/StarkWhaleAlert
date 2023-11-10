@@ -7,8 +7,11 @@ use starknet::{
     core::types::EmittedEvent,
     providers::{jsonrpc::HttpTransport, JsonRpcClient, Provider},
 };
-use std::env;
 use std::error::Error;
+use std::{
+    env,
+    fs::{self, OpenOptions},
+};
 
 #[macro_use]
 extern crate dotenv_codegen;
@@ -21,11 +24,10 @@ mod logger;
 mod starknet_id;
 mod twitter;
 
-// TODO If no block file ==> create one with latest
-
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
     logger::init();
+    check_db();
     check_valid_env();
     let rpc_client = get_infura_client();
     let last_network_block = rpc_client.block_number().await? - 1;
@@ -102,6 +104,15 @@ fn check_valid_env() {
     std::env::var("TWITTER_OAUTH2_CLIENT_ID").expect("TWITTER_OAUTH2_CLIENT_ID must be set.");
     std::env::var("TWITTER_OAUTH2_CLIENT_SECRET")
         .expect("TWITTER_OAUTH2_CLIENT_SECRET must be set.");
+}
+
+fn check_db() {
+    fs::create_dir_all("./db").expect("Couldn't create db folder");
+    OpenOptions::new()
+        .write(true)
+        .create(true)
+        .open("./db/token.json")
+        .expect("Couldn't create token file");
 }
 
 pub fn get_infura_client() -> JsonRpcClient<HttpTransport> {

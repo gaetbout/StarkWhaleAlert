@@ -2,7 +2,7 @@
 .vscode
 log
 
-db
+db/
 
 # Added by cargo
 
