@@ -1,5 +1,6 @@
 use bigdecimal::{FromPrimitive, ToPrimitive};
 use num_bigint::BigUint;
+use num_format::{Locale, ToFormattedString};
 use starknet::core::types::{EmittedEvent, FieldElement};
 use std::ops::Div;
 
@@ -12,28 +13,16 @@ pub async fn get_formatted_text(emitted_event: EmittedEvent, token: &Token) -> S
         emitted_event.data[2].try_into().expect("Error: low"),
         emitted_event.data[3].try_into().expect("Error: high"),
     );
+    // TODO No need to use this one yet?
     amount = to_rounded(amount, token.decimals);
-    let amount_string = amount
-        .to_string()
-        .as_bytes()
-        .rchunks(3)
-        .rev()
-        .map(std::str::from_utf8)
-        .collect::<Result<Vec<&str>, _>>()
-        .unwrap()
-        .join(".");
+    let amount_string = amount.to_u128().unwrap().to_formatted_string(&Locale::en);
     let rate = api::fetch_coin(token.rate_api_id).await.unwrap();
     let rate = BigUint::new(vec![(rate * 10000_f64).to_u32().unwrap()]);
     let usd_value = (amount * rate).div(BigUint::new(vec![10000]));
     let usd_value_string = usd_value
-        .to_string()
-        .as_bytes()
-        .rchunks(3)
-        .rev()
-        .map(std::str::from_utf8)
-        .collect::<Result<Vec<&str>, _>>()
+        .to_u128()
         .unwrap()
-        .join(".");
+        .to_formatted_string(&Locale::en);
 
     let first_line = format!(
         "{:} #{} {} ({} USD)",
@@ -138,9 +127,10 @@ mod tests {
             .unwrap(),
         };
         let response = get_formatted_text(emitted_event, &USDC).await;
+        println!("{response}");
         assert!(
             response
-                == "1.000.000 #USDC $ (1.000.000 USD)\n0x6e1...b3ce bridged to Starknet L2\nhttps://starkscan.co/tx/0x732b09d901fb0075d283ac23cbaae4f8c486123a88a621eeaa05d0b5ddfb8d8",
+                == "1,000,000 #USDC $ (1,000,000 USD)\n0x6e1...b3ce bridged to Starknet L2\nhttps://starkscan.co/tx/0x732b09d901fb0075d283ac23cbaae4f8c486123a88a621eeaa05d0b5ddfb8d8",
             "Should be https://twitter.com/StarkWhaleAlert/status/1703701997629722850"
         );
     }
@@ -180,7 +170,7 @@ mod tests {
         let response = get_formatted_text(emitted_event, &USDC).await;
         assert!(
             response
-                == "1.000.000 #USDC $ (1.000.000 USD)\n0x6e1...b3ce bridged to Ethereum L1\nhttps://starkscan.co/tx/0x732b09d901fb0075d283ac23cbaae4f8c486123a88a621eeaa05d0b5ddfb8d8",
+                == "1,000,000 #USDC $ (1,000,000 USD)\n0x6e1...b3ce bridged to Ethereum L1\nhttps://starkscan.co/tx/0x732b09d901fb0075d283ac23cbaae4f8c486123a88a621eeaa05d0b5ddfb8d8",
             "Should be correct"
         );
     }
@@ -223,7 +213,7 @@ mod tests {
         let response = get_formatted_text(emitted_event, &USDC).await;
         assert!(
             response
-                == "1.000.000 #USDC $ (1.000.000 USD)\nFrom 0x6e1...b3ce to 0x6e1...b3ce\nhttps://starkscan.co/tx/0x732b09d901fb0075d283ac23cbaae4f8c486123a88a621eeaa05d0b5ddfb8d8",
+                == "1,000,000 #USDC $ (1,000,000 USD)\nFrom 0x6e1...b3ce to 0x6e1...b3ce\nhttps://starkscan.co/tx/0x732b09d901fb0075d283ac23cbaae4f8c486123a88a621eeaa05d0b5ddfb8d8",
             "Should be correct"
         );
     }

@@ -43,12 +43,12 @@ async fn main() -> Result<(), Box<dyn Error>> {
     if last_network_block > last_processed_block + 100 {
         // TODO Send mail
         info!(
-            "Local is {} blocks behind (current: {}). To resync use option -r",
+            "Local is {} blocks behind (current: {}). To sync use option -s",
             last_network_block - last_processed_block,
             last_network_block
         );
         let args: Vec<String> = env::args().collect();
-        if args.contains(&String::from("-r")) {
+        if args.contains(&String::from("-s")) {
             info!("Updating to latest block...\n");
             db::set_last_processed_block(last_network_block).await;
         }
