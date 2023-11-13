@@ -49,8 +49,8 @@ pub async fn get_formatted_text(emitted_event: EmittedEvent, token: &Token) -> S
 
 fn to_rounded(amount: BigUint, pow: u32) -> BigUint {
     let power = 10_u128.pow(pow);
-    let amount = amount.clone() / power;
-    let rounding = amount.clone() / (power / 10) % amount.clone();
+    let amount = &amount / power;
+    let rounding = &amount / (power / 10) % &amount;
     if rounding > BigUint::from_u8(5).unwrap() {
         amount + 1_u128
     } else {

@@ -87,7 +87,7 @@ async fn callback(
         .await
         .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
     // set context for use with twitter API
-    println!("{:?}", token.clone());
+    println!("{:?}", &token);
     ctx.lock().unwrap().token = Some(token);
 
     Ok(Redirect::to("/debug_token".parse().unwrap()))
