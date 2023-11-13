@@ -39,6 +39,7 @@ pub async fn tweet(text_to_tweet: String) {
         .send()
         .await;
 
+    // TODO log the tweet to send it manually?
     if res.is_err() {
         error!("Twitter error\n{:?}", res.unwrap_err());
     }

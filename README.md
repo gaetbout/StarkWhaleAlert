@@ -2,34 +2,34 @@
 
 [![Twitter URL](https://img.shields.io/twitter/url.svg?label=Follow%20%40StarkWhaleAlert&style=social&url=https%3A%2F%2Ftwitter.com%2FStarkWhaleAlert)]( https://twitter.com/StarkWhaleAlert)
 
-This is a script aimed to track all transfers above a threshold done on Starknet.  
-If such a transfer is detected it'll post a tweet.
+This is a script aimed to track all transfers of certains tokens above a specified threshold done on Starknet.  
+Whenever a `Transfer` matching the criteria is detected, this bot will post a Tweet.
 
 ## Overview
 
 Here is how the script works:
-1. Fetch last processed block number from file and the last block produced by the network. 
+1. Fetch last processed block number from a file and the last block produced by the network. 
    - If no new block ⇒ Stop
-   - If it is too much behind ⇒ Stop: probably something went wrong.
+   - If it is too much behind ⇒ Stop (can happen that something went wrong).
    - Otherwise ⇒ Continue
 2. For each token:
    1. Get all `Transfer` events from last processed block to current network block.
-   2. Filter events to only keep the ones above the threshold:
+   2. Filter events to keep the ones above the threshold:
       - If none ⇒ Proceed to next token
       - If any ⇒ Tweet
 3. Set last processed block to last block produced by the network
 
 
 To create the tweet the text needs to be formatted involving multiple steps:
-- Format the token value
+- Format the token value 
 - Fetch it's USD value and format it 
-- Format the from and to:
-  - Can be bridging to L1
-  - Can be bridging to L2
-  - Can be someone with a StarknetID
-  - Can be one of the known addresses (e.g.: Layerswap, Jediswap, ...)
+- Format the `from` and `to`:
+  - Can be someone bridging to Ethereum L1
+  - Can be someone bridging to Starknet L2
+  - Can be someone owning a StarknetId
+  - Can be someone belonging to the list of known addresses, e.g.: Layerswap, Jediswap, ...
   - If none of the previous ⇒ Shorten the address to have something like `0x123...4567`
-- Put a reference to the transaction involving the transfer available on a block explorer
+- Put a reference to the transaction involving the transfer (link to a block explorer)
 
 
 ## Installation
