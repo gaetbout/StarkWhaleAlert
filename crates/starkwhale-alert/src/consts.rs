@@ -8,7 +8,7 @@ pub struct Token {
     pub rate_api_id: &'static str,
 }
 
-pub const TOKENS: &[Token] = &[ETH, USDC, USDT];
+pub const TOKENS: &[Token] = &[ETH, USDC, USDT, DAI];
 pub const ADDRESS_LIST: &[AddressToName] = &[
     LAYER_SWAP,
     ZKLEND_MARKET,
@@ -55,6 +55,16 @@ const USDT: Token = Token {
     threshold: 100_000,
     logo: "$",
     rate_api_id: "tether",
+};
+
+const DAI: Token = Token {
+    address: "0x00da114221cb83fa859dbdb4c44beeaa0bb37c7537ad5ae66fe5e0efd20e6eb3",
+    decimals: 18,
+    symbol: "DAI",
+    selector: "Transfer",
+    threshold: 100_000,
+    logo: "D",
+    rate_api_id: "multi-collateral-dai",
 };
 
 pub const LAYER_SWAP: AddressToName = AddressToName {
