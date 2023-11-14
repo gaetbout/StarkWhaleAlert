@@ -1,4 +1,4 @@
-use bigdecimal::{FromPrimitive, ToPrimitive};
+use bigdecimal::ToPrimitive;
 use num_bigint::BigUint;
 use num_format::{Locale, ToFormattedString};
 use starknet::core::types::{EmittedEvent, FieldElement};
@@ -13,7 +13,7 @@ pub async fn get_formatted_text(emitted_event: EmittedEvent, token: &Token) -> S
         emitted_event.data[2].try_into().expect("Error: low"),
         emitted_event.data[3].try_into().expect("Error: high"),
     );
-    // TODO No need to use this one yet?
+    // TODO This whole rounding logic and * 10000_f64 seems odd
     amount = to_rounded(amount, token.decimals);
     let amount_string = amount.to_u128().unwrap().to_formatted_string(&Locale::en);
     let rate = api::fetch_coin(token.rate_api_id).await.unwrap();
@@ -49,13 +49,8 @@ pub async fn get_formatted_text(emitted_event: EmittedEvent, token: &Token) -> S
 
 fn to_rounded(amount: BigUint, pow: u32) -> BigUint {
     let power = 10_u128.pow(pow);
-    let amount = &amount / power;
-    let rounding = &amount / (power / 10) % &amount;
-    if rounding > BigUint::from_u8(5).unwrap() {
-        amount + 1_u128
-    } else {
-        amount
-    }
+    let half_pow = power / 2;
+    (amount + half_pow) / power
 }
 trait ToHex {
     fn to_hex(self) -> String;

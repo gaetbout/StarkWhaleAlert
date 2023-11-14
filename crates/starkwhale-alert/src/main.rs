@@ -1,7 +1,7 @@
 use consts::{Token, TOKENS};
 use dotenv::dotenv;
 use log::info;
-use num_bigint::{BigUint, ToBigInt};
+use num_bigint::BigUint;
 use reqwest::Url;
 use starknet::{
     core::types::EmittedEvent,
@@ -122,14 +122,11 @@ pub fn get_infura_client() -> JsonRpcClient<HttpTransport> {
 }
 
 fn to_u256(low: u128, high: u128) -> BigUint {
-    // TODO There is prob a better solution to do that...
-    let mut low_vec = low.to_bigint().unwrap().to_u32_digits().1;
-    let mut high_vec = high.to_bigint().unwrap().to_u32_digits().1;
-    for _ in low_vec.len()..4 {
-        low_vec.push(0_u32)
-    }
-    low_vec.append(&mut high_vec);
-    BigUint::new(low_vec)
+    let mut bytes: Vec<u8> = Vec::new();
+    bytes.extend(high.to_be_bytes());
+    bytes.extend(low.to_be_bytes());
+
+    BigUint::from_bytes_be(&bytes[..])
 }
 #[cfg(test)]
 mod tests {
