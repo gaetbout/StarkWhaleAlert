@@ -1,3 +1,3 @@
 #!/bin/bash
 
-/home/ubuntu/.nvm/versions/node/v18.16.1/bin/npm run --silent tweet >> log
+./target/release/starkwhale_alert >> log 2>&1

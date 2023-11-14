@@ -1,6 +1,9 @@
-node_modules
-dist
-
 .env
 .vscode
 log
+
+db/
+
+# Added by cargo
+
+/target

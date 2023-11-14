@@ -1,0 +1,5 @@
+[workspace]
+members = [
+    "crates/starkwhale-alert",
+    "crates/twitter-login",
+]
