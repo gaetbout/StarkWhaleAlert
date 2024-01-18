@@ -108,6 +108,10 @@ pub const ADDRESS_LIST: &[AddressToName] = &[
         address: "259fec57cd26d27385cd8948d3693bbf26bed68ad54d7bdd1fdb901774ff0e8",
         name: "rhino.fi: Bridge",
     },
+    AddressToName {
+        address: "059a943ca214c10234b9a3b61c558ac20c005127d183b86a99a8f3c60a08b4ff",
+        name: "Nostra: Interest Rate Model",
+    },
 ];
 
 pub struct AddressToName {

@@ -86,7 +86,7 @@ async fn format_address(address: FieldElement) -> String {
 mod tests {
 
     use super::{format_address, get_formatted_text, to_rounded};
-    use crate::{consts::USDC, to_u256};
+    use crate::to_u256;
     use starknet::core::types::{EmittedEvent, FieldElement};
 
     #[tokio::test]
