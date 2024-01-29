@@ -109,8 +109,12 @@ pub const ADDRESS_LIST: &[AddressToName] = &[
         name: "rhino.fi: Bridge",
     },
     AddressToName {
-        address: "059a943ca214c10234b9a3b61c558ac20c005127d183b86a99a8f3c60a08b4ff",
+        address: "59a943ca214c10234b9a3b61c558ac20c005127d183b86a99a8f3c60a08b4ff",
         name: "Nostra: Interest Rate Model",
+    },
+    AddressToName {
+        address: "5dd3d2f4429af886cd1a3b08289dbcea99a294197e9eb43b0e0325b4b",
+        name: "Ekubo: Core",
     },
 ];
 
