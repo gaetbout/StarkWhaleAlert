@@ -137,7 +137,7 @@ mod tests {
             selector: "Transfer",
             threshold: 50, // 50 eth
             logo: "♦",
-            rate_api_id: "ethereum",
+            rate_api_id: Some("ethereum"),
         };
         fetch_events(&get_infura_client(), &eth, 200000, 200001)
             .await

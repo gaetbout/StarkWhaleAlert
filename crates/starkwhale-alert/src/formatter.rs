@@ -8,25 +8,19 @@ use crate::{api, consts::Token, consts::ADDRESS_LIST, get_infura_client, starkne
 
 pub async fn get_formatted_text(emitted_event: EmittedEvent, token: &Token) -> String {
     let from = emitted_event.data[0];
-    let to = emitted_event.data[1];
+    let to: FieldElement = emitted_event.data[1];
     let mut amount = to_u256(
         emitted_event.data[2].try_into().expect("Error: low"),
         emitted_event.data[3].try_into().expect("Error: high"),
     );
-    // TODO This whole rounding logic and * 10000_f64 seems odd
+
     amount = to_rounded(amount, token.decimals);
     let amount_string = amount.to_u128().unwrap().to_formatted_string(&Locale::en);
-    let rate = api::fetch_coin(token.rate_api_id).await.unwrap();
-    let rate = BigUint::new(vec![(rate * 10000_f64).to_u32().unwrap()]);
-    let usd_value = (amount * rate).div(BigUint::new(vec![10000]));
-    let usd_value_string = usd_value
-        .to_u128()
-        .unwrap()
-        .to_formatted_string(&Locale::en);
+    let usd_value = get_usd_value(token, amount).await;
 
     let first_line = format!(
         "{:} #{} {} ({} USD)",
-        amount_string, token.symbol, token.logo, usd_value_string
+        amount_string, token.symbol, token.logo, usd_value
     );
     let second_line = if to == FieldElement::ZERO {
         format!("{} bridged to Ethereum L1", format_address(from).await)
@@ -47,11 +41,28 @@ pub async fn get_formatted_text(emitted_event: EmittedEvent, token: &Token) -> S
     format!("{}\n{}\n{}", first_line, second_line, third_line)
 }
 
+async fn get_usd_value(token: &Token, amount: BigUint) -> String {
+    match token.rate_api_id {
+        Some(coin_id) => {
+            let rate = api::fetch_coin(coin_id).await.unwrap();
+            let rate = BigUint::new(vec![(rate * 10000_f64).to_u32().unwrap()]);
+            let usd_value = (amount * rate).div(BigUint::new(vec![10000]));
+
+            usd_value
+                .to_u128()
+                .unwrap()
+                .to_formatted_string(&Locale::en)
+        }
+        None => "???".to_owned(),
+    }
+}
+
 fn to_rounded(amount: BigUint, pow: u32) -> BigUint {
     let power = 10_u128.pow(pow);
     let half_pow = power / 2;
     (amount + half_pow) / power
 }
+
 trait ToHex {
     fn to_hex(self) -> String;
 }
