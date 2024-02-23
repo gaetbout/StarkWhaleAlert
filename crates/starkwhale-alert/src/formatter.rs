@@ -97,7 +97,7 @@ async fn format_address(address: FieldElement) -> String {
 mod tests {
 
     use super::{format_address, get_formatted_text, to_rounded};
-    use crate::to_u256;
+    use crate::{consts::TOKENS, to_u256};
     use starknet::core::types::{EmittedEvent, FieldElement};
 
     #[tokio::test]
@@ -132,7 +132,7 @@ mod tests {
             )
             .unwrap(),
         };
-        let response = get_formatted_text(emitted_event, &USDC).await;
+        let response = get_formatted_text(emitted_event, &TOKENS[1]).await;
         println!("{response}");
         assert!(
             response
@@ -173,7 +173,7 @@ mod tests {
             )
             .unwrap(),
         };
-        let response = get_formatted_text(emitted_event, &USDC).await;
+        let response = get_formatted_text(emitted_event, &TOKENS[1]).await;
         assert!(
             response
                 == "1,000,000 #USDC $ (1,000,000 USD)\n0x6e1...b3ce bridged to Ethereum L1\nhttps://starkscan.co/tx/0x732b09d901fb0075d283ac23cbaae4f8c486123a88a621eeaa05d0b5ddfb8d8",
@@ -216,7 +216,7 @@ mod tests {
             )
             .unwrap(),
         };
-        let response = get_formatted_text(emitted_event, &USDC).await;
+        let response = get_formatted_text(emitted_event, &TOKENS[1]).await;
         assert!(
             response
                 == "1,000,000 #USDC $ (1,000,000 USD)\nFrom 0x6e1...b3ce to 0x6e1...b3ce\nhttps://starkscan.co/tx/0x732b09d901fb0075d283ac23cbaae4f8c486123a88a621eeaa05d0b5ddfb8d8",

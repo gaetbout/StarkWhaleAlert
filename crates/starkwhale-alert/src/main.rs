@@ -99,7 +99,7 @@ async fn get_events_to_tweet_about(
 
 fn check_valid_env() {
     dotenv().ok();
-    std::env::var("COINCAP_API_KEY").expect("COINCAP_API_KEY must be set.");
+    std::env::var("COIN_MARKET_CAP_API_KEY").expect("COIN_MARKET_CAP_API_KEY must be set.");
     std::env::var("NODE_PROVIDER_API_KEY").expect("NODE_PROVIDER_API_KEY must be set.");
     std::env::var("TWITTER_OAUTH2_CLIENT_ID").expect("TWITTER_OAUTH2_CLIENT_ID must be set.");
     std::env::var("TWITTER_OAUTH2_CLIENT_SECRET")

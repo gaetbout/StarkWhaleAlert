@@ -1,5 +1,4 @@
 use crate::consts::Token;
-use reqwest::{header, header::HeaderValue};
 use serde::{Deserialize, Serialize};
 use starknet::{
     core::{
@@ -11,65 +10,50 @@ use starknet::{
         JsonRpcClient, Provider, ProviderError,
     },
 };
+use std::collections::HashMap;
 use std::time::Duration;
 
 #[derive(Debug, Serialize, Deserialize)]
 struct FetchCoinResponse {
-    data: Data,
-    timestamp: u64,
+    data: HashMap<String, Data>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
 struct Data {
-    id: String,
-    rank: String,
-    symbol: String,
-    name: String,
-    supply: String,
-    #[serde(rename = "maxSupply")]
-    max_supply: Option<String>,
-    #[serde(rename = "marketCapUsd")]
-    market_cap_usd: String,
-    #[serde(rename = "volumeUsd24Hr")]
-    volume_usd_24_hr: String,
-    #[serde(rename = "priceUsd")]
-    price_usd: String,
-    #[serde(rename = "changePercent24Hr")]
-    change_percent_24_hr: String,
-    #[serde(rename = "vwap24Hr")]
-    vwap_24_hr: String,
+    quote: HashMap<String, Quote>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+struct Quote {
+    price: f64,
 }
 
 pub async fn fetch_coin(coin_id: &str) -> Result<f64, reqwest::Error> {
-    let token = dotenv!("COINCAP_API_KEY");
+    let token = dotenv!("COIN_MARKET_CAP_API_KEY");
 
-    let mut headers = reqwest::header::HeaderMap::new();
-    let auth = format!("Bearer {token}");
-    headers.insert(
-        header::CONTENT_TYPE,
-        HeaderValue::from_static("application/json"),
-    );
-    headers.insert(
-        header::AUTHORIZATION,
-        HeaderValue::try_from(auth).expect("Unable to parse the Bearer token"),
-    );
-
-    let client = reqwest::Client::builder()
-        .default_headers(headers)
-        .build()?;
-
-    let get_link: String = format!("{}{}", "https://api.coincap.io/v2/assets/", coin_id);
+    let client = reqwest::Client::builder().build()?;
 
     let coin_info: FetchCoinResponse = client
-        .get(get_link)
-        .header("Accept", "text/plain")
+        .get("https://pro-api.coinmarketcap.com/v2/cryptocurrency/quotes/latest")
+        .header("Accepts", "application/json")
+        .header("X-CMC_PRO_API_KEY", token)
+        .query(&[("slug", coin_id)])
+        .query(&[("convert", "USD")])
         .timeout(Duration::from_secs(3))
         .send()
         .await?
         .json()
         .await?;
-
-    Ok(coin_info.data.price_usd.parse().expect("Error: fetch_coin"))
+    Ok(coin_info
+        .data
+        .values()
+        .into_iter()
+        .next()
+        .expect("fetch_coin: data map issue")
+        .quote
+        .get("USD")
+        .expect("fetch_coin: quote map issue")
+        .price)
 }
 
 pub async fn fetch_events(
@@ -120,6 +104,8 @@ mod tests {
     #[case("ethereum")]
     #[case("usd-coin")]
     #[case("tether")]
+    #[case("multi-collateral-dai")]
+    #[case("starknet-token")]
     #[tokio::test]
     async fn test_fetch_coin(#[case] coin: &str) {
         let value = fetch_coin(coin).await.unwrap();
