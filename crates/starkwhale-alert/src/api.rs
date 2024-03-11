@@ -44,6 +44,7 @@ pub async fn fetch_coin(coin_id: &str) -> Result<f64, reqwest::Error> {
         .await?
         .json()
         .await?;
+
     Ok(coin_info
         .data
         .values()
@@ -106,6 +107,7 @@ mod tests {
     #[case("tether")]
     #[case("multi-collateral-dai")]
     #[case("starknet-token")]
+    #[case("wrapped-bitcoin")]
     #[tokio::test]
     async fn test_fetch_coin(#[case] coin: &str) {
         let value = fetch_coin(coin).await.unwrap();

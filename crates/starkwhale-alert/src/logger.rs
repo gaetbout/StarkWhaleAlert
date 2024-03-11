@@ -29,7 +29,7 @@ impl log::Log for SimpleLogger {
 }
 
 fn date() -> String {
-    let offset = chrono::FixedOffset::east_opt(7200).unwrap();
+    let offset = chrono::FixedOffset::east_opt(3600).unwrap();
     let timezone: chrono::FixedOffset = chrono::offset::TimeZone::from_offset(&offset);
     let current_time = chrono::Utc::now().with_timezone(&timezone);
     current_time.format("%F %T").to_string()
