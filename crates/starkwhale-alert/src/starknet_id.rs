@@ -8,6 +8,7 @@ use starknet::{
     },
     providers::{jsonrpc::HttpTransport, JsonRpcClient, Provider},
 };
+use twitter_v2::oauth2::http::response;
 
 pub const STARKNET_ID_CONTRACT_ADDRESS: FieldElement = FieldElement::from_mont([
     9876522541644636344,
@@ -29,8 +30,11 @@ pub async fn address_to_domain(
             },
             BlockId::Tag(BlockTag::Latest),
         )
-        .await
-        .unwrap();
+        .await;
+    if response.is_err() {
+        return None;
+    }
+    let response = response.unwrap();
     if response.len() == 1 && response[0] == FieldElement::ZERO {
         return None;
     }
@@ -122,19 +126,31 @@ mod tests {
     #[tokio::test]
     async fn test_starknet_id() {
         // stark
-        address_to_domain(
+        let name = address_to_domain(
             get_infura_client(),
             FieldElement::from_hex_be(
                 "0x1f4055a52c859593e79988bfe998b536066805fe757522ece47945f46f6b6e7",
             )
             .unwrap(),
         )
-        .await;
+        .await
+        .unwrap();
+        assert_eq!(name, "stark.stark");
+        // address_to_domain(
+        //     get_infura_client(),
+        //     FieldElement::from_hex_be("0x225bd17f4b4ede26c77673d8d3").unwrap(),
+        // )
+        // .await;
+    }
 
-        address_to_domain(
+    #[tokio::test]
+    async fn test_starknet_id_fail() {
+        // stark
+        let should_be_none = address_to_domain(
             get_infura_client(),
             FieldElement::from_hex_be("0x225bd17f4b4ede26c77673d8d3").unwrap(),
         )
         .await;
+        assert!(should_be_none.is_none());
     }
 }

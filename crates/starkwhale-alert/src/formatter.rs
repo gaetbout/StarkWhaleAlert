@@ -122,11 +122,13 @@ mod tests {
             .unwrap(),
             keys,
             data,
-            block_hash: FieldElement::from_hex_be(
-                "0x030905d20477c31ecc0951a8c7d2f8c91d16a2ce864aaad2730aa330e328dc6a",
-            )
-            .unwrap(),
-            block_number: 237165,
+            block_hash: Some(
+                FieldElement::from_hex_be(
+                    "0x030905d20477c31ecc0951a8c7d2f8c91d16a2ce864aaad2730aa330e328dc6a",
+                )
+                .unwrap(),
+            ),
+            block_number: Some(237165),
             transaction_hash: FieldElement::from_hex_be(
                 "0x732b09d901fb0075d283ac23cbaae4f8c486123a88a621eeaa05d0b5ddfb8d8",
             )
@@ -163,11 +165,13 @@ mod tests {
             .unwrap(),
             keys,
             data,
-            block_hash: FieldElement::from_hex_be(
-                "0x030905d20477c31ecc0951a8c7d2f8c91d16a2ce864aaad2730aa330e328dc6a",
-            )
-            .unwrap(),
-            block_number: 237165,
+            block_hash: Some(
+                FieldElement::from_hex_be(
+                    "0x030905d20477c31ecc0951a8c7d2f8c91d16a2ce864aaad2730aa330e328dc6a",
+                )
+                .unwrap(),
+            ),
+            block_number: Some(237165),
             transaction_hash: FieldElement::from_hex_be(
                 "0x732b09d901fb0075d283ac23cbaae4f8c486123a88a621eeaa05d0b5ddfb8d8",
             )
@@ -206,11 +210,13 @@ mod tests {
             .unwrap(),
             keys,
             data,
-            block_hash: FieldElement::from_hex_be(
-                "0x030905d20477c31ecc0951a8c7d2f8c91d16a2ce864aaad2730aa330e328dc6a",
-            )
-            .unwrap(),
-            block_number: 237165,
+            block_hash: Some(
+                FieldElement::from_hex_be(
+                    "0x030905d20477c31ecc0951a8c7d2f8c91d16a2ce864aaad2730aa330e328dc6a",
+                )
+                .unwrap(),
+            ),
+            block_number: Some(237165),
             transaction_hash: FieldElement::from_hex_be(
                 "0x732b09d901fb0075d283ac23cbaae4f8c486123a88a621eeaa05d0b5ddfb8d8",
             )

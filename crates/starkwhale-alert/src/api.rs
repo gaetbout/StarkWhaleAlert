@@ -5,10 +5,7 @@ use starknet::{
         types::{BlockId, EmittedEvent, EventFilter, FieldElement},
         utils::get_selector_from_name,
     },
-    providers::{
-        jsonrpc::{HttpTransport, HttpTransportError, JsonRpcClientError},
-        JsonRpcClient, Provider, ProviderError,
-    },
+    providers::{jsonrpc::HttpTransport, JsonRpcClient, Provider, ProviderError},
 };
 use std::collections::HashMap;
 use std::time::Duration;
@@ -62,7 +59,7 @@ pub async fn fetch_events(
     token: &Token,
     from_block: u64,
     to_block: u64,
-) -> Result<Vec<EmittedEvent>, ProviderError<JsonRpcClientError<HttpTransportError>>> {
+) -> Result<Vec<EmittedEvent>, ProviderError> {
     let mut events = vec![];
     let mut continuation_token = None;
     let from_block = Some(BlockId::Number(from_block));
