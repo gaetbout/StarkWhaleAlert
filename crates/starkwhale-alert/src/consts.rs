@@ -138,6 +138,10 @@ pub const ADDRESS_LIST: &[AddressToName] = &[
         address: "13c67ed78bc280887234fe5ed5e77272465317978ae86c25a71531d9332a2d",
         name: "Binance",
     },
+    AddressToName {
+        address: "517daba3622259ae4fffab72bb716d89c30df0994c6ab25ede61bd139639724",
+        name: "Strk Provisions: StarkEx Claim",
+    },
 ];
 
 pub struct AddressToName {
