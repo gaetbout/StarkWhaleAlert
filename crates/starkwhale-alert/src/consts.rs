@@ -50,7 +50,7 @@ pub const TOKENS: &[Token] = &[
         decimals: 18,
         symbol: "STRK",
         selector: "Transfer",
-        threshold: 1_500_000,
+        threshold: 2_500_000,
         logo: "",
         rate_api_id: Some("starknet-token"),
     },
@@ -142,6 +142,68 @@ pub const ADDRESS_LIST: &[AddressToName] = &[
         address: "517daba3622259ae4fffab72bb716d89c30df0994c6ab25ede61bd139639724",
         name: "Strk Provisions: StarkEx Claim",
     },
+    // These addresses are coming from ZachXBT investigations telegram channel
+    AddressToName {
+        address: "213c67ed78bc280887234fe5ed5e77272465317978ae86c25a71531d9332a2d",
+        name: "Binance",
+    },
+    AddressToName {
+        address: "269ea391a9c99cb6cee43ff589169f547cbc48d7554fdfbbfa7f97f516da700",
+        name: "OKX",
+    },
+    AddressToName {
+        address: "76601136372fcdbbd914eea797082f7504f828e122288ad45748b0c8b0c9696",
+        name: "Bybit",
+    },
+    AddressToName {
+        address: "620102ea610be8518125cf2de850d0c4f5d0c5d81f969cff666fb53b05042d2",
+        name: "Kraken",
+    },
+    AddressToName {
+        address: "566ec9d06c79b1ca32970519715a27f066e76fac8971bbd21b96a50db826d90",
+        name: "Kucoin",
+    },
+    AddressToName {
+        address: "3fd14213a96e9d90563ebe1b224f357c6481a755ee6f046c8ce9acd9b8654a7",
+        name: "HTX",
+    },
+    AddressToName {
+        address: "69a7818562b608ce8c5d0039e7f6d1c6ee55f36978f633b151858d85c022d2f",
+        name: "MEXC",
+    },
+    AddressToName {
+        address: "e91830f84747f37692127b20d4e4f9b96482b1007592fee1d7c0136ee60e6d",
+        name: "Gate",
+    },
+    AddressToName {
+        address: "299b9008e2d3fa88de6d06781fc9f32f601b2626cb0efa8e8c19f2b17837ed1",
+        name: "Bitget",
+    },
+    AddressToName {
+        address: "4b555a99b585adf082754e5ea36e4202f13efa649e6ac16dfe8c0e217c454bc",
+        name: "HitBTC",
+    },
+    AddressToName {
+        address: "fb108ed29e1b5d82bb61a39a15bbab410543818bf7df9be3c0f5dd0d612cf3",
+        name: "CoinEX",
+    },
+    AddressToName {
+        address: "62b6edccf9d86aff918634e53f3fac9545a8bcf84bcb59a0a09f9194d18282d",
+        name: "ChangeNow",
+    },
+    AddressToName {
+        address: "786c463590ca32345e0118a0303a8f66af10882d7315ce282840feb5d6817f9",
+        name: "XT",
+    },
+    AddressToName {
+        address: "1a103074e6ea2f988b427c77e671207c20d6005d407a685eeee2e1f61028392",
+        name: "Bitrue",
+    },
+    AddressToName {
+        address: "4de639e634c071c3ce8b1c69fac0500aab5ddb25a08fd0f757176243e4c0467",
+        name: "Bitmart",
+    },
+    // End of ZachXBT investigations telegram channel
 ];
 
 pub struct AddressToName {
