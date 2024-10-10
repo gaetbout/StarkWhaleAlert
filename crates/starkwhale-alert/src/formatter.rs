@@ -7,11 +7,18 @@ use std::ops::Div;
 use crate::{api, consts::Token, consts::ADDRESS_LIST, get_infura_client, starknet_id, to_u256};
 
 pub async fn get_formatted_text(emitted_event: EmittedEvent, token: &Token) -> String {
-    let from = emitted_event.data[0];
-    let to: Felt = emitted_event.data[1];
+    let (from, to, amount_idx) = if emitted_event.keys.len() > 1 {
+        (emitted_event.keys[1], emitted_event.keys[2], 0)
+    } else {
+        (emitted_event.data[0], emitted_event.data[1], 2)
+    };
     let mut amount = to_u256(
-        emitted_event.data[2].try_into().expect("Error: low"),
-        emitted_event.data[3].try_into().expect("Error: high"),
+        emitted_event.data[amount_idx]
+            .try_into()
+            .expect("Error: low"),
+        emitted_event.data[amount_idx + 1]
+            .try_into()
+            .expect("Error: high"),
     );
 
     amount = to_rounded(amount, token.decimals);

@@ -2,7 +2,7 @@
 name = "starkwhale_alert"
 version = "0.1.0"
 edition = "2021"
-# TODO ADD starknet-id = { git = "https://github.com/starknet-id/starknet-id.rs.git", branch = "master" }
+
 [dependencies]
 dotenv = "0.15.0"
 reqwest = { version = "0.11.18", features = ["json"] }
@@ -11,6 +11,7 @@ rstest = "0.18.2"
 serde = { version = "1.0.188", features = ["derive"] }
 serde_json = "1.0.105"
 starknet = "0.12.0"
+# TODO Resume name resolving
 # starknet-id = { git = "https://github.com/starknet-id/starknet-id.rs.git", branch = "master" }
 koit = "0.2.0"
 twitter-v2 = "0.1.8"
