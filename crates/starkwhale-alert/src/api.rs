@@ -2,7 +2,7 @@ use crate::consts::Token;
 use serde::{Deserialize, Serialize};
 use starknet::{
     core::{
-        types::{BlockId, EmittedEvent, EventFilter, FieldElement},
+        types::{BlockId, EmittedEvent, EventFilter, Felt},
         utils::get_selector_from_name,
     },
     providers::{jsonrpc::HttpTransport, JsonRpcClient, Provider, ProviderError},
@@ -64,7 +64,7 @@ pub async fn fetch_events(
     let mut continuation_token = None;
     let from_block = Some(BlockId::Number(from_block));
     let to_block = Some(BlockId::Number(to_block));
-    let address = Some(FieldElement::from_hex_be(token.address).expect("Invalid address"));
+    let address = Some(Felt::from_hex(token.address).expect("Invalid address"));
     let keys = Some(vec![vec![
         get_selector_from_name(token.selector).expect("Invalid selector")
     ]]);
