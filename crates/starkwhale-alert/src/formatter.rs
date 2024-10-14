@@ -42,7 +42,8 @@ pub async fn get_formatted_text(emitted_event: EmittedEvent, token: &Token) -> S
     };
 
     let third_line = format!(
-        "https://starkscan.co/tx/{}",
+        // "https://starkscan.co/tx/{}",
+        "https://voyager.online/tx/{}",
         emitted_event.transaction_hash.to_hex()
     );
     format!("{}\n{}\n{}", first_line, second_line, third_line)
