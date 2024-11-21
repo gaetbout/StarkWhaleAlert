@@ -23,7 +23,7 @@ pub const TOKENS: &[Token] = &[
         decimals: 6,
         symbol: "USDC",
         selector: "Transfer",
-        threshold: 1_500_000,
+        threshold: 1_800_000,
         logo: "$",
         rate_api_id: Some("usd-coin"),
     },
