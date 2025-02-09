@@ -101,6 +101,17 @@ async fn get_events_with_retries(
         .get_events(event_filter.clone(), continuation_token.clone(), 1000)
         .await;
     if event_result.is_err() {
+        let err = event_result.err().unwrap();
+        match err {
+            // If rate limited, wait for a second and retry
+            ProviderError::RateLimited => {
+                tokio::time::sleep(Duration::from_secs(1)).await;
+            }
+            _ => {
+                // Ignore
+            }
+        }
+
         Box::pin(get_events_with_retries(
             rpc_client,
             event_filter,
