@@ -2,7 +2,7 @@ use crate::consts::Token;
 use serde::{Deserialize, Serialize};
 use starknet::{
     core::{
-        types::{BlockId, EmittedEvent, EventFilter, Felt},
+        types::{BlockId, EmittedEvent, EventFilter, EventsPage, Felt},
         utils::get_selector_from_name,
     },
     providers::{jsonrpc::HttpTransport, JsonRpcClient, Provider, ProviderError},
@@ -70,24 +70,46 @@ pub async fn fetch_events(
     ]]);
 
     loop {
-        let event_page = rpc_client
-            .get_events(
-                EventFilter {
-                    from_block,
-                    to_block,
-                    address,
-                    keys: keys.clone(),
-                },
-                continuation_token,
-                1000,
-            )
-            .await?;
+        let event_filter = EventFilter {
+            from_block,
+            to_block,
+            address,
+            keys: keys.clone(),
+        };
+        let event_page =
+            get_events_with_retries(rpc_client, &event_filter, continuation_token.clone(), 0)
+                .await?;
 
         events.extend(event_page.events);
         match event_page.continuation_token {
             Some(_) => continuation_token = event_page.continuation_token,
             None => return Ok(events),
         }
+    }
+}
+
+async fn get_events_with_retries(
+    rpc_client: &JsonRpcClient<HttpTransport>,
+    event_filter: &EventFilter,
+    continuation_token: Option<String>,
+    retries: u8,
+) -> Result<EventsPage, ProviderError> {
+    if retries > 5 {
+        return Err(ProviderError::RateLimited);
+    }
+    let event_result = rpc_client
+        .get_events(event_filter.clone(), continuation_token.clone(), 1000)
+        .await;
+    if event_result.is_err() {
+        Box::pin(get_events_with_retries(
+            rpc_client,
+            event_filter,
+            continuation_token.clone(),
+            retries + 1,
+        ))
+        .await
+    } else {
+        Ok(event_result.unwrap())
     }
 }
 
