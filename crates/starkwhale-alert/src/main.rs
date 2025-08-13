@@ -42,7 +42,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
         return Ok(());
     }
 
-    if last_network_block > last_processed_block + 100 {
+    if last_network_block > last_processed_block + 300 {
         // TODO Send mail
         info!(
             "Local is {} blocks behind (current: {}). To sync use option -s",
