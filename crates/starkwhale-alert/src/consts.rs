@@ -204,6 +204,10 @@ pub const ADDRESS_LIST: &[AddressToName] = &[
         name: "Bitmart",
     },
     // End of ZachXBT investigations telegram channel
+    AddressToName {
+        address: "62da0780fae50d68cecaa5a051606dc21217ba290969b302db4dd99d2e9b470",
+        name: "Extended: Core",
+    },
 ];
 
 pub struct AddressToName {
