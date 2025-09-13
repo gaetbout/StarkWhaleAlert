@@ -106,6 +106,14 @@ async fn get_events_with_retries(
         Err(ProviderError::RateLimited) => {
             tokio::time::sleep(Duration::from_secs(2)).await;
         }
+        Err(ProviderError::Other(e)) => {
+            let x = format!("Error: {}", e);
+            if x.contains("data did not match any variant") {
+                tokio::time::sleep(Duration::from_secs(2)).await;
+            } else {
+                return Err(ProviderError::Other(e));
+            }
+        }
         Err(e) => return Err(e),
     }
     Box::pin(get_events_with_retries(
