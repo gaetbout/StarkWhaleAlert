@@ -56,7 +56,7 @@ pub const TOKENS: &[Token] = &[
     },
     Token {
         address: "0x075afe6402aD5A5c20Dd25E10eC3b3986aCAA647b77e4Ae24B0CBc9a54A27a87",
-        decimals: 8,
+        decimals: 18,
         symbol: "EKUBO",
         selector: "Transfer",
         threshold: 10_000,
