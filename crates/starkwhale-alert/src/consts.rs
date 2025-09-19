@@ -37,15 +37,6 @@ pub const TOKENS: &[Token] = &[
         rate_api_id: Some("tether"),
     },
     Token {
-        address: "0x00da114221cb83fa859dbdb4c44beeaa0bb37c7537ad5ae66fe5e0efd20e6eb3",
-        decimals: 18,
-        symbol: "DAI",
-        selector: "Transfer",
-        threshold: 100_000,
-        logo: "D",
-        rate_api_id: Some("multi-collateral-dai"),
-    },
-    Token {
         address: "0x04718f5a0fc34cc1af16a1cdee98ffb20c31f5cd61d6ab07201858f4287c938d",
         decimals: 18,
         symbol: "STRK",
@@ -62,6 +53,15 @@ pub const TOKENS: &[Token] = &[
         threshold: 5,
         logo: "B",
         rate_api_id: Some("wrapped-bitcoin"),
+    },
+    Token {
+        address: "0x075afe6402aD5A5c20Dd25E10eC3b3986aCAA647b77e4Ae24B0CBc9a54A27a87",
+        decimals: 8,
+        symbol: "EKUBO",
+        selector: "Transfer",
+        threshold: 10_000,
+        logo: "$",
+        rate_api_id: Some("ekubo-protocol"),
     },
 ];
 

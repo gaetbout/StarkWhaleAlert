@@ -136,7 +136,6 @@ mod tests {
     #[case("ethereum")]
     #[case("usd-coin")]
     #[case("tether")]
-    #[case("multi-collateral-dai")]
     #[case("starknet-token")]
     #[case("wrapped-bitcoin")]
     #[tokio::test]
