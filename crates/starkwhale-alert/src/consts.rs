@@ -59,7 +59,7 @@ pub const TOKENS: &[Token] = &[
         decimals: 18,
         symbol: "EKUBO",
         selector: "Transfer",
-        threshold: 10_000,
+        threshold: 50_000,
         logo: "$",
         rate_api_id: Some("ekubo-protocol"),
     },
