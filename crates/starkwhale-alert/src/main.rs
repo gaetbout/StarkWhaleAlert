@@ -89,8 +89,17 @@ async fn get_events_to_tweet_about(
     events
         .into_iter()
         .filter(|event| {
-            let low: u128 = event.data[2].try_into().unwrap();
-            let high = event.data[3].try_into().unwrap();
+            let (low, high) = if token.symbol == "LBTC" {
+                (
+                    event.data[0].try_into().unwrap(),
+                    event.data[1].try_into().unwrap(),
+                )
+            } else {
+                (
+                    event.data[2].try_into().unwrap(),
+                    event.data[3].try_into().unwrap(),
+                )
+            };
 
             to_u256(low, high) > threshold
         })
