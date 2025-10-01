@@ -89,19 +89,14 @@ async fn get_events_to_tweet_about(
     events
         .into_iter()
         .filter(|event| {
-            let (low, high) = if token.symbol == "LBTC" {
-                (
-                    event.data[0].try_into().unwrap(),
-                    event.data[1].try_into().unwrap(),
-                )
+            // ERC20 Transfer
+            let (low, high) = if event.data.len() == 2 {
+                (event.data[0], event.data[1])
             } else {
-                (
-                    event.data[2].try_into().unwrap(),
-                    event.data[3].try_into().unwrap(),
-                )
+                (event.data[2], event.data[3])
             };
 
-            to_u256(low, high) > threshold
+            to_u256(low.try_into().unwrap(), high.try_into().unwrap()) > threshold
         })
         .collect()
 }
