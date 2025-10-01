@@ -7,6 +7,7 @@ pub struct Token {
     pub logo: &'static str,
     pub rate_api_id: Option<&'static str>,
 }
+const BTC_THRESHOLD: u128 = 8;
 
 pub const TOKENS: &[Token] = &[
     Token {
@@ -62,6 +63,33 @@ pub const TOKENS: &[Token] = &[
         threshold: 100_000,
         logo: "$",
         rate_api_id: Some("ekubo-protocol"),
+    },
+    Token {
+        address: "0x036834a40984312f7f7de8d31e3f6305b325389eaeea5b1c0664b2fb936461a4",
+        decimals: 8,
+        symbol: "LBTC",
+        selector: "Transfer",
+        threshold: BTC_THRESHOLD,
+        logo: "B",
+        rate_api_id: Some("lombard-staked-btc"),
+    },
+    Token {
+        address: "0x0593e034dda23eea82d2ba9a30960ed42cf4a01502cc2351dc9b9881f9931a68",
+        decimals: 18,
+        symbol: "SolvBTC",
+        selector: "Transfer",
+        threshold: BTC_THRESHOLD,
+        logo: "B",
+        rate_api_id: Some("solv-btc"),
+    },
+    Token {
+        address: "0x04daa17763b286d1e59b97c283c0b8c949994c361e426a28f743c67bdfe9a32f",
+        decimals: 18,
+        symbol: "tBTC",
+        selector: "Transfer",
+        threshold: BTC_THRESHOLD,
+        logo: "B",
+        rate_api_id: Some("tbtc-token"),
     },
 ];
 
