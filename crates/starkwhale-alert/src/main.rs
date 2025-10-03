@@ -68,6 +68,10 @@ async fn main() -> Result<(), Box<dyn Error>> {
             let transfer_events: Vec<TransferEvent> =
                 events.into_iter().map(|event| event.into()).collect();
             if transfer_events.len() > 1 {
+                info!(
+                    "Multicall transfer detected with {} events",
+                    transfer_events.len()
+                );
                 let text_to_tweet = formatter::get_formatted_text_for_transfer_events(
                     &transfer_events,
                     tx_hash,
@@ -184,7 +188,7 @@ mod tests {
     #[tokio::test]
     async fn test_grouping_events() {
         let events_by_tx =
-            get_events_to_tweet_about(&TOKENS[4], &get_infura_client(), 2619795, 2619796).await;
+            get_events_to_tweet_about(&TOKENS[4], &get_infura_client(), 2644915, 2644916).await;
         for (tx_hash, events) in events_by_tx {
             let transfer_events: Vec<TransferEvent> =
                 events.into_iter().map(|event| event.into()).collect();
@@ -196,13 +200,14 @@ mod tests {
                     &TOKENS[4],
                 )
                 .await;
+                println!("{}", &text_to_tweet);
                 if text_to_tweet.len() > MAX_TWEET_LENGTH {
-                    tweet_all(&transfer_events, tx_hash, &TOKENS[4]).await;
+                    // tweet_all(&transfer_events, tx_hash, &TOKENS[4]).await;
                 } else {
                     println!("{}", &text_to_tweet);
                 }
             } else {
-                tweet_all(&transfer_events, tx_hash, &TOKENS[4]).await;
+                // tweet_all(&transfer_events, tx_hash, &TOKENS[4]).await;
             }
         }
     }
