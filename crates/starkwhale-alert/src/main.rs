@@ -1,13 +1,14 @@
+use crate::formatter::TransferEvent;
 use consts::{Token, TOKENS};
 use dotenv::dotenv;
 use log::info;
 use num_bigint::BigUint;
 use reqwest::Url;
 use starknet::{
-    core::types::EmittedEvent,
+    core::types::{EmittedEvent, Felt},
     providers::{jsonrpc::HttpTransport, JsonRpcClient, Provider},
 };
-use std::error::Error;
+use std::{collections::HashMap, error::Error};
 use std::{
     env,
     fs::{self, OpenOptions},
@@ -24,6 +25,7 @@ mod logger;
 mod starknet_id;
 mod twitter;
 
+const MAX_TWEET_LENGTH: usize = 280;
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
     logger::init();
@@ -58,14 +60,28 @@ async fn main() -> Result<(), Box<dyn Error>> {
     }
 
     for token in TOKENS {
-        // TODO Prob a better way to do, like spawning a thread and do each in parrallel?
-        let to_tweet =
+        let events_by_tx =
             get_events_to_tweet_about(token, &rpc_client, last_processed_block, last_network_block)
                 .await;
 
-        for emitted_event in to_tweet {
-            let text_to_tweet = formatter::get_formatted_text(emitted_event, token).await;
-            twitter::tweet(text_to_tweet).await;
+        for (tx_hash, events) in events_by_tx {
+            let transfer_events: Vec<TransferEvent> =
+                events.into_iter().map(|event| event.into()).collect();
+            if transfer_events.len() > 1 {
+                let text_to_tweet = formatter::get_formatted_text_for_transfer_events(
+                    &transfer_events,
+                    tx_hash,
+                    &token,
+                )
+                .await;
+                if text_to_tweet.len() > MAX_TWEET_LENGTH {
+                    tweet_all(&transfer_events, tx_hash, &token).await;
+                } else {
+                    twitter::tweet(text_to_tweet).await;
+                }
+            } else {
+                tweet_all(&transfer_events, tx_hash, &token).await;
+            }
         }
     }
 
@@ -79,26 +95,40 @@ async fn get_events_to_tweet_about(
     rpc_client: &JsonRpcClient<HttpTransport>,
     from_block: u64,
     to_block: u64,
-) -> Vec<EmittedEvent> {
+) -> HashMap<Felt, Vec<EmittedEvent>> {
     let events = api::fetch_events(rpc_client, token, from_block, to_block)
         .await
         .unwrap();
 
     info!("{} Transfer for {}", events.len(), token.symbol);
     let threshold = to_u256(10_u128.pow(token.decimals.into()) * token.threshold, 0);
-    events
-        .into_iter()
-        .filter(|event| {
-            // ERC20 Transfer
-            let (low, high) = if event.data.len() == 2 {
-                (event.data[0], event.data[1])
-            } else {
-                (event.data[2], event.data[3])
-            };
+    let mut events_by_tx: HashMap<Felt, Vec<EmittedEvent>> = HashMap::new();
 
-            to_u256(low.try_into().unwrap(), high.try_into().unwrap()) > threshold
-        })
-        .collect()
+    // Filter events and group them by transaction hash
+    for event in events.into_iter().filter(|event| {
+        // ERC20 Transfer
+        let (low, high) = if event.data.len() == 2 {
+            (event.data[0], event.data[1])
+        } else {
+            (event.data[2], event.data[3])
+        };
+
+        to_u256(low.try_into().unwrap(), high.try_into().unwrap()) > threshold
+    }) {
+        events_by_tx
+            .entry(event.transaction_hash)
+            .or_default()
+            .push(event);
+    }
+
+    events_by_tx
+}
+
+async fn tweet_all(transfer_events: &Vec<TransferEvent>, tx_hash: Felt, token: &Token) {
+    for event in transfer_events {
+        let text_to_tweet = formatter::get_formatted_text(event.clone(), tx_hash, token).await;
+        twitter::tweet(text_to_tweet).await;
+    }
 }
 
 fn check_valid_env() {
@@ -134,9 +164,12 @@ fn to_u256(low: u128, high: u128) -> BigUint {
 }
 #[cfg(test)]
 mod tests {
+    use super::{
+        get_events_to_tweet_about, get_infura_client, to_u256, tweet_all, MAX_TWEET_LENGTH,
+    };
+    use crate::consts::TOKENS;
+    use crate::formatter::{self, TransferEvent};
     use num_bigint::BigUint;
-
-    use super::to_u256;
 
     #[test]
     fn test_big_int() {
@@ -146,5 +179,31 @@ mod tests {
         assert!(u256_0 < u256_1, "0");
         assert!(u256_1 < u256_2, "1");
         assert!((u256_1 + BigUint::new(vec![1])).eq(&u256_2), "2");
+    }
+
+    #[tokio::test]
+    async fn test_grouping_events() {
+        let events_by_tx =
+            get_events_to_tweet_about(&TOKENS[4], &get_infura_client(), 2619795, 2619796).await;
+        for (tx_hash, events) in events_by_tx {
+            let transfer_events: Vec<TransferEvent> =
+                events.into_iter().map(|event| event.into()).collect();
+            // For now, tweet about each event in the transaction
+            if transfer_events.len() > 1 {
+                let text_to_tweet = formatter::get_formatted_text_for_transfer_events(
+                    &transfer_events,
+                    tx_hash,
+                    &TOKENS[4],
+                )
+                .await;
+                if text_to_tweet.len() > MAX_TWEET_LENGTH {
+                    tweet_all(&transfer_events, tx_hash, &TOKENS[4]).await;
+                } else {
+                    println!("{}", &text_to_tweet);
+                }
+            } else {
+                tweet_all(&transfer_events, tx_hash, &TOKENS[4]).await;
+            }
+        }
     }
 }

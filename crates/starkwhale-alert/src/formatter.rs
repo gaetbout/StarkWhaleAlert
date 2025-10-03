@@ -6,62 +6,116 @@ use std::ops::Div;
 
 use crate::{api, consts::Token, consts::ADDRESS_LIST, get_infura_client, starknet_id, to_u256};
 
-pub async fn get_formatted_text(emitted_event: EmittedEvent, token: &Token) -> String {
-    let (from, to, amount_idx) = if emitted_event.keys.len() > 1 {
-        (emitted_event.keys[1], emitted_event.keys[2], 0)
-    } else {
-        (emitted_event.data[0], emitted_event.data[1], 2)
-    };
-    let mut amount = to_u256(
-        emitted_event.data[amount_idx]
-            .try_into()
-            .expect("Error: low"),
-        emitted_event.data[amount_idx + 1]
-            .try_into()
-            .expect("Error: high"),
-    );
+#[derive(Debug, Clone)]
+pub struct TransferEvent {
+    pub from: Felt,
+    pub to: Felt,
+    pub amount: BigUint,
+}
 
-    amount = to_rounded(amount, token.decimals);
+impl Into<TransferEvent> for EmittedEvent {
+    fn into(self) -> TransferEvent {
+        let (from, to, amount_idx) = if self.keys.len() > 1 {
+            (self.keys[1], self.keys[2], 0)
+        } else {
+            (self.data[0], self.data[1], 2)
+        };
+        let amount = to_u256(
+            self.data[amount_idx].try_into().expect("Error: low"),
+            self.data[amount_idx + 1].try_into().expect("Error: high"),
+        );
+        TransferEvent { from, to, amount }
+    }
+}
+
+pub async fn get_formatted_text_for_transfer_events(
+    emitted_events: &Vec<TransferEvent>,
+    transaction_hash: Felt,
+    token: &Token,
+) -> String {
+    /*
+        Multicall transfer detected:
+    - 12 #tBTC (≈$X) from 0xA... to 0xB...
+    - 11 #tBTC (≈$Y) from 0xB... to 0xC...
+    Tx: https://voyager.online/tx/...
+            */
+    let rate = get_rate(token).await;
+
+    let mut text = format!("Multicall transfer detected:\n",);
+    for event in emitted_events {
+        let amount = to_rounded(event.amount.clone(), token.decimals);
+        let amount_string = amount.to_u128().unwrap().to_formatted_string(&Locale::en);
+        let usd_value = get_usd_value(amount, &rate);
+        text += &format!(
+            "- {} #{} {} ({} USD) from {} to {}\n",
+            amount_string,
+            token.symbol,
+            token.logo,
+            usd_value,
+            format_address(event.from).await,
+            format_address(event.to).await
+        );
+    }
+    text += &format!("https://voyager.online/tx/{}", transaction_hash.to_hex());
+    text
+}
+
+pub async fn get_formatted_text(
+    transfer_event: TransferEvent,
+    transaction_hash: Felt,
+    token: &Token,
+) -> String {
+    let amount = to_rounded(transfer_event.amount, token.decimals);
     let amount_string = amount.to_u128().unwrap().to_formatted_string(&Locale::en);
-    let usd_value = get_usd_value(token, amount).await;
+    let rate = get_rate(token).await;
+    let usd_value = get_usd_value(amount, &rate);
 
     let first_line = format!(
         "{:} #{} {} ({} USD)",
         amount_string, token.symbol, token.logo, usd_value
     );
-    let second_line = if to == Felt::ZERO {
-        format!("{} bridged to Ethereum L1", format_address(from).await)
-    } else if from == Felt::ZERO {
-        format!("{} bridged to Starknet L2", format_address(to).await)
+    let second_line = if transfer_event.to == Felt::ZERO {
+        format!(
+            "{} bridged to Ethereum",
+            format_address(transfer_event.from).await
+        )
+    } else if transfer_event.from == Felt::ZERO {
+        format!(
+            "{} bridged to Starknet",
+            format_address(transfer_event.to).await
+        )
     } else {
         format!(
             "From {} to {}",
-            format_address(from).await,
-            format_address(to).await
+            format_address(transfer_event.from).await,
+            format_address(transfer_event.to).await
         )
     };
 
-    let third_line = format!(
-        // "https://starkscan.co/tx/{}",
-        "https://voyager.online/tx/{}",
-        emitted_event.transaction_hash.to_hex()
-    );
+    let third_line = format!("https://voyager.online/tx/{}", transaction_hash.to_hex());
     format!("{}\n{}\n{}", first_line, second_line, third_line)
 }
 
-async fn get_usd_value(token: &Token, amount: BigUint) -> String {
+async fn get_rate(token: &Token) -> Option<BigUint> {
     match token.rate_api_id {
         Some(coin_id) => {
             let rate = api::fetch_coin(coin_id).await.unwrap();
-            let rate = BigUint::new(vec![(rate * 10000_f64).to_u32().unwrap()]);
-            let usd_value = (amount * rate).div(BigUint::new(vec![10000]));
-
-            usd_value
-                .to_u128()
-                .unwrap()
-                .to_formatted_string(&Locale::en)
+            Some(BigUint::new(vec![(rate * 10000_f64).to_u32().unwrap()]))
         }
-        None => "???".to_owned(),
+        None => None,
+    }
+}
+
+fn get_usd_value(amount: BigUint, rate: &Option<BigUint>) -> String {
+    if let Some(rate) = rate {
+        let usd_value = (amount * rate).div(BigUint::new(vec![10000]));
+
+        usd_value
+            .to_u128()
+            .unwrap()
+            .to_formatted_string(&Locale::en)
+    } else {
+        "???".to_owned()
     }
 }
 
@@ -121,6 +175,9 @@ mod tests {
             Felt::from_hex("0xe8d4a51000").unwrap(),
             Felt::from_hex("0x0").unwrap(),
         ];
+        let transaction_hash =
+            Felt::from_hex("0x732b09d901fb0075d283ac23cbaae4f8c486123a88a621eeaa05d0b5ddfb8d8")
+                .unwrap();
         let emitted_event = EmittedEvent {
             from_address: Felt::from_hex(
                 "0x049d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7",
@@ -135,12 +192,9 @@ mod tests {
                 .unwrap(),
             ),
             block_number: Some(237165),
-            transaction_hash: Felt::from_hex(
-                "0x732b09d901fb0075d283ac23cbaae4f8c486123a88a621eeaa05d0b5ddfb8d8",
-            )
-            .unwrap(),
+            transaction_hash,
         };
-        let response = get_formatted_text(emitted_event, &TOKENS[1]).await;
+        let response = get_formatted_text(emitted_event.into(), transaction_hash, &TOKENS[1]).await;
         println!("{response}");
         assert!(
             response
@@ -162,6 +216,9 @@ mod tests {
             Felt::from_hex("0xe8d4a51000").unwrap(),
             Felt::from_hex("0x0").unwrap(),
         ];
+        let transaction_hash =
+            Felt::from_hex("0x732b09d901fb0075d283ac23cbaae4f8c486123a88a621eeaa05d0b5ddfb8d8")
+                .unwrap();
         let emitted_event = EmittedEvent {
             from_address: Felt::from_hex(
                 "0x049d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7",
@@ -176,12 +233,9 @@ mod tests {
                 .unwrap(),
             ),
             block_number: Some(237165),
-            transaction_hash: Felt::from_hex(
-                "0x732b09d901fb0075d283ac23cbaae4f8c486123a88a621eeaa05d0b5ddfb8d8",
-            )
-            .unwrap(),
+            transaction_hash,
         };
-        let response = get_formatted_text(emitted_event, &TOKENS[1]).await;
+        let response = get_formatted_text(emitted_event.into(), transaction_hash, &TOKENS[1]).await;
         assert!(
             response
                 == "1,000,000 #USDC $ (1,000,000 USD)\n0x6e1...b3ce bridged to Ethereum L1\nhttps://starkscan.co/tx/0x732b09d901fb0075d283ac23cbaae4f8c486123a88a621eeaa05d0b5ddfb8d8",
@@ -203,6 +257,9 @@ mod tests {
             Felt::from_hex("0xe8d4a51000").unwrap(),
             Felt::from_hex("0x0").unwrap(),
         ];
+        let transaction_hash =
+            Felt::from_hex("0x732b09d901fb0075d283ac23cbaae4f8c486123a88a621eeaa05d0b5ddfb8d8")
+                .unwrap();
         let emitted_event = EmittedEvent {
             from_address: Felt::from_hex(
                 "0x049d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7",
@@ -217,12 +274,9 @@ mod tests {
                 .unwrap(),
             ),
             block_number: Some(237165),
-            transaction_hash: Felt::from_hex(
-                "0x732b09d901fb0075d283ac23cbaae4f8c486123a88a621eeaa05d0b5ddfb8d8",
-            )
-            .unwrap(),
+            transaction_hash,
         };
-        let response = get_formatted_text(emitted_event, &TOKENS[1]).await;
+        let response = get_formatted_text(emitted_event.into(), transaction_hash, &TOKENS[1]).await;
         assert!(
             response
                 == "1,000,000 #USDC $ (1,000,000 USD)\nFrom 0x6e1...b3ce to 0x6e1...b3ce\nhttps://starkscan.co/tx/0x732b09d901fb0075d283ac23cbaae4f8c486123a88a621eeaa05d0b5ddfb8d8",
