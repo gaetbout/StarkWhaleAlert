@@ -33,23 +33,16 @@ pub async fn get_formatted_text_for_transfer_events(
     transaction_hash: Felt,
     token: &Token,
 ) -> String {
-    /*
-        Multicall transfer detected:
-    - 12 #tBTC (≈$X) from 0xA... to 0xB...
-    - 11 #tBTC (≈$Y) from 0xB... to 0xC...
-    Tx: https://voyager.online/tx/...
-            */
     let rate = get_rate(token).await;
 
-    let mut text = format!("Multicall transfer detected:\n",);
+    let mut text = format!("Multicall of #{}: \n", token.symbol);
     for event in emitted_events {
         let amount = to_rounded(event.amount.clone(), token.decimals);
         let amount_string = amount.to_u128().unwrap().to_formatted_string(&Locale::en);
         let usd_value = get_usd_value(amount, &rate);
         text += &format!(
-            "- {} #{} {} ({} USD) from {} to {}\n",
+            "- {}{} ({} $): {} -> {}\n",
             amount_string,
-            token.symbol,
             token.logo,
             usd_value,
             format_address(event.from).await,

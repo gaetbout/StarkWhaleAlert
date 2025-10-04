@@ -103,7 +103,6 @@ async fn get_events_to_tweet_about(
     let events = api::fetch_events(rpc_client, token, from_block, to_block)
         .await
         .unwrap();
-
     info!("{} Transfer for {}", events.len(), token.symbol);
     let threshold = to_u256(10_u128.pow(token.decimals.into()) * token.threshold, 0);
     let mut events_by_tx: HashMap<Felt, Vec<EmittedEvent>> = HashMap::new();
@@ -168,9 +167,7 @@ fn to_u256(low: u128, high: u128) -> BigUint {
 }
 #[cfg(test)]
 mod tests {
-    use super::{
-        get_events_to_tweet_about, get_infura_client, to_u256, tweet_all, MAX_TWEET_LENGTH,
-    };
+    use super::{get_events_to_tweet_about, get_infura_client, to_u256, MAX_TWEET_LENGTH};
     use crate::consts::TOKENS;
     use crate::formatter::{self, TransferEvent};
     use num_bigint::BigUint;
@@ -187,27 +184,37 @@ mod tests {
 
     #[tokio::test]
     async fn test_grouping_events() {
+        let token = &TOKENS[4];
+        println!("token: {:?}", token);
+        let rpc_client = get_infura_client();
+        let last_network_block = 2673565;
+        let last_processed_block = last_network_block + 1;
         let events_by_tx =
-            get_events_to_tweet_about(&TOKENS[4], &get_infura_client(), 2644915, 2644916).await;
+            get_events_to_tweet_about(token, &rpc_client, last_network_block, last_processed_block)
+                .await;
+
+        println!("events_by_tx: {:?}", events_by_tx);
         for (tx_hash, events) in events_by_tx {
             let transfer_events: Vec<TransferEvent> =
                 events.into_iter().map(|event| event.into()).collect();
-            // For now, tweet about each event in the transaction
+            println!("transfer_events: {:?}", transfer_events);
             if transfer_events.len() > 1 {
+                println!(
+                    "Multicall transfer detected with {} events",
+                    transfer_events.len()
+                );
                 let text_to_tweet = formatter::get_formatted_text_for_transfer_events(
                     &transfer_events,
                     tx_hash,
-                    &TOKENS[4],
+                    &token,
                 )
                 .await;
-                println!("{}", &text_to_tweet);
+                println!("text_to_tweet: {:?}", text_to_tweet.len());
                 if text_to_tweet.len() > MAX_TWEET_LENGTH {
-                    // tweet_all(&transfer_events, tx_hash, &TOKENS[4]).await;
+                    println!("{}", &text_to_tweet);
                 } else {
                     println!("{}", &text_to_tweet);
                 }
-            } else {
-                // tweet_all(&transfer_events, tx_hash, &TOKENS[4]).await;
             }
         }
     }
