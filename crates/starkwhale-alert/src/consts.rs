@@ -180,6 +180,10 @@ pub const ADDRESS_LIST: &[AddressToName] = &[
         name: "Binance",
     },
     AddressToName {
+        address: "4164013f90b05d67f026779bf96e9c401c96f3485b645a786166e6935fba116",
+        name: "Binance",
+    },
+    AddressToName {
         address: "517daba3622259ae4fffab72bb716d89c30df0994c6ab25ede61bd139639724",
         name: "Strk Provisions: StarkEx Claim",
     },
