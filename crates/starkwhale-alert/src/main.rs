@@ -32,6 +32,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     check_db();
     check_valid_env();
     let rpc_client = get_infura_client();
+    println!("rpc client created: {:?}", rpc_client);
     let last_network_block = rpc_client.block_number().await? - 1;
 
     let last_processed_block = db::get_last_processed_block().await;
@@ -45,14 +46,13 @@ async fn main() -> Result<(), Box<dyn Error>> {
     }
 
     if last_network_block > last_processed_block + 500 {
-        // TODO Send mail
         info!(
             "Local is {} blocks behind (current: {}). To sync use option -s",
             last_network_block - last_processed_block,
             last_network_block
         );
         let args: Vec<String> = env::args().collect();
-        if args.contains(&String::from("-s")) {
+        if args.contains(&String::from("-s")) || last_network_block > last_processed_block + 5000 {
             info!("Updating to latest block...\n");
             db::set_last_processed_block(last_network_block).await;
         }
