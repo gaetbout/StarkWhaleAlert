@@ -32,7 +32,6 @@ async fn main() -> Result<(), Box<dyn Error>> {
     check_db();
     check_valid_env();
     let rpc_client = get_infura_client();
-    println!("rpc client created: {:?}", rpc_client);
     let last_network_block = rpc_client.block_number().await? - 1;
 
     let last_processed_block = db::get_last_processed_block().await;
