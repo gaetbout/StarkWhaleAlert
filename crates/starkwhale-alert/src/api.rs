@@ -108,7 +108,9 @@ async fn get_events_with_retries(
         }
         Err(ProviderError::Other(e)) => {
             let x = format!("Error: {}", e);
-            if x.contains("data did not match any variant") {
+            if x.contains("data did not match any variant")
+                || x.contains("Your app has exceeded its compute units per second capacity")
+            {
                 tokio::time::sleep(Duration::from_secs(2)).await;
             } else {
                 return Err(ProviderError::Other(e));
