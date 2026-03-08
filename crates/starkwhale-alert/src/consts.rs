@@ -53,7 +53,7 @@ pub const TOKENS: &[Token] = &[
         decimals: 18,
         symbol: "STRK",
         selector: "Transfer",
-        threshold: 10_000_000,
+        threshold: 15_000_000,
         logo: "",
         rate_api_id: Some("starknet-token"),
     },
