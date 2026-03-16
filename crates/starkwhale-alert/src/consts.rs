@@ -62,7 +62,7 @@ pub const TOKENS: &[Token] = &[
         decimals: 8,
         symbol: "wBTC",
         selector: "Transfer",
-        threshold: 11,
+        threshold: 17,
         logo: BTC_SYMBOL,
         rate_api_id: Some("wrapped-bitcoin"),
     },
