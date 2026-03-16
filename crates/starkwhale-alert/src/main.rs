@@ -128,8 +128,11 @@ async fn get_events_to_tweet_about(
 
 async fn tweet_all(transfer_events: &Vec<TransferEvent>, tx_hash: Felt, token: &Token) {
     for event in transfer_events {
-        let text_to_tweet = formatter::get_formatted_text(event.clone(), tx_hash, token).await;
-        twitter::tweet(text_to_tweet).await;
+        if let Some(text_to_tweet) =
+            formatter::get_formatted_text(event.clone(), tx_hash, token).await
+        {
+            twitter::tweet(text_to_tweet).await;
+        }
     }
 }
 

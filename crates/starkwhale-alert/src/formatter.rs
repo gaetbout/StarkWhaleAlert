@@ -57,7 +57,7 @@ pub async fn get_formatted_text(
     transfer_event: TransferEvent,
     transaction_hash: Felt,
     token: &Token,
-) -> String {
+) -> Option<String> {
     let amount = to_rounded(transfer_event.amount, token.decimals);
     let amount_string = amount.to_u128().unwrap().to_formatted_string(&Locale::en);
     let rate = get_rate(token).await;
@@ -78,15 +78,17 @@ pub async fn get_formatted_text(
             format_address(transfer_event.to).await
         )
     } else {
-        format!(
-            "From {} to {}",
-            format_address(transfer_event.from).await,
-            format_address(transfer_event.to).await
-        )
+        let from = format_address(transfer_event.from).await;
+        let to = format_address(transfer_event.to).await;
+        // most likely rebalancing of the pool
+        if from.contains("kubo") && to.contains("kubo") {
+            return None;
+        }
+        format!("From {} to {}", from, to)
     };
 
     let third_line = format!("https://voyager.online/tx/{}", transaction_hash.to_hex());
-    format!("{}\n{}\n{}", first_line, second_line, third_line)
+    Some(format!("{}\n{}\n{}", first_line, second_line, third_line))
 }
 
 async fn get_rate(token: &Token) -> Option<BigUint> {
@@ -187,7 +189,9 @@ mod tests {
             block_number: Some(237165),
             transaction_hash,
         };
-        let response = get_formatted_text(emitted_event.into(), transaction_hash, &TOKENS[1]).await;
+        let response = get_formatted_text(emitted_event.into(), transaction_hash, &TOKENS[1])
+            .await
+            .unwrap();
         println!("{response}");
         assert!(
             response
@@ -228,7 +232,9 @@ mod tests {
             block_number: Some(237165),
             transaction_hash,
         };
-        let response = get_formatted_text(emitted_event.into(), transaction_hash, &TOKENS[1]).await;
+        let response = get_formatted_text(emitted_event.into(), transaction_hash, &TOKENS[1])
+            .await
+            .unwrap();
         assert!(
             response
                 == "1,000,000 #USDC $ (1,000,000 USD)\n0x6e1...b3ce bridged to Ethereum L1\nhttps://starkscan.co/tx/0x732b09d901fb0075d283ac23cbaae4f8c486123a88a621eeaa05d0b5ddfb8d8",
@@ -269,7 +275,9 @@ mod tests {
             block_number: Some(237165),
             transaction_hash,
         };
-        let response = get_formatted_text(emitted_event.into(), transaction_hash, &TOKENS[1]).await;
+        let response = get_formatted_text(emitted_event.into(), transaction_hash, &TOKENS[1])
+            .await
+            .unwrap();
         assert!(
             response
                 == "1,000,000 #USDC $ (1,000,000 USD)\nFrom 0x6e1...b3ce to 0x6e1...b3ce\nhttps://starkscan.co/tx/0x732b09d901fb0075d283ac23cbaae4f8c486123a88a621eeaa05d0b5ddfb8d8",
