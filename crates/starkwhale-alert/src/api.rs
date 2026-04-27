@@ -1,8 +1,8 @@
 use crate::consts::Token;
 use serde::{Deserialize, Serialize};
-use starknet::{
+use starknet_rust::{
     core::{
-        types::{BlockId, EmittedEvent, EventFilter, EventsPage, Felt},
+        types::{AddressFilter, BlockId, EmittedEvent, EventFilter, EventsPage, Felt},
         utils::get_selector_from_name,
     },
     providers::{jsonrpc::HttpTransport, JsonRpcClient, Provider, ProviderError},
@@ -64,7 +64,6 @@ pub async fn fetch_events(
     let mut continuation_token = None;
     let from_block = Some(BlockId::Number(from_block));
     let to_block = Some(BlockId::Number(to_block));
-    let address = Some(Felt::from_hex(token.address).expect("Invalid address"));
     let keys = Some(vec![vec![
         get_selector_from_name(token.selector).expect("Invalid selector")
     ]]);
@@ -73,7 +72,7 @@ pub async fn fetch_events(
         let event_filter = EventFilter {
             from_block,
             to_block,
-            address,
+            address: Some(AddressFilter::Single(Felt::from_hex(token.address).expect("Invalid address"))),
             keys: keys.clone(),
         };
         let event_page =
@@ -100,7 +99,6 @@ async fn get_events_with_retries(
     let event_result = rpc_client
         .get_events(event_filter.clone(), continuation_token.clone(), 1000)
         .await;
-
     match event_result {
         Ok(events_page) => return Ok(events_page),
         Err(ProviderError::RateLimited) => {

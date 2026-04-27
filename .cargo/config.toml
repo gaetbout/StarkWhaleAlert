@@ -1,2 +1,10 @@
 [target.x86_64-unknown-linux-gnu]
-linker = "x86_64-unknown-linux-gnu-gcc"
+linker = "x86_64-linux-gnu-gcc"
+
+[env]
+# Many C/C++-backed crates (e.g. aws-lc-sys) use the `cc` crate, which expects a
+# `${TARGET}-gcc`-style compiler name. Debian/Ubuntu toolchains typically use
+# `x86_64-linux-gnu-gcc` (no "unknown"), so we map the variables explicitly.
+CC_x86_64_unknown_linux_gnu = "x86_64-linux-gnu-gcc"
+CXX_x86_64_unknown_linux_gnu = "x86_64-linux-gnu-g++"
+AR_x86_64_unknown_linux_gnu = "x86_64-linux-gnu-ar"

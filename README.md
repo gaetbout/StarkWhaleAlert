@@ -47,7 +47,7 @@ cargo run --bin bin_name
 
 Build for a linux environment from a mac using: 
 ```shell
-cargo build --bin starkwhale_alert --release --target=x86_64-unknown-linux-gnu
+cross build --bin starkwhale_alert --release --target x86_64-unknown-linux-gnu
 ```
 
 ## Setup 

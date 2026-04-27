@@ -1,7 +1,7 @@
 use bigdecimal::ToPrimitive;
 use num_bigint::BigUint;
 use num_format::{Locale, ToFormattedString};
-use starknet::core::types::{EmittedEvent, Felt};
+use starknet_rust::core::types::{EmittedEvent, Felt};
 use std::ops::Div;
 
 use crate::{api, consts::Token, consts::ADDRESS_LIST, get_infura_client, starknet_id, to_u256};
@@ -155,7 +155,7 @@ mod tests {
 
     use super::{format_address, get_formatted_text, to_rounded};
     use crate::{consts::TOKENS, to_u256};
-    use starknet::core::types::{EmittedEvent, Felt};
+    use starknet_rust::core::types::{EmittedEvent, Felt};
 
     #[tokio::test]
     async fn test_get_formatted_text_bridge_to_starknet() {

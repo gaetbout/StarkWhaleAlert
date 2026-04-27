@@ -1,5 +1,5 @@
 // This code was extracted from https://github.com/Th0rgal/starknet-rs/tree/feat/starknet-id
-use starknet::{
+use starknet_rust::{
     core::types::Felt,
     providers::{jsonrpc::HttpTransport, JsonRpcClient},
 };
@@ -18,7 +18,7 @@ pub async fn address_to_domain(
 mod tests {
     use super::address_to_domain;
     use crate::get_infura_client;
-    use starknet::core::types::Felt;
+    use starknet_rust::core::types::Felt;
 
     #[tokio::test]
     async fn test_starknet_id() {

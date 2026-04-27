@@ -4,7 +4,7 @@ use dotenv::dotenv;
 use log::info;
 use num_bigint::BigUint;
 use reqwest::Url;
-use starknet::{
+use starknet_rust::{
     core::types::{EmittedEvent, Felt},
     providers::{jsonrpc::HttpTransport, JsonRpcClient, Provider},
 };
@@ -156,7 +156,7 @@ fn check_db() {
 
 pub fn get_infura_client() -> JsonRpcClient<HttpTransport> {
     let api_key = dotenv!("NODE_PROVIDER_API_KEY");
-    let rpc_url = format!("https://starknet-mainnet.infura.io/v3/{api_key}");
+    let rpc_url = format!("https://starknet-mainnet.g.alchemy.com/starknet/version/rpc/v0_10/{api_key}");
     JsonRpcClient::new(HttpTransport::new(Url::parse(&rpc_url).unwrap()))
 }
 
