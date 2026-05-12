@@ -49,7 +49,7 @@ pub async fn get_formatted_text_for_transfer_events(
             format_address(event.to).await
         );
     }
-    text += &format!("https://voyager.online/tx/{}", transaction_hash.to_hex());
+    text += &transaction_hash.to_hex();
     text
 }
 
@@ -87,8 +87,12 @@ pub async fn get_formatted_text(
         format!("From {} to {}", from, to)
     };
 
-    let third_line = format!("https://voyager.online/tx/{}", transaction_hash.to_hex());
-    Some(format!("{}\n{}\n{}", first_line, second_line, third_line))
+    Some(format!(
+        "{}\n{}\n{}",
+        first_line,
+        second_line,
+        transaction_hash.to_hex()
+    ))
 }
 
 async fn get_rate(token: &Token) -> Option<BigUint> {
@@ -194,9 +198,8 @@ mod tests {
             .unwrap();
         println!("{response}");
         assert!(
-            response
-                == "1,000,000 #USDC $ (1,000,000 USD)\n0x6e1...b3ce bridged to Starknet L2\nhttps://starkscan.co/tx/0x732b09d901fb0075d283ac23cbaae4f8c486123a88a621eeaa05d0b5ddfb8d8",
-            "Should be https://twitter.com/StarkWhaleAlert/status/1703701997629722850"
+            response == "1,000,000 #USDC $ (1,000,000 USD)\n0x6e1...b3ce bridged to Starknet L2\n0x732b09d901fb0075d283ac23cbaae4f8c486123a88a621eeaa05d0b5ddfb8d8",
+            "Should match snapshot tweet text"
         );
     }
 
@@ -236,8 +239,7 @@ mod tests {
             .await
             .unwrap();
         assert!(
-            response
-                == "1,000,000 #USDC $ (1,000,000 USD)\n0x6e1...b3ce bridged to Ethereum L1\nhttps://starkscan.co/tx/0x732b09d901fb0075d283ac23cbaae4f8c486123a88a621eeaa05d0b5ddfb8d8",
+            response == "1,000,000 #USDC $ (1,000,000 USD)\n0x6e1...b3ce bridged to Ethereum L1\n0x732b09d901fb0075d283ac23cbaae4f8c486123a88a621eeaa05d0b5ddfb8d8",
             "Should be correct"
         );
     }
@@ -279,8 +281,7 @@ mod tests {
             .await
             .unwrap();
         assert!(
-            response
-                == "1,000,000 #USDC $ (1,000,000 USD)\nFrom 0x6e1...b3ce to 0x6e1...b3ce\nhttps://starkscan.co/tx/0x732b09d901fb0075d283ac23cbaae4f8c486123a88a621eeaa05d0b5ddfb8d8",
+            response == "1,000,000 #USDC $ (1,000,000 USD)\nFrom 0x6e1...b3ce to 0x6e1...b3ce\n0x732b09d901fb0075d283ac23cbaae4f8c486123a88a621eeaa05d0b5ddfb8d8",
             "Should be correct"
         );
     }
