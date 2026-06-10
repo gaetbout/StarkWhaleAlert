@@ -5,7 +5,7 @@ use starknet_rust::{
 };
 
 pub async fn address_to_domain(
-    _rpc_client: JsonRpcClient<HttpTransport>,
+    _rpc_client: &JsonRpcClient<HttpTransport>,
     _address: Felt,
 ) -> Option<String> {
     // rpc_client
@@ -24,7 +24,7 @@ mod tests {
     async fn test_starknet_id() {
         // stark
         let name = address_to_domain(
-            get_infura_client(),
+            &get_infura_client(),
             Felt::from_hex("0x1f4055a52c859593e79988bfe998b536066805fe757522ece47945f46f6b6e7")
                 .unwrap(),
         )
@@ -42,7 +42,7 @@ mod tests {
     async fn test_starknet_id_fail() {
         // stark
         let should_be_none = address_to_domain(
-            get_infura_client(),
+            &get_infura_client(),
             Felt::from_hex("0x225bd17f4b4ede26c77673d8d3").unwrap(),
         )
         .await;

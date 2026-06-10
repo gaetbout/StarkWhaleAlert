@@ -72,7 +72,9 @@ pub async fn fetch_events(
         let event_filter = EventFilter {
             from_block,
             to_block,
-            address: Some(AddressFilter::Single(Felt::from_hex(token.address).expect("Invalid address"))),
+            address: Some(AddressFilter::Single(
+                Felt::from_hex(token.address).expect("Invalid address"),
+            )),
             keys: keys.clone(),
         };
         let event_page =

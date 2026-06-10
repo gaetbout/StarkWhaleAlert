@@ -1,5 +1,6 @@
-use crate::formatter::TransferEvent;
-use consts::{Token, TOKENS};
+use crate::composer::{compose_tweets, Alert, ResolvedTransfer, TransferEvent};
+use bigdecimal::ToPrimitive;
+use consts::{Token, ADDRESS_LIST, TOKENS};
 use dotenv::dotenv;
 use log::info;
 use num_bigint::BigUint;
@@ -18,14 +19,13 @@ use std::{
 extern crate dotenv_codegen;
 
 mod api;
+mod composer;
 mod consts;
 mod db;
-mod formatter;
 mod logger;
 mod starknet_id;
 mod twitter;
 
-const MAX_TWEET_LENGTH: usize = 280;
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
     logger::init();
@@ -62,28 +62,42 @@ async fn main() -> Result<(), Box<dyn Error>> {
         let events_by_tx =
             get_events_to_tweet_about(token, &rpc_client, last_processed_block, last_network_block)
                 .await;
+        if events_by_tx.is_empty() {
+            continue;
+        }
+
+        // Gather the I/O once per token: the Rate and the resolved names, then hand a pure
+        // Alert to the Composer.
+        let rate = fetch_rate(token).await;
+        let mut name_cache: HashMap<Felt, String> = HashMap::new();
 
         for (tx_hash, events) in events_by_tx {
-            let transfer_events: Vec<TransferEvent> =
-                events.into_iter().map(|event| event.into()).collect();
-            if transfer_events.len() > 1 {
-                info!(
-                    "Multicall transfer detected with {} events",
-                    transfer_events.len()
-                );
-                let text_to_tweet = formatter::get_formatted_text_for_transfer_events(
-                    &transfer_events,
-                    tx_hash,
-                    &token,
-                )
-                .await;
-                if text_to_tweet.len() > MAX_TWEET_LENGTH {
-                    tweet_all(&transfer_events, tx_hash, &token).await;
-                } else {
-                    twitter::tweet(text_to_tweet).await;
-                }
-            } else {
-                tweet_all(&transfer_events, tx_hash, &token).await;
+            let mut transfers = Vec::with_capacity(events.len());
+            for event in events {
+                let transfer = TransferEvent::from(event);
+                let from_name = resolve_party(&rpc_client, transfer.from, &mut name_cache).await;
+                let to_name = resolve_party(&rpc_client, transfer.to, &mut name_cache).await;
+                transfers.push(ResolvedTransfer {
+                    from: transfer.from,
+                    to: transfer.to,
+                    from_name,
+                    to_name,
+                    amount: transfer.amount,
+                });
+            }
+
+            let alert = Alert {
+                token,
+                tx: tx_hash,
+                rate: rate.clone(),
+                transfers,
+            };
+            let tweets = compose_tweets(&alert);
+            if tweets.len() > 1 {
+                info!("Multicall transfer split into {} tweets", tweets.len());
+            }
+            for tweet in tweets {
+                twitter::tweet(tweet).await;
             }
         }
     }
@@ -126,13 +140,50 @@ async fn get_events_to_tweet_about(
     events_by_tx
 }
 
-async fn tweet_all(transfer_events: &Vec<TransferEvent>, tx_hash: Felt, token: &Token) {
-    for event in transfer_events {
-        if let Some(text_to_tweet) =
-            formatter::get_formatted_text(event.clone(), tx_hash, token).await
-        {
-            twitter::tweet(text_to_tweet).await;
+/// The token's USD Rate, fetched once per run. `None` when the token has no `rate_api_id`.
+async fn fetch_rate(token: &Token) -> Option<BigUint> {
+    match token.rate_api_id {
+        Some(coin_id) => {
+            let rate = api::fetch_coin(coin_id).await.unwrap();
+            Some(BigUint::new(vec![(rate * 10000_f64).to_u32().unwrap()]))
         }
+        None => None,
+    }
+}
+
+/// Resolve one address to a Party name, memoised per run. The zero address is a Bridge end
+/// and is left empty — the Composer renders it without ever naming it.
+async fn resolve_party(
+    rpc_client: &JsonRpcClient<HttpTransport>,
+    address: Felt,
+    cache: &mut HashMap<Felt, String>,
+) -> String {
+    if address == Felt::ZERO {
+        return String::new();
+    }
+    if let Some(name) = cache.get(&address) {
+        return name.clone();
+    }
+    let name = resolve_uncached(rpc_client, address).await;
+    cache.insert(address, name.clone());
+    name
+}
+
+async fn resolve_uncached(rpc_client: &JsonRpcClient<HttpTransport>, address: Felt) -> String {
+    let address_as_hex = format!("{:#x}", address);
+    if let Some(known) = ADDRESS_LIST
+        .iter()
+        .find(|item| address_as_hex.ends_with(item.address))
+    {
+        return known.name.to_string();
+    }
+    match starknet_id::address_to_domain(rpc_client, address).await {
+        Some(name) => name,
+        None => format!(
+            "{}...{}",
+            &address_as_hex[0..5],
+            &address_as_hex[address_as_hex.len() - 4..],
+        ),
     }
 }
 
@@ -156,7 +207,8 @@ fn check_db() {
 
 pub fn get_infura_client() -> JsonRpcClient<HttpTransport> {
     let api_key = dotenv!("NODE_PROVIDER_API_KEY");
-    let rpc_url = format!("https://starknet-mainnet.g.alchemy.com/starknet/version/rpc/v0_10/{api_key}");
+    let rpc_url =
+        format!("https://starknet-mainnet.g.alchemy.com/starknet/version/rpc/v0_10/{api_key}");
     JsonRpcClient::new(HttpTransport::new(Url::parse(&rpc_url).unwrap()))
 }
 
@@ -169,9 +221,7 @@ fn to_u256(low: u128, high: u128) -> BigUint {
 }
 #[cfg(test)]
 mod tests {
-    use super::{get_events_to_tweet_about, get_infura_client, to_u256, MAX_TWEET_LENGTH};
-    use crate::consts::TOKENS;
-    use crate::formatter::{self, TransferEvent};
+    use super::to_u256;
     use num_bigint::BigUint;
 
     #[test]
@@ -182,42 +232,5 @@ mod tests {
         assert!(u256_0 < u256_1, "0");
         assert!(u256_1 < u256_2, "1");
         assert!((u256_1 + BigUint::new(vec![1])).eq(&u256_2), "2");
-    }
-
-    #[tokio::test]
-    async fn test_grouping_events() {
-        let token = &TOKENS[4];
-        println!("token: {:?}", token);
-        let rpc_client = get_infura_client();
-        let last_network_block = 2673565;
-        let last_processed_block = last_network_block + 1;
-        let events_by_tx =
-            get_events_to_tweet_about(token, &rpc_client, last_network_block, last_processed_block)
-                .await;
-
-        println!("events_by_tx: {:?}", events_by_tx);
-        for (tx_hash, events) in events_by_tx {
-            let transfer_events: Vec<TransferEvent> =
-                events.into_iter().map(|event| event.into()).collect();
-            println!("transfer_events: {:?}", transfer_events);
-            if transfer_events.len() > 1 {
-                println!(
-                    "Multicall transfer detected with {} events",
-                    transfer_events.len()
-                );
-                let text_to_tweet = formatter::get_formatted_text_for_transfer_events(
-                    &transfer_events,
-                    tx_hash,
-                    &token,
-                )
-                .await;
-                println!("text_to_tweet: {:?}", text_to_tweet.len());
-                if text_to_tweet.len() > MAX_TWEET_LENGTH {
-                    println!("{}", &text_to_tweet);
-                } else {
-                    println!("{}", &text_to_tweet);
-                }
-            }
-        }
     }
 }
