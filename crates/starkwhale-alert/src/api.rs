@@ -1,4 +1,5 @@
 use crate::consts::Token;
+use log::{error, warn};
 use serde::{Deserialize, Serialize};
 use starknet_rust::{
     core::{
@@ -96,6 +97,7 @@ async fn get_events_with_retries(
     retries: u8,
 ) -> Result<EventsPage, ProviderError> {
     if retries > 5 {
+        error!("get_events: giving up after {} attempts, returning RateLimited (the real cause is the last logged error above)", retries);
         return Err(ProviderError::RateLimited);
     }
     let event_result = rpc_client
@@ -104,6 +106,7 @@ async fn get_events_with_retries(
     match event_result {
         Ok(events_page) => return Ok(events_page),
         Err(ProviderError::RateLimited) => {
+            warn!("get_events: rate limited (attempt {}), retrying in 2s", retries);
             tokio::time::sleep(Duration::from_secs(2)).await;
         }
         Err(ProviderError::Other(e)) => {
@@ -111,12 +114,20 @@ async fn get_events_with_retries(
             if x.contains("data did not match any variant")
                 || x.contains("Your app has exceeded its compute units per second capacity")
             {
+                warn!(
+                    "get_events: retryable error (attempt {}), retrying in 2s: {}",
+                    retries, x
+                );
                 tokio::time::sleep(Duration::from_secs(2)).await;
             } else {
+                error!("get_events: non-retryable Other error: {}", x);
                 return Err(ProviderError::Other(e));
             }
         }
-        Err(e) => return Err(e),
+        Err(e) => {
+            error!("get_events: unexpected provider error: {:?}", e);
+            return Err(e);
+        }
     }
     Box::pin(get_events_with_retries(
         rpc_client,

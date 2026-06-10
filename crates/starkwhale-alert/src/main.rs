@@ -2,7 +2,7 @@ use crate::composer::{compose_tweets, Alert, ResolvedTransfer, TransferEvent};
 use bigdecimal::ToPrimitive;
 use consts::{Token, ADDRESS_LIST, TOKENS};
 use dotenv::dotenv;
-use log::info;
+use log::{error, info};
 use num_bigint::BigUint;
 use reqwest::Url;
 use starknet_rust::{
@@ -113,9 +113,16 @@ async fn get_events_to_tweet_about(
     from_block: u64,
     to_block: u64,
 ) -> HashMap<Felt, Vec<EmittedEvent>> {
-    let events = api::fetch_events(rpc_client, token, from_block, to_block)
-        .await
-        .unwrap();
+    let events = match api::fetch_events(rpc_client, token, from_block, to_block).await {
+        Ok(events) => events,
+        Err(e) => {
+            error!(
+                "fetch_events failed for {} (blocks {}-{}): {:?}",
+                token.symbol, from_block, to_block, e
+            );
+            panic!("fetch_events failed for {}: {:?}", token.symbol, e);
+        }
+    };
     info!("{} Transfer for {}", events.len(), token.symbol);
     let threshold = to_u256(10_u128.pow(token.decimals.into()) * token.threshold, 0);
     let mut events_by_tx: HashMap<Felt, Vec<EmittedEvent>> = HashMap::new();
